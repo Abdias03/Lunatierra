@@ -1,0 +1,111 @@
+{
+  "app": {
+    "greeting": "Hello"
+  },
+  "nav": {
+    "home": "Home",
+    "crops": "Crops",
+    "add": "Add",
+    "questions": "Questions"
+  },
+  "home": {
+    "welcome": "Your field at a glance, with the weather, moon, and actions that matter today.",
+    "moreActions": "More actions for today"
+  },
+  "highlight": {
+    "eyebrow": "Today's focus",
+    "title": "What should I do today?",
+    "cta": "Open questions"
+  },
+  "summary": {
+    "eyebrow": "Cultivation summary",
+    "title": "Your active crops",
+    "viewAll": "See all",
+    "empty": "Add a crop to start seeing quick field summaries here.",
+    "cropEyebrow": "Field card",
+    "days": "Days",
+    "daysValue": "{{value}} days"
+  },
+  "crops": {
+    "description": "Review each crop stage, expected behavior, and water status in one place."
+  },
+  "dashboard": {
+    "brand": "Lunatierra",
+    "title": "What should I do today?",
+    "subtitle": "Practical daily guidance for small farmers, based on crop stage, weather, and moon cycle.",
+    "dailyFocus": "Daily focus",
+    "moon": "Moon",
+    "weather": "Weather",
+    "rain": "Rain",
+    "humidity": "Humidity",
+    "loading": "Loading...",
+    "rainChance": "{{value}}% chance",
+    "temperature": "{{condition}}, {{value}}°C"
+  },
+  "recommendations": {
+    "title": "Recommendations",
+    "subtitle": "Clear actions for today",
+    "empty": "No recommendations yet.",
+    "severity": {
+      "success": "good",
+      "warning": "attention",
+      "info": "info"
+    }
+  },
+  "register": {
+    "title": "Register Crop",
+    "subtitle": "Add a crop to start tracking",
+    "description": "Add the crop, planting date, and water availability to keep daily recommendations accurate.",
+    "crop": "Crop",
+    "plantingDate": "Planting date",
+    "waterAvailable": "Water available?",
+    "submit": "Register crop",
+    "saving": "Saving..."
+  },
+  "tracking": {
+    "title": "Crop Tracking",
+    "subtitle": "Stage, behavior, and field follow-up",
+    "empty": "No crops registered yet. Add one to start tracking growth stages.",
+    "plantedOn": "Planted on {{date}} | {{days}} days ago",
+    "waterReady": "Water ready",
+    "lowWater": "Low water"
+  },
+  "crop": {
+    "stage": "Current stage",
+    "names": {
+      "corn": "Corn",
+      "beans": "Beans",
+      "squash": "Squash"
+    }
+  },
+  "quickQuestion": {
+    "title": "Quick Question",
+    "subtitle": "Simple predefined support",
+    "description": "Ask a short question and get a practical answer without leaving the app.",
+    "placeholder": "Why is my plant yellow?",
+    "submit": "Ask a simple question",
+    "thinking": "Thinking..."
+  },
+  "cropDetail": {
+    "back": "Back",
+    "heroEyebrow": "Crop detail",
+    "planted": "Planted",
+    "mainAction": "What to do today?",
+    "observeEyebrow": "Observe",
+    "observeTitle": "What to watch in the field",
+    "tipsEyebrow": "Warnings",
+    "tipsTitle": "Tips and alerts",
+    "noWarnings": "No warnings right now. Keep your usual field walk and monitor the leaves.",
+    "notFound": "This crop could not be found. Go back to your list and choose another crop."
+  },
+  "language": {
+    "label": "Language",
+    "english": "EN",
+    "spanish": "ES"
+  },
+  "errors": {
+    "load": "Could not load the farm data. Please confirm the backend is running.",
+    "saveCrop": "The crop could not be registered. Check the date and try again.",
+    "questionUnavailable": "The question service is unavailable right now."
+  }
+}

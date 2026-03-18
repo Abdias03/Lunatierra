@@ -1,0 +1,111 @@
+{
+  "app": {
+    "greeting": "Hola"
+  },
+  "nav": {
+    "home": "Inicio",
+    "crops": "Cultivos",
+    "add": "Agregar",
+    "questions": "Preguntas"
+  },
+  "home": {
+    "welcome": "Tu parcela de un vistazo, con clima, luna y acciones importantes para hoy.",
+    "moreActions": "Más acciones para hoy"
+  },
+  "highlight": {
+    "eyebrow": "Enfoque de hoy",
+    "title": "¿Qué debo hacer hoy?",
+    "cta": "Abrir preguntas"
+  },
+  "summary": {
+    "eyebrow": "Resumen del cultivo",
+    "title": "Tus cultivos activos",
+    "viewAll": "Ver todo",
+    "empty": "Agrega un cultivo para ver aquí un resumen rápido del campo.",
+    "cropEyebrow": "Tarjeta del campo",
+    "days": "Días",
+    "daysValue": "{{value}} días"
+  },
+  "crops": {
+    "description": "Revisa la etapa, el comportamiento esperado y el estado de agua de cada cultivo en un solo lugar."
+  },
+  "dashboard": {
+    "brand": "Lunatierra",
+    "title": "¿Qué debo hacer hoy?",
+    "subtitle": "Guía diaria práctica para pequeños agricultores, basada en la etapa del cultivo, el clima y el ciclo lunar.",
+    "dailyFocus": "Enfoque del día",
+    "moon": "Luna",
+    "weather": "Clima",
+    "rain": "Lluvia",
+    "humidity": "Humedad",
+    "loading": "Cargando...",
+    "rainChance": "{{value}}% de probabilidad",
+    "temperature": "{{condition}}, {{value}}°C"
+  },
+  "recommendations": {
+    "title": "Recomendaciones",
+    "subtitle": "Acciones claras para hoy",
+    "empty": "Aún no hay recomendaciones.",
+    "severity": {
+      "success": "bien",
+      "warning": "atención",
+      "info": "info"
+    }
+  },
+  "register": {
+    "title": "Registrar cultivo",
+    "subtitle": "Agrega un cultivo para comenzar el seguimiento",
+    "description": "Agrega el cultivo, la fecha de siembra y la disponibilidad de agua para mantener precisas las recomendaciones diarias.",
+    "crop": "Cultivo",
+    "plantingDate": "Fecha de siembra",
+    "waterAvailable": "¿Hay agua disponible?",
+    "submit": "Registrar cultivo",
+    "saving": "Guardando..."
+  },
+  "tracking": {
+    "title": "Seguimiento del cultivo",
+    "subtitle": "Etapa, comportamiento y seguimiento en campo",
+    "empty": "Todavía no hay cultivos registrados. Agrega uno para comenzar el seguimiento.",
+    "plantedOn": "Sembrado el {{date}} | hace {{days}} días",
+    "waterReady": "Con agua",
+    "lowWater": "Poca agua"
+  },
+  "crop": {
+    "stage": "Etapa actual",
+    "names": {
+      "corn": "Maíz",
+      "beans": "Frijol",
+      "squash": "Calabaza"
+    }
+  },
+  "quickQuestion": {
+    "title": "Pregunta rápida",
+    "subtitle": "Soporte simple predefinido",
+    "description": "Haz una pregunta corta y recibe una respuesta práctica sin salir de la app.",
+    "placeholder": "¿Por qué mi planta está amarilla?",
+    "submit": "Hacer una pregunta simple",
+    "thinking": "Pensando..."
+  },
+  "cropDetail": {
+    "back": "Volver",
+    "heroEyebrow": "Detalle del cultivo",
+    "planted": "Siembra",
+    "mainAction": "Â¿QuÃ© hacer hoy?",
+    "observeEyebrow": "Observa",
+    "observeTitle": "QuÃ© revisar en el campo",
+    "tipsEyebrow": "Alertas",
+    "tipsTitle": "Consejos y advertencias",
+    "noWarnings": "No hay alertas por ahora. ContinÃºa tu recorrido habitual y observa las hojas.",
+    "notFound": "No se encontrÃ³ este cultivo. Vuelve a la lista y elige otro."
+  },
+  "language": {
+    "label": "Idioma",
+    "english": "EN",
+    "spanish": "ES"
+  },
+  "errors": {
+    "load": "No se pudieron cargar los datos del campo. Confirma que el backend esté en ejecución.",
+    "saveCrop": "No se pudo registrar el cultivo. Revisa la fecha e inténtalo de nuevo.",
+    "questionUnavailable": "El servicio de preguntas no está disponible en este momento."
+  }
+}
