@@ -5,7 +5,12 @@ import com.lunatierra.backend.dto.RecommendationItem;
 import com.lunatierra.backend.dto.RecommendationResponse;
 import com.lunatierra.backend.dto.UserCropResponse;
 import com.lunatierra.backend.dto.WeatherSummary;
+import com.lunatierra.backend.model.Recommendation;
+import com.lunatierra.backend.model.RecommendationType;
+import com.lunatierra.backend.repository.CropStageRepository;
+import com.lunatierra.backend.repository.RecommendationRepository;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import org.springframework.context.MessageSource;
@@ -20,15 +25,27 @@ public class RecommendationService {
     private static final Logger logger = LoggerFactory.getLogger(RecommendationService.class);
 
     private final UserCropService userCropService;
+    private final StageService stageService;
+    private final ConditionService conditionService;
     private final WeatherService weatherService;
-    private final LunarPhaseService lunarPhaseService;
+    private final LunarService lunarService;
+    private final CropStageRepository cropStageRepository;
+    private final RecommendationRepository recommendationRepository;
     private final MessageSource messageSource;
 
-    public RecommendationService(UserCropService userCropService, WeatherService weatherService,
-                                 LunarPhaseService lunarPhaseService, MessageSource messageSource) {
+    public RecommendationService(UserCropService userCropService, StageService stageService,
+                                 ConditionService conditionService,
+                                 WeatherService weatherService, LunarService lunarService,
+                                 CropStageRepository cropStageRepository,
+                                 RecommendationRepository recommendationRepository,
+                                 MessageSource messageSource) {
         this.userCropService = userCropService;
+        this.stageService = stageService;
+        this.conditionService = conditionService;
         this.weatherService = weatherService;
-        this.lunarPhaseService = lunarPhaseService;
+        this.lunarService = lunarService;
+        this.cropStageRepository = cropStageRepository;
+        this.recommendationRepository = recommendationRepository;
         this.messageSource = messageSource;
     }
 
@@ -38,7 +55,7 @@ public class RecommendationService {
 
         List<UserCropResponse> crops = userCropService.getAll(effectiveLocale);
         WeatherSummary weather = weatherService.getTodayForecast(effectiveLocale);
-        String lunarPhase = lunarPhaseService.getCurrentPhase(effectiveLocale);
+        String lunarPhase = lunarService.getCurrentPhaseDisplayName(effectiveLocale);
         List<RecommendationItem> items = new ArrayList<>();
         List<CropDetailRecommendation> cropDetails = new ArrayList<>();
 
@@ -51,47 +68,34 @@ public class RecommendationService {
         }
 
         for (UserCropResponse crop : crops) {
-            String cropName = crop.getCropName().toLowerCase(Locale.ROOT);
-            long days = crop.getDaysSincePlanting();
-            cropDetails.add(buildCropDetail(crop, weather, effectiveLocale));
-
-            if ("corn".equals(cropName) && days >= 5 && days <= 10) {
-                items.add(new RecommendationItem(
-                        message("recommendation.check_germination.title", effectiveLocale),
-                        message("recommendation.check_germination.message", effectiveLocale, days),
-                        "warning"
-                ));
-            }
-
-            if ("beans".equals(cropName) && days >= 36 && days <= 55) {
-                items.add(new RecommendationItem(
-                        message("recommendation.protect_flowering.title", effectiveLocale),
-                        message("recommendation.protect_flowering.message", effectiveLocale),
-                        "info"
-                ));
-            }
-
-            if ("squash".equals(cropName) && weather.getHumidity() > 75) {
-                items.add(new RecommendationItem(
-                        message("recommendation.pest_risk.title", effectiveLocale),
-                        message("recommendation.pest_risk.message", effectiveLocale),
-                        "warning"
-                ));
-            }
-
-            if (days > 0 && growthStageMatchesHarvest(crop.getGrowthStage(), effectiveLocale)) {
+            var stage = stageService.resolveStage(crop.getCropName(), crop.getDaysSincePlanting(), effectiveLocale);
+            List<String> conditions = conditionService.determineWeatherConditions(weather);
+            RecommendationInsight insight = resolveInsight(
+                    crop.getCropName(),
+                    stage.getId(),
+                    stage.getKey(),
+                    conditions,
+                    null,
+                    crop.isWaterAvailable(),
+                    effectiveLocale
+            );
+            cropDetails.add(new CropDetailRecommendation(
+                    crop.getId(),
+                    insight.actionToday(),
+                    insight.observation(),
+                    insight.reason(),
+                    insight.warnings()
+            ));
+            items.add(new RecommendationItem(
+                    localizeCropName(crop.getCropName(), effectiveLocale),
+                    insight.actionToday(),
+                    "info"
+            ));
+            if (growthStageMatchesHarvest(crop.getGrowthStage(), effectiveLocale)) {
                 items.add(new RecommendationItem(
                         message("recommendation.ready_harvest.title", effectiveLocale),
                         message("recommendation.ready_harvest.message", effectiveLocale, localizeCropName(crop.getCropName(), effectiveLocale)),
                         "success"
-                ));
-            }
-
-            if (!crop.isWaterAvailable() && weather.getRainChance() < 40) {
-                items.add(new RecommendationItem(
-                        message("recommendation.watch_water.title", effectiveLocale),
-                        message("recommendation.watch_water.message", effectiveLocale, localizeCropName(crop.getCropName(), effectiveLocale)),
-                        "warning"
                 ));
             }
         }
@@ -104,7 +108,7 @@ public class RecommendationService {
             ));
         }
 
-        if (lunarPhaseService.isWaxingPhase()) {
+        if (lunarService.isWaxingPhase()) {
             items.add(new RecommendationItem(
                     message("recommendation.fertilization.title", effectiveLocale),
                     message("recommendation.fertilization.message", effectiveLocale),
@@ -133,57 +137,143 @@ public class RecommendationService {
     }
 
     private boolean growthStageMatchesHarvest(String stageName, Locale locale) {
-        return message("crop.stage.harvest", locale).equals(stageName);
+        return message("crop.stage.maturation", locale).equals(stageName)
+                || message("crop.stage.harvest", locale).equals(stageName);
     }
 
-    private CropDetailRecommendation buildCropDetail(UserCropResponse crop, WeatherSummary weather, Locale locale) {
-        String cropName = crop.getCropName().toLowerCase(Locale.ROOT);
-        long days = crop.getDaysSincePlanting();
-        String localizedCrop = localizeCropName(crop.getCropName(), locale);
+    public RecommendationInsight resolveInsight(String cropName, Long stageId, String stageKey, List<String> conditionKeys,
+                                                Long regionId,
+                                                boolean waterAvailable, Locale locale) {
+        Long effectiveStageId = stageId != null
+                ? stageId
+                : cropStageRepository.findByCrop_CodeIgnoreCaseAndName(cropName, stageKey)
+                .map(stage -> stage.getId())
+                .orElse(null);
 
-        String actionToday;
-        String fieldObservation;
-        List<String> warnings = new ArrayList<>();
+        List<RecommendationType> scopedTypes = List.of(
+                RecommendationType.ACTION,
+                RecommendationType.OBSERVATION,
+                RecommendationType.WARNING
+        );
 
-        if ("corn".equals(cropName) && days <= 5) {
-            actionToday = message("crop_detail.corn.early.action", locale);
-            fieldObservation = message("crop_detail.corn.early.observation", locale);
-            warnings.add(message("crop_detail.corn.early.warning", locale));
-        } else if ("corn".equals(cropName) && days <= 15) {
-            actionToday = message("crop_detail.corn.growth.action", locale);
-            fieldObservation = message("crop_detail.corn.growth.observation", locale);
-            if (weather.getHumidity() > 75) {
-                warnings.add(message("crop_detail.corn.growth.warning_humidity", locale));
+        List<Recommendation> specificRules = List.of();
+        if (effectiveStageId != null) {
+            for (String conditionKey : conditionKeys) {
+                specificRules = findScopedRules(cropName, effectiveStageId, conditionKey, scopedTypes, regionId);
+                if (!specificRules.isEmpty()) {
+                    break;
+                }
             }
-        } else if ("beans".equals(cropName)) {
-            actionToday = message("crop_detail.beans.action", locale);
-            fieldObservation = message("crop_detail.beans.observation", locale);
-            if (weather.getHumidity() > 75) {
-                warnings.add(message("crop_detail.beans.warning_humidity", locale));
+
+            if (specificRules.isEmpty()) {
+                specificRules = findScopedRules(cropName, effectiveStageId, "ANY", scopedTypes, regionId);
             }
-        } else if ("squash".equals(cropName)) {
-            actionToday = message("crop_detail.squash.action", locale);
-            fieldObservation = message("crop_detail.squash.observation", locale);
-            if (weather.getHumidity() > 75) {
-                warnings.add(message("crop_detail.squash.warning_humidity", locale));
-            }
-        } else {
-            actionToday = message("crop_detail.default.action", locale, localizedCrop);
-            fieldObservation = message("crop_detail.default.observation", locale);
         }
 
-        if (!crop.isWaterAvailable()) {
-            warnings.add(message("crop_detail.warning.low_water", locale));
+        List<Recommendation> conditionRules = new ArrayList<>();
+        for (String conditionKey : conditionKeys) {
+            conditionRules.addAll(findGlobalRules(conditionKey, regionId));
         }
 
-        if (weather.getRainChance() > 70) {
-            warnings.add(message("crop_detail.warning.high_rain", locale));
+        List<Recommendation> waterRules = !waterAvailable
+                ? findGlobalRules("LOW_WATER", regionId)
+                : List.of();
+
+        String actionToday = firstMessageByType(specificRules, RecommendationType.ACTION);
+        if (actionToday == null) {
+            actionToday = "Sigue observando tu cultivo y evita cambios bruscos en el manejo.";
+        }
+
+        String observation = firstMessageByType(specificRules, RecommendationType.OBSERVATION);
+        if (observation == null) {
+            observation = "Observa color de hojas, humedad del suelo y fuerza general de la planta.";
+        }
+
+        String reason = buildReason(stageKey, conditionKeys, waterAvailable);
+
+        List<String> warnings = new ArrayList<>(messagesByType(specificRules, RecommendationType.WARNING));
+        warnings.addAll(messagesByType(conditionRules, RecommendationType.WARNING));
+        warnings.addAll(messagesByType(waterRules, RecommendationType.WARNING));
+        if (!waterAvailable) {
+            String lowWaterWarning = "No hay suficiente agua disponible, prioriza riego.";
+            if (!warnings.contains(lowWaterWarning)) {
+                warnings.add(lowWaterWarning);
+            }
         }
 
         if (warnings.isEmpty()) {
-            warnings.add(message("crop_detail.warning.none", locale));
+            warnings.add("No hay alertas importantes para hoy. Sigue tu recorrido habitual.");
         }
 
-        return new CropDetailRecommendation(crop.getId(), actionToday, fieldObservation, warnings);
+        return new RecommendationInsight(actionToday, observation, reason, warnings);
+    }
+
+    private List<Recommendation> findScopedRules(String cropCode, Long stageId, String condition,
+                                                 Collection<RecommendationType> types, Long regionId) {
+        if (regionId != null) {
+            List<Recommendation> regionalRules =
+                    recommendationRepository.findByCrop_CodeIgnoreCaseAndStage_IdAndConditionAndTypeInAndActiveTrueAndRegion_IdOrderByPriorityAscVersionDesc(
+                            cropCode, stageId, condition, types, regionId
+                    );
+            if (!regionalRules.isEmpty()) {
+                return regionalRules;
+            }
+        }
+
+        return recommendationRepository.findByCrop_CodeIgnoreCaseAndStage_IdAndConditionAndTypeInAndActiveTrueAndRegionIsNullOrderByPriorityAscVersionDesc(
+                cropCode, stageId, condition, types
+        );
+    }
+
+    private List<Recommendation> findGlobalRules(String condition, Long regionId) {
+        if (regionId != null) {
+            List<Recommendation> regionalRules =
+                    recommendationRepository.findByCropIsNullAndStageIsNullAndConditionAndActiveTrueAndRegion_IdOrderByPriorityAscVersionDesc(
+                            condition, regionId
+                    );
+            if (!regionalRules.isEmpty()) {
+                return regionalRules;
+            }
+        }
+
+        return recommendationRepository.findByCropIsNullAndStageIsNullAndConditionAndActiveTrueAndRegionIsNullOrderByPriorityAscVersionDesc(
+                condition
+        );
+    }
+
+    private String buildReason(String stageKey, List<String> conditionKeys, boolean waterAvailable) {
+        StringBuilder reason = new StringBuilder("La recomendación se generó por la etapa ");
+        reason.append(stageKey);
+
+        if (!conditionKeys.isEmpty()) {
+            reason.append(" y las condiciones ");
+            reason.append(String.join(", ", conditionKeys));
+        }
+
+        if (!waterAvailable) {
+            reason.append(". Además, no hay suficiente agua disponible");
+        }
+
+        reason.append(".");
+        return reason.toString();
+    }
+
+    private String firstMessageByType(List<Recommendation> recommendations, RecommendationType type) {
+        return recommendations.stream()
+                .filter(rule -> rule.getType() == type)
+                .map(Recommendation::getMessage)
+                .findFirst()
+                .orElse(null);
+    }
+
+    private List<String> messagesByType(List<Recommendation> recommendations, RecommendationType type) {
+        return recommendations.stream()
+                .filter(rule -> rule.getType() == type)
+                .map(Recommendation::getMessage)
+                .distinct()
+                .toList();
+    }
+
+    public record RecommendationInsight(String actionToday, String observation, String reason, List<String> warnings) {
     }
 }
