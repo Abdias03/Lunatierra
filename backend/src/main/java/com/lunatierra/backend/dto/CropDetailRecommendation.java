@@ -7,12 +7,14 @@ public class CropDetailRecommendation {
     private final Long cropId;
     private final String actionToday;
     private final String fieldObservation;
+    private final String reason;
     private final List<String> warnings;
 
-    public CropDetailRecommendation(Long cropId, String actionToday, String fieldObservation, List<String> warnings) {
+    public CropDetailRecommendation(Long cropId, String actionToday, String fieldObservation, String reason, List<String> warnings) {
         this.cropId = cropId;
         this.actionToday = actionToday;
         this.fieldObservation = fieldObservation;
+        this.reason = reason;
         this.warnings = warnings;
     }
 
@@ -26,6 +28,10 @@ public class CropDetailRecommendation {
 
     public String getFieldObservation() {
         return fieldObservation;
+    }
+
+    public String getReason() {
+        return reason;
     }
 
     public List<String> getWarnings() {

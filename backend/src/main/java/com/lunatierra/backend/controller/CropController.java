@@ -1,13 +1,16 @@
 package com.lunatierra.backend.controller;
 
 import com.lunatierra.backend.dto.CreateUserCropRequest;
+import com.lunatierra.backend.dto.CropIntelligenceResponse;
 import com.lunatierra.backend.dto.UserCropResponse;
+import com.lunatierra.backend.service.CropEngineService;
 import com.lunatierra.backend.service.UserCropService;
 import jakarta.validation.Valid;
 import java.util.List;
 import java.util.Locale;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,9 +22,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class CropController {
 
     private final UserCropService userCropService;
+    private final CropEngineService cropEngineService;
 
-    public CropController(UserCropService userCropService) {
+    public CropController(UserCropService userCropService, CropEngineService cropEngineService) {
         this.userCropService = userCropService;
+        this.cropEngineService = cropEngineService;
     }
 
     @PostMapping
@@ -33,5 +38,11 @@ public class CropController {
     @GetMapping
     public List<UserCropResponse> getCrops(Locale locale) {
         return userCropService.getAll(locale);
+    }
+
+    @GetMapping("/{id}/intelligence")
+    public CropIntelligenceResponse getCropIntelligence(@PathVariable Long id, Locale locale) {
+        UserCropResponse crop = userCropService.getById(id, locale);
+        return cropEngineService.buildInsight(crop, locale);
     }
 }

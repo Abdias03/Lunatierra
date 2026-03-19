@@ -1,0 +1,30 @@
+spring:
+  application:
+    name: lunatierra-backend
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/lunatierra}
+    username: ${DB_USERNAME:lunatierra}
+    password: ${DB_PASSWORD:Dev230319}
+    hikari:
+      pool-name: LunatierraHikariPool
+      minimum-idle: ${DB_POOL_MIN_IDLE:2}
+      maximum-pool-size: ${DB_POOL_MAX_SIZE:10}
+      idle-timeout: 30000
+      connection-timeout: 20000
+      max-lifetime: 1800000
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+  sql:
+    init:
+      mode: always
+      encoding: UTF-8
+
+server:
+  port: ${SERVER_PORT:8080}

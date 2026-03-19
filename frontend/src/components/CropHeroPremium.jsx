@@ -9,10 +9,25 @@ function resolveGradient(stageName = '') {
   if (normalized.includes('germin')) {
     return 'from-[#eef8b5] via-[#7fb251] to-[#2d241c]';
   }
-  if (normalized.includes('veget') || normalized.includes('growth') || normalized.includes('crecimiento')) {
+  if (
+    normalized.includes('veget') ||
+    normalized.includes('growth') ||
+    normalized.includes('crecimiento') ||
+    normalized.includes('guia') ||
+    normalized.includes('guía')
+  ) {
     return 'from-[#dbf2a4] via-[#4e8a38] to-[#241c16]';
   }
-  if (normalized.includes('harvest') || normalized.includes('cosecha')) {
+  if (
+    normalized.includes('flor') ||
+    normalized.includes('fruto') ||
+    normalized.includes('fruit') ||
+    normalized.includes('mazorca') ||
+    normalized.includes('vaina')
+  ) {
+    return 'from-[#f2e48c] via-[#7da044] to-[#241c16]';
+  }
+  if (normalized.includes('harvest') || normalized.includes('cosecha') || normalized.includes('madur')) {
     return 'from-[#f0d878] via-[#93af45] to-[#241c16]';
   }
   return 'from-[#def0ab] via-[#6d9d49] to-[#241c16]';

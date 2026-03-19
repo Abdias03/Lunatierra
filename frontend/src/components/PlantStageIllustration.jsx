@@ -86,10 +86,30 @@ function resolveArtVariant(stageName = '') {
   if (normalized.includes('germin')) {
     return 'sprout';
   }
-  if (normalized.includes('veget') || normalized.includes('growth') || normalized.includes('crecimiento')) {
+  if (
+    normalized.includes('veget') ||
+    normalized.includes('growth') ||
+    normalized.includes('crecimiento') ||
+    normalized.includes('guia') ||
+    normalized.includes('guía')
+  ) {
     return 'growth';
   }
-  if (normalized.includes('harvest') || normalized.includes('cosecha') || normalized.includes('mature') || normalized.includes('madur')) {
+  if (
+    normalized.includes('flor') ||
+    normalized.includes('fruit') ||
+    normalized.includes('fruto') ||
+    normalized.includes('mazorca') ||
+    normalized.includes('vaina')
+  ) {
+    return 'mature';
+  }
+  if (
+    normalized.includes('harvest') ||
+    normalized.includes('cosecha') ||
+    normalized.includes('mature') ||
+    normalized.includes('madur')
+  ) {
     return 'mature';
   }
   return 'growth';

@@ -1,7 +1,9 @@
 package com.lunatierra.backend.model;
 
+import jakarta.persistence.Index;
 import java.time.LocalDate;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -9,7 +11,11 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 
+@Table(name = "user_crops", indexes = {
+        @Index(name = "idx_user_crop_crop_id", columnList = "crop_id")
+})
 @Entity
 public class UserCrop {
 
@@ -17,16 +23,18 @@ public class UserCrop {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "crop_id", nullable = false)
     private Crop crop;
 
+    @Column(name = "planting_date")
     private LocalDate plantingDate;
 
+    @Column(name = "water_available")
     private Boolean waterAvailable;
 
     public UserCrop() {
