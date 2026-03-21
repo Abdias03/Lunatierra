@@ -42,7 +42,7 @@ public class UserCropService {
     public UserCropResponse create(CreateUserCropRequest request, Locale locale) {
         Crop crop = cropRepository.findByCodeIgnoreCase(request.getCropName())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Crop not supported"));
-        User user = userRepository.findAll().stream().findFirst()
+        User user = userRepository.findFirstByOrderByIdAsc()
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Default user missing"));
 
         UserCrop userCrop = new UserCrop(user, crop, request.getPlantingDate(), Boolean.TRUE.equals(request.getWaterAvailable()));

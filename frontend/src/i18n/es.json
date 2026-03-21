@@ -12,6 +12,40 @@
     "welcome": "Tu parcela de un vistazo, con clima, luna y acciones importantes para hoy.",
     "moreActions": "Más acciones para hoy"
   },
+  "today": {
+    "eyebrow": "HOY",
+    "title": "Tu recorrido de hoy",
+    "empty": "Agrega un cultivo para empezar a recibir acciones del dÃ­a.",
+    "day": "DÃ­a {{value}}",
+    "status": {
+      "good": "BIEN",
+      "attention": "ATENCIÃ“N",
+      "risk": "RIESGO"
+    },
+    "actionsTitle": "Acciones de hoy",
+    "fallbackWaterAction": "Prioriza un riego ligero si el suelo estÃ¡ seco",
+    "fallbackSoilAction": "Revisa la humedad del suelo cerca de la planta",
+    "fallbackWeedsAction": "Quita la maleza cercana antes de que avance",
+    "reviewed": "âœ” Ya revisÃ©",
+    "reviewedDone": "âœ” Revisado hoy"
+  },
+  "todayMotivation": {
+    "risk": "Hoy revisa con calma: tu cultivo necesita un poco mÃ¡s de atenciÃ³n.",
+    "attention": "Vas bien. Con una revisiÃ³n tranquila hoy puedes prevenir problemas.",
+    "reviewed": "Buen trabajo hoy. Tu parcela ya recibiÃ³ su revisiÃ³n diaria.",
+    "streakStrong": "Llevas muy buena racha. Tu constancia ayuda a detectar cambios a tiempo.",
+    "streakGrowing": "Buen trabajo ayer. MantÃ©n el ritmo con una revisiÃ³n breve hoy.",
+    "stage": {
+      "germination": "Tu planta apenas empieza. Hoy basta con observarla con cuidado.",
+      "growth": "Tu cultivo va avanzando bien. Hoy solo revisa y acompaÃ±a su crecimiento.",
+      "flowering": "Tu cultivo estÃ¡ en un momento delicado. Una revisiÃ³n suave hoy hace diferencia.",
+      "mature": "Tu cultivo ya va cerca de cosecha. Mantente atento a los cambios finales."
+    }
+  },
+  "todayExtras": {
+    "reviewing": "Guardando revisiÃƒÂ³n de hoy",
+    "streak": "Racha: {{count}} dÃƒÂ­as"
+  },
   "highlight": {
     "eyebrow": "Enfoque de hoy",
     "title": "¿Qué debo hacer hoy?",

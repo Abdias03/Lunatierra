@@ -1,5 +1,5 @@
-INSERT INTO users (id, name) VALUES
-    (1, 'Farmer Demo')
+INSERT INTO users (id, name, streak_count, last_check_date) VALUES
+    (1, 'Farmer Demo', 0, NULL)
 ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO regions (id, name, climate_type) VALUES

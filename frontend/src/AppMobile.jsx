@@ -1,17 +1,16 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Route, Routes } from 'react-router-dom';
-import { askQuestion, createCrop, fetchCrops, fetchRecommendations } from './api';
+import { askQuestion, checkInDaily, createCrop, fetchCrops, fetchRecommendations } from './api';
 import AppCard from './components/AppCard';
 import BottomNav from './components/BottomNav';
 import CropCard from './components/CropCard';
 import CropDetailPagePremium from './components/CropDetailPagePremium';
 import CropFormI18n from './components/CropFormI18n';
-import HighlightCard from './components/HighlightCard';
 import LanguageSwitcher from './components/LanguageSwitcher';
 import QuickQuestionI18n from './components/QuickQuestionI18n';
-import RecommendationListI18n from './components/RecommendationListI18n';
 import SectionHeader from './components/SectionHeader';
+import TodayFocusCard from './components/TodayFocusCard';
 
 function InfoCard({ icon, label, value, tone = 'soft' }) {
   const tones = {
@@ -39,6 +38,7 @@ export default function AppMobile() {
   const [crops, setCrops] = useState([]);
   const [recommendationData, setRecommendationData] = useState(null);
   const [savingCrop, setSavingCrop] = useState(false);
+  const [reviewingToday, setReviewingToday] = useState(false);
   const [asking, setAsking] = useState(false);
   const [answer, setAnswer] = useState('');
   const [error, setError] = useState('');
@@ -87,6 +87,19 @@ export default function AppMobile() {
     }
   };
 
+  const handleTodayReview = async () => {
+    try {
+      setReviewingToday(true);
+      setError('');
+      const progress = await checkInDaily();
+      setRecommendationData((current) => current ? { ...current, dailyProgress: progress } : current);
+    } catch {
+      setError(t('errors.dailyReview', { defaultValue: 'No se pudo guardar la revisión de hoy. Inténtalo de nuevo.' }));
+    } finally {
+      setReviewingToday(false);
+    }
+  };
+
   const weather = recommendationData?.weather;
   const navLabels = {
     home: t('nav.home'),
@@ -94,6 +107,34 @@ export default function AppMobile() {
     add: t('nav.add'),
     questions: t('nav.questions')
   };
+  const cropsWithDetails = crops.map((crop) => ({
+    crop,
+    cropDetail: recommendationData?.cropDetails?.find((item) => item.cropId === crop.id) || null
+  }));
+
+  const getStatusScore = ({ crop, cropDetail }) => {
+    if (!crop.waterAvailable || (cropDetail?.warnings?.length || 0) >= 2) {
+      return 3;
+    }
+
+    if ((cropDetail?.warnings?.length || 0) === 1) {
+      return 2;
+    }
+
+    return 1;
+  };
+
+  const featuredCrop = cropsWithDetails.length
+    ? [...cropsWithDetails].sort((left, right) => {
+        const scoreDifference = getStatusScore(right) - getStatusScore(left);
+
+        if (scoreDifference !== 0) {
+          return scoreDifference;
+        }
+
+        return left.crop.daysSincePlanting - right.crop.daysSincePlanting;
+      })[0]
+    : null;
 
   const renderHome = () => (
     <div className="space-y-5">
@@ -121,7 +162,13 @@ export default function AppMobile() {
         />
       </div>
 
-      <HighlightCard recommendationData={recommendationData} onOpenQuestions={() => setCurrentScreen('questions')} />
+      <TodayFocusCard
+        crop={featuredCrop?.crop || null}
+        cropDetail={featuredCrop?.cropDetail || null}
+        recommendationData={recommendationData}
+        reviewing={reviewingToday}
+        onReview={handleTodayReview}
+      />
 
       <section className="space-y-4">
         <SectionHeader
@@ -151,11 +198,6 @@ export default function AppMobile() {
             <p className="text-sm leading-6 text-earth-700">{t('summary.empty')}</p>
           </AppCard>
         )}
-      </section>
-
-      <section className="space-y-4">
-        <SectionHeader eyebrow={t('recommendations.title')} title={t('home.moreActions')} />
-        <RecommendationListI18n items={recommendationData?.recommendations || []} />
       </section>
     </div>
   );

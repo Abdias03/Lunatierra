@@ -1,5 +1,6 @@
 package com.lunatierra.backend.service;
 
+import com.lunatierra.backend.dto.AIContext;
 import com.lunatierra.backend.dto.CropIntelligenceResponse;
 import com.lunatierra.backend.dto.LunarPhaseResponse;
 import com.lunatierra.backend.dto.StageInsight;
@@ -17,14 +18,17 @@ public class CropEngineService {
     private final LunarService lunarService;
     private final RecommendationService recommendationService;
     private final ConditionService conditionService;
+    private final AIService aiService;
 
     public CropEngineService(StageService stageService, WeatherService weatherService, LunarService lunarService,
-                             RecommendationService recommendationService, ConditionService conditionService) {
+                             RecommendationService recommendationService, ConditionService conditionService,
+                             AIService aiService) {
         this.stageService = stageService;
         this.weatherService = weatherService;
         this.lunarService = lunarService;
         this.recommendationService = recommendationService;
         this.conditionService = conditionService;
+        this.aiService = aiService;
     }
 
     public CropIntelligenceResponse buildInsight(UserCropResponse crop, Locale locale) {
@@ -45,6 +49,17 @@ public class CropEngineService {
                 crop.isWaterAvailable(),
                 locale
         );
+        String primaryCondition = conditions.isEmpty() ? "NORMAL" : conditions.get(0);
+        String assistantMessage = aiService.generateAdvice(new AIContext(
+                crop.getCropDisplayName() != null ? crop.getCropDisplayName() : crop.getCropName(),
+                stage.getName(),
+                crop.getDaysSincePlanting(),
+                primaryCondition,
+                crop.isWaterAvailable(),
+                recommendation.actionToday(),
+                recommendation.observation(),
+                recommendation.warnings()
+        ));
 
         return new CropIntelligenceResponse(
                 stage,
@@ -54,7 +69,8 @@ public class CropEngineService {
                 recommendation.warnings(),
                 lunarPhase.getDisplayName(),
                 lunarPhase.getActivities(),
-                weather
+                weather,
+                assistantMessage
         );
     }
 }

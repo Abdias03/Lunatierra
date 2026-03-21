@@ -12,6 +12,38 @@
     "welcome": "Your field at a glance, with the weather, moon, and actions that matter today.",
     "moreActions": "More actions for today"
   },
+  "today": {
+    "eyebrow": "TODAY",
+    "title": "Your daily field check",
+    "empty": "Add a crop to start receiving daily actions.",
+    "day": "Day {{value}}",
+    "status": {
+      "good": "GOOD",
+      "attention": "ATTENTION",
+      "risk": "RISK"
+    },
+    "motivation": {
+      "risk": "Today, take it slow: your crop needs a little more attention.",
+      "attention": "You're doing well. A calm check today can prevent bigger problems.",
+      "reviewed": "Good work today. Your field already got its daily check.",
+      "streakStrong": "You're on a strong streak. Your consistency helps catch changes early.",
+      "streakGrowing": "Nice job yesterday. Keep the rhythm with a short check today.",
+      "stage": {
+        "germination": "Your plant is just getting started. Today, gentle observation is enough.",
+        "growth": "Your plant is moving forward well. Today, just check and guide its growth.",
+        "flowering": "Your crop is in a delicate moment. A careful look today makes a difference.",
+        "mature": "Your crop is nearing harvest. Stay close and watch the final changes."
+      }
+    },
+    "actionsTitle": "Today's actions",
+    "streak": "Streak: {{count}} days",
+    "fallbackWaterAction": "Prioritize light watering if the soil feels dry",
+    "fallbackSoilAction": "Check soil moisture near the base",
+    "fallbackWeedsAction": "Remove nearby weeds before they spread",
+    "reviewed": "✔ Reviewed",
+    "reviewedDone": "✔ Done today",
+    "reviewing": "Saving today's check"
+  },
   "highlight": {
     "eyebrow": "Today's focus",
     "title": "What should I do today?",
@@ -106,6 +138,7 @@
   "errors": {
     "load": "Could not load the farm data. Please confirm the backend is running.",
     "saveCrop": "The crop could not be registered. Check the date and try again.",
-    "questionUnavailable": "The question service is unavailable right now."
+    "questionUnavailable": "The question service is unavailable right now.",
+    "dailyReview": "Today's check could not be saved. Please try again."
   }
 }

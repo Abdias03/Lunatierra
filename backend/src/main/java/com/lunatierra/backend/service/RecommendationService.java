@@ -29,6 +29,7 @@ public class RecommendationService {
     private final ConditionService conditionService;
     private final WeatherService weatherService;
     private final LunarService lunarService;
+    private final DailyProgressService dailyProgressService;
     private final CropStageRepository cropStageRepository;
     private final RecommendationRepository recommendationRepository;
     private final MessageSource messageSource;
@@ -36,6 +37,7 @@ public class RecommendationService {
     public RecommendationService(UserCropService userCropService, StageService stageService,
                                  ConditionService conditionService,
                                  WeatherService weatherService, LunarService lunarService,
+                                 DailyProgressService dailyProgressService,
                                  CropStageRepository cropStageRepository,
                                  RecommendationRepository recommendationRepository,
                                  MessageSource messageSource) {
@@ -44,6 +46,7 @@ public class RecommendationService {
         this.conditionService = conditionService;
         this.weatherService = weatherService;
         this.lunarService = lunarService;
+        this.dailyProgressService = dailyProgressService;
         this.cropStageRepository = cropStageRepository;
         this.recommendationRepository = recommendationRepository;
         this.messageSource = messageSource;
@@ -125,7 +128,14 @@ public class RecommendationService {
         }
 
         String dailyFocus = items.get(0).getMessage();
-        return new RecommendationResponse(lunarPhase, weather, dailyFocus, items, cropDetails);
+        return new RecommendationResponse(
+                lunarPhase,
+                weather,
+                dailyFocus,
+                items,
+                cropDetails,
+                dailyProgressService.getProgress()
+        );
     }
 
     private String message(String key, Locale locale, Object... args) {

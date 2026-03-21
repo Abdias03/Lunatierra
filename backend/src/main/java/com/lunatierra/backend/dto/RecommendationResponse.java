@@ -9,15 +9,18 @@ public class RecommendationResponse {
     private final String dailyFocus;
     private final List<RecommendationItem> recommendations;
     private final List<CropDetailRecommendation> cropDetails;
+    private final DailyProgressResponse dailyProgress;
 
     public RecommendationResponse(String lunarPhase, WeatherSummary weather, String dailyFocus,
                                   List<RecommendationItem> recommendations,
-                                  List<CropDetailRecommendation> cropDetails) {
+                                  List<CropDetailRecommendation> cropDetails,
+                                  DailyProgressResponse dailyProgress) {
         this.lunarPhase = lunarPhase;
         this.weather = weather;
         this.dailyFocus = dailyFocus;
         this.recommendations = recommendations;
         this.cropDetails = cropDetails;
+        this.dailyProgress = dailyProgress;
     }
 
     public String getLunarPhase() {
@@ -38,5 +41,9 @@ public class RecommendationResponse {
 
     public List<CropDetailRecommendation> getCropDetails() {
         return cropDetails;
+    }
+
+    public DailyProgressResponse getDailyProgress() {
+        return dailyProgress;
     }
 }

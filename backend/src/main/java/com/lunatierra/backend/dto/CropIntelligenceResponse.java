@@ -12,9 +12,11 @@ public class CropIntelligenceResponse {
     private final String lunarPhase;
     private final List<String> lunarActivities;
     private final WeatherSummary weather;
+    private final String assistantMessage;
 
     public CropIntelligenceResponse(StageInsight stage, String actionToday, String observation, String reason, List<String> warnings,
-                                    String lunarPhase, List<String> lunarActivities, WeatherSummary weather) {
+                                    String lunarPhase, List<String> lunarActivities, WeatherSummary weather,
+                                    String assistantMessage) {
         this.stage = stage;
         this.actionToday = actionToday;
         this.observation = observation;
@@ -23,6 +25,7 @@ public class CropIntelligenceResponse {
         this.lunarPhase = lunarPhase;
         this.lunarActivities = lunarActivities;
         this.weather = weather;
+        this.assistantMessage = assistantMessage;
     }
 
     public StageInsight getStage() {
@@ -55,5 +58,9 @@ public class CropIntelligenceResponse {
 
     public WeatherSummary getWeather() {
         return weather;
+    }
+
+    public String getAssistantMessage() {
+        return assistantMessage;
     }
 }

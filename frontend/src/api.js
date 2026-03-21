@@ -42,6 +42,14 @@ export async function fetchRecommendations() {
   return handleResponse(response);
 }
 
+export async function checkInDaily() {
+  const response = await fetch('/api/daily-progress/check-in', {
+    method: 'POST',
+    headers: buildHeaders()
+  });
+  return handleResponse(response);
+}
+
 export async function askQuestion(question) {
   const response = await fetch('/api/questions', {
     method: 'POST',
