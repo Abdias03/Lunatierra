@@ -9,13 +9,13 @@
     "questions": "Questions"
   },
   "home": {
-    "welcome": "Your field at a glance, with the weather, moon, and actions that matter today.",
-    "moreActions": "More actions for today"
+    "welcome": "Your field is ready for today. Let's take a quick look together.",
+    "moreActions": "More ideas for today"
   },
   "today": {
     "eyebrow": "TODAY",
     "title": "Your daily field check",
-    "empty": "Add a crop to start receiving daily actions.",
+    "empty": "Add a crop and I'll start showing you what to look at each day.",
     "day": "Day {{value}}",
     "status": {
       "good": "GOOD",
@@ -23,61 +23,61 @@
       "risk": "RISK"
     },
     "motivation": {
-      "risk": "Today, take it slow: your crop needs a little more attention.",
-      "attention": "You're doing well. A calm check today can prevent bigger problems.",
-      "reviewed": "Good work today. Your field already got its daily check.",
-      "streakStrong": "You're on a strong streak. Your consistency helps catch changes early.",
-      "streakGrowing": "Nice job yesterday. Keep the rhythm with a short check today.",
+      "risk": "Your crop needs a little extra care today. Take a calm look before doing anything else.",
+      "attention": "Your plant is doing well. A quick check today can keep it on track.",
+      "reviewed": "Nice work. Today's field check is already done.",
+      "streakStrong": "You're building a great streak. That steady care makes a difference.",
+      "streakGrowing": "Good job yesterday. Today only needs a short check.",
       "stage": {
-        "germination": "Your plant is just getting started. Today, gentle observation is enough.",
-        "growth": "Your plant is moving forward well. Today, just check and guide its growth.",
-        "flowering": "Your crop is in a delicate moment. A careful look today makes a difference.",
-        "mature": "Your crop is nearing harvest. Stay close and watch the final changes."
+        "germination": "Your plant is just starting. Today, a gentle look is enough.",
+        "growth": "Your plant is moving along well. Today, just guide and observe.",
+        "flowering": "This is a delicate moment. A soft check today goes a long way.",
+        "mature": "Harvest is getting closer. Stay nearby and watch the final changes."
       }
     },
-    "actionsTitle": "Today's actions",
+    "actionsTitle": "Today you can do this:",
     "streak": "Streak: {{count}} days",
-    "fallbackWaterAction": "Prioritize light watering if the soil feels dry",
-    "fallbackSoilAction": "Check soil moisture near the base",
+    "fallbackWaterAction": "Give light water if the soil feels dry",
+    "fallbackSoilAction": "Check the soil moisture near the base",
     "fallbackWeedsAction": "Remove nearby weeds before they spread",
-    "reviewed": "✔ Reviewed",
-    "reviewedDone": "✔ Done today",
+    "reviewed": "✔ I checked it",
+    "reviewedDone": "✔ Checked today",
     "reviewing": "Saving today's check"
   },
   "highlight": {
     "eyebrow": "Today's focus",
-    "title": "What should I do today?",
+    "title": "What matters today?",
     "cta": "Open questions"
   },
   "summary": {
-    "eyebrow": "Cultivation summary",
-    "title": "Your active crops",
+    "eyebrow": "Your field",
+    "title": "Active crops",
     "viewAll": "See all",
-    "empty": "Add a crop to start seeing quick field summaries here.",
+    "empty": "Add a crop to start seeing a quick summary here.",
     "cropEyebrow": "Field card",
     "days": "Days",
     "daysValue": "{{value}} days"
   },
   "crops": {
-    "description": "Review each crop stage, expected behavior, and water status in one place."
+    "description": "See each crop stage, expected behavior, and water status in one place."
   },
   "dashboard": {
     "brand": "Lunatierra",
     "title": "What should I do today?",
-    "subtitle": "Practical daily guidance for small farmers, based on crop stage, weather, and moon cycle.",
-    "dailyFocus": "Daily focus",
+    "subtitle": "Simple daily guidance for small farmers, based on stage, weather, and moon cycle.",
+    "dailyFocus": "Today's focus",
     "moon": "Moon",
     "weather": "Weather",
     "rain": "Rain",
     "humidity": "Humidity",
     "loading": "Loading...",
-    "rainChance": "{{value}}% chance",
+    "rainChance": "{{value}}% chance of rain",
     "temperature": "{{condition}}, {{value}}°C"
   },
   "recommendations": {
     "title": "Recommendations",
-    "subtitle": "Clear actions for today",
-    "empty": "No recommendations yet.",
+    "subtitle": "Simple actions for today",
+    "empty": "Nothing special for now. A quick field walk is enough.",
     "severity": {
       "success": "good",
       "warning": "attention",
@@ -85,19 +85,19 @@
     }
   },
   "register": {
-    "title": "Register Crop",
-    "subtitle": "Add a crop to start tracking",
-    "description": "Add the crop, planting date, and water availability to keep daily recommendations accurate.",
+    "title": "Add a crop",
+    "subtitle": "Start tracking your field",
+    "description": "Choose the crop, planting date, and water availability so the daily guidance feels more useful.",
     "crop": "Crop",
     "plantingDate": "Planting date",
-    "waterAvailable": "Water available?",
-    "submit": "Register crop",
+    "waterAvailable": "Do you have water available?",
+    "submit": "Save crop",
     "saving": "Saving..."
   },
   "tracking": {
-    "title": "Crop Tracking",
-    "subtitle": "Stage, behavior, and field follow-up",
-    "empty": "No crops registered yet. Add one to start tracking growth stages.",
+    "title": "Your crops",
+    "subtitle": "See how each one is doing",
+    "empty": "There are no crops yet. Add one and we'll start tracking it.",
     "plantedOn": "Planted on {{date}} | {{days}} days ago",
     "waterReady": "Water ready",
     "lowWater": "Low water"
@@ -111,24 +111,24 @@
     }
   },
   "quickQuestion": {
-    "title": "Quick Question",
-    "subtitle": "Simple predefined support",
-    "description": "Ask a short question and get a practical answer without leaving the app.",
-    "placeholder": "Why is my plant yellow?",
-    "submit": "Ask a simple question",
+    "title": "Quick question",
+    "subtitle": "A simple answer in seconds",
+    "description": "Ask something short and get practical help without leaving the app.",
+    "placeholder": "Why are my leaves turning yellow?",
+    "submit": "Ask",
     "thinking": "Thinking..."
   },
   "cropDetail": {
     "back": "Back",
-    "heroEyebrow": "Crop detail",
+    "heroEyebrow": "Your crop",
     "planted": "Planted",
-    "mainAction": "What to do today?",
-    "observeEyebrow": "Observe",
-    "observeTitle": "What to watch in the field",
-    "tipsEyebrow": "Warnings",
-    "tipsTitle": "Tips and alerts",
-    "noWarnings": "No warnings right now. Keep your usual field walk and monitor the leaves.",
-    "notFound": "This crop could not be found. Go back to your list and choose another crop."
+    "mainAction": "What to do today",
+    "observeEyebrow": "Take a look",
+    "observeTitle": "What to check in the field",
+    "tipsEyebrow": "Keep in mind",
+    "tipsTitle": "Helpful notes",
+    "noWarnings": "Everything looks calm for now. Keep your usual field walk.",
+    "notFound": "This crop is not here anymore. Go back and choose another one."
   },
   "language": {
     "label": "Language",
@@ -136,9 +136,9 @@
     "spanish": "ES"
   },
   "errors": {
-    "load": "Could not load the farm data. Please confirm the backend is running.",
-    "saveCrop": "The crop could not be registered. Check the date and try again.",
-    "questionUnavailable": "The question service is unavailable right now.",
-    "dailyReview": "Today's check could not be saved. Please try again."
+    "load": "I couldn't load your field data. Please check that the backend is running.",
+    "saveCrop": "I couldn't save that crop. Check the date and try again.",
+    "questionUnavailable": "The question helper is not available right now.",
+    "dailyReview": "I couldn't save today's check. Please try again."
   }
 }

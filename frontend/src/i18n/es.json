@@ -9,77 +9,75 @@
     "questions": "Preguntas"
   },
   "home": {
-    "welcome": "Tu parcela de un vistazo, con clima, luna y acciones importantes para hoy.",
-    "moreActions": "Más acciones para hoy"
+    "welcome": "Tu parcela está lista para hoy. Vamos a verla juntos.",
+    "moreActions": "Más ideas para hoy"
   },
   "today": {
     "eyebrow": "HOY",
     "title": "Tu recorrido de hoy",
-    "empty": "Agrega un cultivo para empezar a recibir acciones del dÃ­a.",
-    "day": "DÃ­a {{value}}",
+    "empty": "Agrega un cultivo y te iré mostrando qué revisar cada día.",
+    "day": "Día {{value}}",
     "status": {
       "good": "BIEN",
-      "attention": "ATENCIÃ“N",
+      "attention": "ATENCIÓN",
       "risk": "RIESGO"
     },
-    "actionsTitle": "Acciones de hoy",
-    "fallbackWaterAction": "Prioriza un riego ligero si el suelo estÃ¡ seco",
-    "fallbackSoilAction": "Revisa la humedad del suelo cerca de la planta",
+    "motivation": {
+      "risk": "Hoy ve con calma 🌿 Tu cultivo necesita un poco más de atención.",
+      "attention": "Tu planta va bien 🌱 Solo dale una revisión tranquila hoy.",
+      "reviewed": "Buen trabajo. Tu revisión de hoy ya quedó lista.",
+      "streakStrong": "Qué buena racha 🔥 Esa constancia le hace bien a tu cultivo.",
+      "streakGrowing": "Buen trabajo ayer. Hoy basta con una revisión breve.",
+      "stage": {
+        "germination": "Tu planta apenas empieza 🌱 Hoy solo revisa que todo siga parejo.",
+        "growth": "Tu cultivo va avanzando bien 🌿 Hoy acompaña su crecimiento con calma.",
+        "flowering": "Tu cultivo está en un momento delicado 🌼 Hoy revísalo con cuidado.",
+        "mature": "La cosecha ya se empieza a sentir 🌽 Mantente atento a los cambios finales."
+      }
+    },
+    "actionsTitle": "Hoy puedes hacer esto:",
+    "streak": "Racha: {{count}} días",
+    "fallbackWaterAction": "Dale un riego ligero si la tierra se siente seca",
+    "fallbackSoilAction": "Revisa si la tierra sigue húmeda cerca de la planta",
     "fallbackWeedsAction": "Quita la maleza cercana antes de que avance",
-    "reviewed": "âœ” Ya revisÃ©",
-    "reviewedDone": "âœ” Revisado hoy"
-  },
-  "todayMotivation": {
-    "risk": "Hoy revisa con calma: tu cultivo necesita un poco mÃ¡s de atenciÃ³n.",
-    "attention": "Vas bien. Con una revisiÃ³n tranquila hoy puedes prevenir problemas.",
-    "reviewed": "Buen trabajo hoy. Tu parcela ya recibiÃ³ su revisiÃ³n diaria.",
-    "streakStrong": "Llevas muy buena racha. Tu constancia ayuda a detectar cambios a tiempo.",
-    "streakGrowing": "Buen trabajo ayer. MantÃ©n el ritmo con una revisiÃ³n breve hoy.",
-    "stage": {
-      "germination": "Tu planta apenas empieza. Hoy basta con observarla con cuidado.",
-      "growth": "Tu cultivo va avanzando bien. Hoy solo revisa y acompaÃ±a su crecimiento.",
-      "flowering": "Tu cultivo estÃ¡ en un momento delicado. Una revisiÃ³n suave hoy hace diferencia.",
-      "mature": "Tu cultivo ya va cerca de cosecha. Mantente atento a los cambios finales."
-    }
-  },
-  "todayExtras": {
-    "reviewing": "Guardando revisiÃƒÂ³n de hoy",
-    "streak": "Racha: {{count}} dÃƒÂ­as"
+    "reviewed": "✔ Ya revisé",
+    "reviewedDone": "✔ Revisado hoy",
+    "reviewing": "Guardando tu revisión de hoy"
   },
   "highlight": {
-    "eyebrow": "Enfoque de hoy",
-    "title": "¿Qué debo hacer hoy?",
+    "eyebrow": "Enfoque del día",
+    "title": "¿Qué importa hoy?",
     "cta": "Abrir preguntas"
   },
   "summary": {
-    "eyebrow": "Resumen del cultivo",
-    "title": "Tus cultivos activos",
+    "eyebrow": "Tu parcela",
+    "title": "Cultivos activos",
     "viewAll": "Ver todo",
-    "empty": "Agrega un cultivo para ver aquí un resumen rápido del campo.",
+    "empty": "Agrega un cultivo para empezar a ver un resumen rápido aquí.",
     "cropEyebrow": "Tarjeta del campo",
     "days": "Días",
     "daysValue": "{{value}} días"
   },
   "crops": {
-    "description": "Revisa la etapa, el comportamiento esperado y el estado de agua de cada cultivo en un solo lugar."
+    "description": "Aquí puedes ver la etapa, cómo va el cultivo y si tienes agua disponible."
   },
   "dashboard": {
     "brand": "Lunatierra",
-    "title": "¿Qué debo hacer hoy?",
-    "subtitle": "Guía diaria práctica para pequeños agricultores, basada en la etapa del cultivo, el clima y el ciclo lunar.",
-    "dailyFocus": "Enfoque del día",
+    "title": "¿Qué hago hoy?",
+    "subtitle": "Una guía simple para acompañarte cada día con tu cultivo.",
+    "dailyFocus": "Enfoque de hoy",
     "moon": "Luna",
     "weather": "Clima",
     "rain": "Lluvia",
     "humidity": "Humedad",
     "loading": "Cargando...",
-    "rainChance": "{{value}}% de probabilidad",
+    "rainChance": "{{value}}% de probabilidad de lluvia",
     "temperature": "{{condition}}, {{value}}°C"
   },
   "recommendations": {
     "title": "Recomendaciones",
-    "subtitle": "Acciones claras para hoy",
-    "empty": "Aún no hay recomendaciones.",
+    "subtitle": "Acciones simples para hoy",
+    "empty": "Por ahora todo se ve tranquilo. Con una revisión rápida basta.",
     "severity": {
       "success": "bien",
       "warning": "atención",
@@ -87,19 +85,19 @@
     }
   },
   "register": {
-    "title": "Registrar cultivo",
-    "subtitle": "Agrega un cultivo para comenzar el seguimiento",
-    "description": "Agrega el cultivo, la fecha de siembra y la disponibilidad de agua para mantener precisas las recomendaciones diarias.",
+    "title": "Agrega un cultivo",
+    "subtitle": "Empieza a acompañar tu parcela",
+    "description": "Elige el cultivo, la fecha de siembra y si tienes agua disponible para darte una guía más útil.",
     "crop": "Cultivo",
     "plantingDate": "Fecha de siembra",
-    "waterAvailable": "¿Hay agua disponible?",
-    "submit": "Registrar cultivo",
+    "waterAvailable": "¿Tienes agua disponible?",
+    "submit": "Guardar cultivo",
     "saving": "Guardando..."
   },
   "tracking": {
-    "title": "Seguimiento del cultivo",
-    "subtitle": "Etapa, comportamiento y seguimiento en campo",
-    "empty": "Todavía no hay cultivos registrados. Agrega uno para comenzar el seguimiento.",
+    "title": "Tus cultivos",
+    "subtitle": "Mira cómo va cada uno",
+    "empty": "Todavía no hay cultivos. Agrega uno y empezamos a acompañarlo.",
     "plantedOn": "Sembrado el {{date}} | hace {{days}} días",
     "waterReady": "Con agua",
     "lowWater": "Poca agua"
@@ -114,23 +112,23 @@
   },
   "quickQuestion": {
     "title": "Pregunta rápida",
-    "subtitle": "Soporte simple predefinido",
+    "subtitle": "Una ayuda simple en segundos",
     "description": "Haz una pregunta corta y recibe una respuesta práctica sin salir de la app.",
-    "placeholder": "¿Por qué mi planta está amarilla?",
-    "submit": "Hacer una pregunta simple",
+    "placeholder": "¿Por qué mis hojas se ven amarillas?",
+    "submit": "Preguntar",
     "thinking": "Pensando..."
   },
   "cropDetail": {
     "back": "Volver",
-    "heroEyebrow": "Detalle del cultivo",
+    "heroEyebrow": "Tu cultivo",
     "planted": "Siembra",
-    "mainAction": "Â¿QuÃ© hacer hoy?",
-    "observeEyebrow": "Observa",
-    "observeTitle": "QuÃ© revisar en el campo",
-    "tipsEyebrow": "Alertas",
-    "tipsTitle": "Consejos y advertencias",
-    "noWarnings": "No hay alertas por ahora. ContinÃºa tu recorrido habitual y observa las hojas.",
-    "notFound": "No se encontrÃ³ este cultivo. Vuelve a la lista y elige otro."
+    "mainAction": "Lo más importante de hoy",
+    "observeEyebrow": "Échale un ojo",
+    "observeTitle": "Qué revisar en el campo",
+    "tipsEyebrow": "Ten en cuenta",
+    "tipsTitle": "Notas y alertas",
+    "noWarnings": "Por ahora todo se ve tranquilo. Sigue tu recorrido con normalidad.",
+    "notFound": "Este cultivo ya no aparece aquí. Vuelve y elige otro."
   },
   "language": {
     "label": "Idioma",
@@ -138,8 +136,9 @@
     "spanish": "ES"
   },
   "errors": {
-    "load": "No se pudieron cargar los datos del campo. Confirma que el backend esté en ejecución.",
-    "saveCrop": "No se pudo registrar el cultivo. Revisa la fecha e inténtalo de nuevo.",
-    "questionUnavailable": "El servicio de preguntas no está disponible en este momento."
+    "load": "No pude cargar los datos de tu parcela. Revisa que el backend esté corriendo.",
+    "saveCrop": "No pude guardar ese cultivo. Revisa la fecha e inténtalo otra vez.",
+    "questionUnavailable": "La ayuda rápida no está disponible en este momento.",
+    "dailyReview": "No pude guardar la revisión de hoy. Inténtalo otra vez."
   }
 }

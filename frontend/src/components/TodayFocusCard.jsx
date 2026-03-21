@@ -58,48 +58,36 @@ function getMotivationMessage(t, { crop, status, streakCount, reviewed }) {
 
   if (status === 'risk') {
     return t('today.motivation.risk', {
-      defaultValue: t('todayMotivation.risk', {
-        defaultValue: 'Hoy revisa con calma: tu cultivo necesita un poco más de atención.'
-      })
+      defaultValue: 'Hoy ve con calma. Tu cultivo necesita un poco más de atención.'
     });
   }
 
   if (status === 'attention') {
     return t('today.motivation.attention', {
-      defaultValue: t('todayMotivation.attention', {
-        defaultValue: 'Vas bien. Con una revisión tranquila hoy puedes prevenir problemas.'
-      })
+      defaultValue: 'Tu planta va bien. Con una revisión tranquila hoy puedes prevenir problemas.'
     });
   }
 
   if (reviewed) {
     return t('today.motivation.reviewed', {
-      defaultValue: t('todayMotivation.reviewed', {
-        defaultValue: 'Buen trabajo hoy. Tu parcela ya recibió su revisión diaria.'
-      })
+      defaultValue: 'Buen trabajo hoy. Tu parcela ya tuvo su revisión.'
     });
   }
 
   if (streakCount >= 5) {
     return t('today.motivation.streakStrong', {
-      defaultValue: t('todayMotivation.streakStrong', {
-        defaultValue: 'Llevas muy buena racha. Tu constancia ayuda a detectar cambios a tiempo.'
-      })
+      defaultValue: 'Llevas una gran racha. Esa constancia ayuda mucho a tu cultivo.'
     });
   }
 
   if (streakCount >= 1) {
     return t('today.motivation.streakGrowing', {
-      defaultValue: t('todayMotivation.streakGrowing', {
-        defaultValue: 'Buen trabajo ayer. Mantén el ritmo con una revisión breve hoy.'
-      })
+      defaultValue: 'Buen trabajo ayer. Hoy basta con una revisión breve.'
     });
   }
 
   return t(`today.motivation.stage.${stageTone}`, {
-    defaultValue: t(`todayMotivation.stage.${stageTone}`, {
-      defaultValue: 'Tu cultivo va avanzando. Hoy solo revisa y acompaña su crecimiento.'
-    })
+    defaultValue: 'Tu cultivo va avanzando bien. Hoy solo acompaña su crecimiento.'
   });
 }
 
@@ -122,8 +110,8 @@ export default function TodayFocusCard({ crop, cropDetail, recommendationData, r
   const cropName = crop?.cropDisplayName || t(`crop.names.${crop?.cropName}`, crop?.cropName || '');
   const streakCount = recommendationData?.dailyProgress?.streakCount ?? 0;
   const reviewed = Boolean(recommendationData?.dailyProgress?.checkedToday);
-  const streakLabel = t('today.streak', { count: streakCount, defaultValue: t('todayExtras.streak', { count: streakCount }) });
-  const reviewingLabel = t('today.reviewing', { defaultValue: t('todayExtras.reviewing') });
+  const streakLabel = t('today.streak', { count: streakCount, defaultValue: `Racha: ${streakCount} días` });
+  const reviewingLabel = t('today.reviewing', { defaultValue: 'Guardando tu revisión de hoy' });
   const motivationMessage = useMemo(
     () => getMotivationMessage(t, { crop, status, streakCount, reviewed }),
     [t, crop, status, streakCount, reviewed]
