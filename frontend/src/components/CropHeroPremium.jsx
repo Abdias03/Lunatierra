@@ -1,5 +1,8 @@
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import PlantStageIllustration from './PlantStageIllustration';
+
+const STAGE_STORAGE_PREFIX = 'lunatierra-stage-';
 
 function resolveGradient(stageName = '') {
   const normalized = stageName.toLowerCase();
@@ -36,6 +39,26 @@ function resolveGradient(stageName = '') {
 export default function CropHeroPremium({ crop }) {
   const { t } = useTranslation();
   const gradient = resolveGradient(crop.growthStage);
+  const [showGrowthNudge, setShowGrowthNudge] = useState(false);
+
+  useEffect(() => {
+    const storageKey = `${STAGE_STORAGE_PREFIX}${crop.id}`;
+    const previousStage = localStorage.getItem(storageKey);
+
+    if (previousStage && previousStage !== crop.growthStage) {
+      setShowGrowthNudge(true);
+
+      const timeoutId = window.setTimeout(() => {
+        setShowGrowthNudge(false);
+      }, 1400);
+
+      localStorage.setItem(storageKey, crop.growthStage);
+      return () => window.clearTimeout(timeoutId);
+    }
+
+    localStorage.setItem(storageKey, crop.growthStage);
+    return undefined;
+  }, [crop.id, crop.growthStage]);
 
   return (
     <section className={`relative overflow-hidden rounded-[36px] bg-gradient-to-b ${gradient} px-5 pb-6 pt-5 text-white shadow-card`}>
@@ -53,7 +76,7 @@ export default function CropHeroPremium({ crop }) {
             <h1 className="mt-3 text-4xl font-semibold capitalize leading-none">
               {t(`crop.names.${crop.cropName}`, crop.cropName)}
             </h1>
-            <p className="mt-3 inline-flex rounded-full bg-white/14 px-3 py-1 text-sm font-medium text-white/92 backdrop-blur">
+            <p className="mt-3 inline-flex rounded-full border border-white/20 bg-black/30 px-3 py-1 text-sm font-medium text-white">
               {crop.growthStage}
             </p>
           </div>
@@ -63,8 +86,14 @@ export default function CropHeroPremium({ crop }) {
         </div>
 
         <div className="mt-2">
-          <PlantStageIllustration stageName={crop.growthStage} />
+          <PlantStageIllustration stageName={crop.growthStage} animateGrowth={showGrowthNudge} />
         </div>
+
+        {showGrowthNudge ? (
+          <div className="reward-bloom absolute left-1/2 top-[18%] z-20 -translate-x-1/2 rounded-full border border-white/20 bg-black/30 px-4 py-2 text-sm font-semibold text-white shadow-[0_16px_30px_rgba(18,12,8,0.18)]">
+            Tu planta creció 🌱
+          </div>
+        ) : null}
 
         <div className="-mt-8 grid grid-cols-2 gap-3">
           <div className="rounded-[24px] border border-white/10 bg-white/12 px-4 py-4 shadow-[0_12px_30px_rgba(20,14,10,0.14)] backdrop-blur-md">

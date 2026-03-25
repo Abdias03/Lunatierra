@@ -7,11 +7,13 @@ public class LunarPhaseResponse {
     private final String phase;
     private final String displayName;
     private final List<String> activities;
+    private final List<String> recommendedCrops;
 
-    public LunarPhaseResponse(String phase, String displayName, List<String> activities) {
+    public LunarPhaseResponse(String phase, String displayName, List<String> activities, List<String> recommendedCrops) {
         this.phase = phase;
         this.displayName = displayName;
         this.activities = activities;
+        this.recommendedCrops = recommendedCrops;
     }
 
     public String getPhase() {
@@ -24,5 +26,9 @@ public class LunarPhaseResponse {
 
     public List<String> getActivities() {
         return activities;
+    }
+
+    public List<String> getRecommendedCrops() {
+        return recommendedCrops;
     }
 }

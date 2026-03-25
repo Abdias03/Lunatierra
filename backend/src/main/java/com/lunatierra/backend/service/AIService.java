@@ -18,8 +18,8 @@ import org.springframework.web.client.RestClient;
 public class AIService {
 
     private static final Logger logger = LoggerFactory.getLogger(AIService.class);
-    private static final int MAX_SENTENCES = 3;
-    private static final int MAX_CHARS = 280;
+    private static final int MAX_SENTENCES = 2;
+    private static final int MAX_CHARS = 180;
 
     private final RestClient restClient;
     private final String model;
@@ -92,14 +92,17 @@ public class AIService {
 
                 Instrucciones:
                 - Habla en espanol simple
-                - Maximo 3 frases
+                - Maximo 2 frases
                 - No uses lenguaje tecnico
-                - Se claro y directo
-                - Da consejos practicos
+                - Suena cercano, como alguien que acompana el cultivo
+                - Se claro, amable y directo
+                - Da consejos practicos y faciles de hacer hoy
                 - Usa solo la informacion del contexto
                 - No inventes datos, causas, plagas, fechas o clima extra
-                - Si el contexto no alcanza, repite la accion u observacion con palabras simples
+                - Si el contexto no alcanza, repite la accion u observacion con palabras mas calidas
                 - No menciones informacion externa ni supuestos
+                - Evita listas, titulos y explicaciones largas
+                - Puedes usar palabras como "tu planta", "hoy" y "dale una revisada"
                 """.formatted(
                 context.getCrop(),
                 context.getStage(),
@@ -135,10 +138,7 @@ public class AIService {
                 .collect(Collectors.toCollection(ArrayList::new));
 
         if (relevantSentences.isEmpty()) {
-            relevantSentences.add(context.getActionToday());
-            if (context.getObservation() != null && !context.getObservation().isBlank()) {
-                relevantSentences.add(context.getObservation());
-            }
+            return buildFriendlyFallback(context);
         }
 
         String compact = String.join(" ", relevantSentences).trim();
@@ -150,7 +150,7 @@ public class AIService {
             }
         }
 
-        return compact.isBlank() ? null : compact;
+        return compact.isBlank() ? buildFriendlyFallback(context) : compact;
     }
 
     private List<String> splitSentences(String text) {
@@ -167,7 +167,9 @@ public class AIService {
                 && !normalizedSentence.contains("especialista")
                 && !normalizedSentence.contains("doctor")
                 && !normalizedSentence.contains("mercado")
-                && !normalizedSentence.contains("quimico");
+                && !normalizedSentence.contains("quimico")
+                && !normalizedSentence.contains("fertilizante quimico")
+                && !normalizedSentence.contains("diagnostico");
     }
 
     private boolean containsAny(String normalizedSentence, AIContext context) {
@@ -200,6 +202,54 @@ public class AIService {
                 collector.add(part);
             }
         }
+    }
+
+    private String buildFriendlyFallback(AIContext context) {
+        List<String> lines = new ArrayList<>();
+
+        if (context.getActionToday() != null && !context.getActionToday().isBlank()) {
+            lines.add(softenSentence(context.getActionToday(), true));
+        }
+
+        if (context.getObservation() != null && !context.getObservation().isBlank()) {
+            lines.add(softenSentence(context.getObservation(), false));
+        }
+
+        if (lines.isEmpty()) {
+            lines.add("Tu planta va bien. Hoy solo dale una revisada tranquila.");
+        }
+
+        return lines.stream()
+                .limit(MAX_SENTENCES)
+                .collect(Collectors.joining(" "));
+    }
+
+    private String softenSentence(String source, boolean actionLine) {
+        String cleaned = source.trim()
+                .replaceAll("\\s+", " ")
+                .replaceAll("(?i)^mant[eé]n\\b", "Mantén")
+                .replaceAll("(?i)^revisa\\b", "Revisa")
+                .replaceAll("(?i)^observa\\b", "Observa")
+                .replaceAll("(?i)^evita\\b", "Evita");
+
+        if (actionLine) {
+            return "Hoy " + lowercaseFirst(cleaned);
+        }
+
+        return "Tu planta va bien, solo " + lowercaseFirst(cleaned);
+    }
+
+    private String lowercaseFirst(String value) {
+        if (value == null || value.isBlank()) {
+            return "";
+        }
+
+        String trimmed = value.strip();
+        if (trimmed.length() == 1) {
+            return trimmed.toLowerCase(Locale.ROOT);
+        }
+
+        return Character.toLowerCase(trimmed.charAt(0)) + trimmed.substring(1);
     }
 
     private record OllamaGenerateRequest(String model, String prompt, boolean stream) {

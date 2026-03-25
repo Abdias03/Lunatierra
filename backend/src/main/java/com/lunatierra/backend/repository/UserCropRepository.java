@@ -11,6 +11,12 @@ public interface UserCropRepository extends JpaRepository<UserCrop, Long> {
     @EntityGraph(attributePaths = {"crop"})
     List<UserCrop> findAllByOrderByPlantingDateDesc();
 
+    @EntityGraph(attributePaths = {"crop"})
+    List<UserCrop> findAllByUser_IdOrderByPlantingDateDesc(Long userId);
+
+    @EntityGraph(attributePaths = {"crop"})
+    Optional<UserCrop> findByIdAndUser_Id(Long id, Long userId);
+
     @Override
     @EntityGraph(attributePaths = {"crop"})
     Optional<UserCrop> findById(Long id);

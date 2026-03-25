@@ -41,8 +41,9 @@
     "fallbackSoilAction": "Revisa si la tierra sigue húmeda cerca de la planta",
     "fallbackWeedsAction": "Quita la maleza cercana antes de que avance",
     "reviewed": "✔ Ya revisé",
-    "reviewedDone": "✔ Revisado hoy",
-    "reviewing": "Guardando tu revisión de hoy"
+    "reviewedDone": "✔ Bien hecho",
+    "reviewing": "Guardando tu revisión de hoy",
+    "rewardMessage": "Buen trabajo 🌱"
   },
   "highlight": {
     "eyebrow": "Enfoque del día",
@@ -104,6 +105,10 @@
   },
   "crop": {
     "stage": "Etapa actual",
+    "progressEyebrow": "Crecimiento",
+    "progressTitle": "Así va creciendo tu cultivo",
+    "progressLabel": "Avance",
+    "progressValue": "{{value}}% del camino",
     "names": {
       "corn": "Maíz",
       "beans": "Frijol",
@@ -114,8 +119,11 @@
     "title": "Pregunta rápida",
     "subtitle": "Una ayuda simple en segundos",
     "description": "Haz una pregunta corta y recibe una respuesta práctica sin salir de la app.",
+    "helper": "Ayuda",
+    "you": "Tú",
+    "prompt": "Pregúntame algo sobre tu cultivo y te responderé de forma simple.",
     "placeholder": "¿Por qué mis hojas se ven amarillas?",
-    "submit": "Preguntar",
+    "submit": "Pregúntame algo 🌱",
     "thinking": "Pensando..."
   },
   "cropDetail": {

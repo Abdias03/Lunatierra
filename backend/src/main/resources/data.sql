@@ -77,9 +77,33 @@ INSERT INTO lunar_activities (id, phase, activity) VALUES
     (16, 'WANING_CRESCENT', 'Planear el siguiente ciclo')
 ON CONFLICT (id) DO NOTHING;
 
+INSERT INTO planting_calendar (id, month, lunar_phase, crop_code) VALUES
+    (1, 3, 'WAXING_CRESCENT', 'CORN'),
+    (2, 3, 'WAXING_CRESCENT', 'BEANS'),
+    (3, 3, 'FIRST_QUARTER', 'CORN'),
+    (4, 3, 'FIRST_QUARTER', 'SQUASH'),
+    (5, 4, 'NEW_MOON', 'BEANS'),
+    (6, 4, 'NEW_MOON', 'SQUASH'),
+    (7, 4, 'FIRST_QUARTER', 'CORN'),
+    (8, 4, 'FIRST_QUARTER', 'BEANS'),
+    (9, 5, 'FULL_MOON', 'CORN'),
+    (10, 5, 'FULL_MOON', 'SQUASH'),
+    (11, 6, 'WAXING_GIBBOUS', 'CORN'),
+    (12, 6, 'WAXING_GIBBOUS', 'BEANS'),
+    (13, 7, 'NEW_MOON', 'BEANS'),
+    (14, 7, 'NEW_MOON', 'SQUASH'),
+    (15, 8, 'FIRST_QUARTER', 'CORN'),
+    (16, 8, 'FIRST_QUARTER', 'BEANS'),
+    (17, 9, 'WAXING_CRESCENT', 'CORN'),
+    (18, 9, 'WAXING_CRESCENT', 'SQUASH'),
+    (19, 10, 'WANING_CRESCENT', 'BEANS'),
+    (20, 10, 'WANING_CRESCENT', 'SQUASH')
+ON CONFLICT (id) DO NOTHING;
+
 SELECT setval('users_id_seq', (SELECT MAX(id) FROM users));
 SELECT setval('regions_id_seq', (SELECT MAX(id) FROM regions));
 SELECT setval('crops_id_seq', (SELECT MAX(id) FROM crops));
 SELECT setval('crop_stages_id_seq', (SELECT MAX(id) FROM crop_stages));
 SELECT setval('recommendations_id_seq', (SELECT MAX(id) FROM recommendations));
 SELECT setval('lunar_activities_id_seq', (SELECT MAX(id) FROM lunar_activities));
+SELECT setval('planting_calendar_id_seq', (SELECT MAX(id) FROM planting_calendar));

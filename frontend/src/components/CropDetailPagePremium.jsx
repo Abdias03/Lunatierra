@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 import AppCard from './AppCard';
 import CropHeroPremium from './CropHeroPremium';
+import CropProgressIndicator from './CropProgressIndicator';
 import CropStatusCard from './CropStatusCard';
 import RecommendationCard from './RecommendationCard';
 import SectionHeader from './SectionHeader';
@@ -21,9 +22,9 @@ export default function CropDetailPagePremium({ crops, recommendationData }) {
           <button
             type="button"
             onClick={() => navigate('/')}
-            className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-3 text-sm font-semibold text-earth-700 shadow-sm transition hover:-translate-y-0.5"
+            className="inline-flex items-center gap-2 rounded-full bg-white/70 px-[14px] py-2 text-sm font-medium text-[#2F2F2F] shadow-sm backdrop-blur-md transition hover:bg-white/85"
           >
-            {'<-'} {t('cropDetail.back')}
+            ← {t('cropDetail.back')}
           </button>
           <AppCard>
             <p className="text-sm leading-6 text-earth-700">{t('cropDetail.notFound')}</p>
@@ -39,12 +40,19 @@ export default function CropDetailPagePremium({ crops, recommendationData }) {
         <button
           type="button"
           onClick={() => navigate(-1)}
-          className="inline-flex items-center gap-2 rounded-full bg-white/95 px-4 py-3 text-sm font-semibold text-earth-700 shadow-sm transition hover:-translate-y-0.5 active:scale-95"
+          className="inline-flex items-center gap-2 rounded-full bg-white/70 px-[14px] py-2 text-sm font-medium text-[#2F2F2F] shadow-sm backdrop-blur-md transition hover:bg-white/85 active:scale-95"
         >
-          {'<-'} {t('cropDetail.back')}
+          ← {t('cropDetail.back')}
         </button>
 
         <CropHeroPremium crop={crop} />
+
+        <section className="space-y-4">
+          <SectionHeader eyebrow={t('crop.progressEyebrow')} title={t('crop.progressTitle')} />
+          <AppCard className="bg-white/92">
+            <CropProgressIndicator stageName={crop.growthStage} />
+          </AppCard>
+        </section>
 
         <section className="-mt-1 grid grid-cols-3 gap-3">
           <CropStatusCard icon="🌙" label={t('dashboard.moon')} value={recommendationData?.lunarPhase || t('dashboard.loading')} tone="soft" />

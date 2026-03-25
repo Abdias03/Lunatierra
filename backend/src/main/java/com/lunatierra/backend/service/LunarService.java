@@ -1,8 +1,11 @@
 package com.lunatierra.backend.service;
 
+import com.lunatierra.backend.dto.LunarCalendarDayResponse;
 import com.lunatierra.backend.dto.LunarPhaseResponse;
+import com.lunatierra.backend.repository.PlantingCalendarRepository;
 import com.lunatierra.backend.repository.LunarActivityRepository;
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Locale;
@@ -18,19 +21,41 @@ public class LunarService {
 
     private final MessageSource messageSource;
     private final LunarActivityRepository lunarActivityRepository;
+    private final PlantingCalendarRepository plantingCalendarRepository;
 
-    public LunarService(MessageSource messageSource, LunarActivityRepository lunarActivityRepository) {
+    public LunarService(MessageSource messageSource, LunarActivityRepository lunarActivityRepository,
+                        PlantingCalendarRepository plantingCalendarRepository) {
         this.messageSource = messageSource;
         this.lunarActivityRepository = lunarActivityRepository;
+        this.plantingCalendarRepository = plantingCalendarRepository;
     }
 
     public LunarPhaseResponse getCurrentPhase(Locale locale) {
-        MoonPhase phase = resolvePhase(LocalDate.now());
+        LocalDate today = LocalDate.now();
+        MoonPhase phase = resolvePhase(today);
         return new LunarPhaseResponse(
                 phase.name(),
                 message(phase.getMessageKey(), locale),
-                getActivities(phase)
+                getActivities(phase),
+                getRecommendedCrops(today.getMonthValue(), phase, locale)
         );
+    }
+
+    public List<LunarCalendarDayResponse> getCalendar(int month, int year, Locale locale) {
+        YearMonth yearMonth = YearMonth.of(year, month);
+        return yearMonth.atDay(1)
+                .datesUntil(yearMonth.atEndOfMonth().plusDays(1))
+                .map(date -> {
+                    MoonPhase phase = resolvePhase(date);
+                    return new LunarCalendarDayResponse(
+                            date.toString(),
+                            phase.name(),
+                            message(phase.getMessageKey(), locale),
+                            getActivities(phase),
+                            getRecommendedCrops(month, phase, locale)
+                    );
+                })
+                .toList();
     }
 
     public List<String> getActivities(Locale locale) {
@@ -39,6 +64,16 @@ public class LunarService {
 
     public String getCurrentPhaseDisplayName(Locale locale) {
         return getCurrentPhase(locale).getDisplayName();
+    }
+
+    public LunarPhaseResponse getPhaseForDate(LocalDate date, Locale locale) {
+        MoonPhase phase = resolvePhase(date);
+        return new LunarPhaseResponse(
+                phase.name(),
+                message(phase.getMessageKey(), locale),
+                getActivities(phase),
+                getRecommendedCrops(date.getMonthValue(), phase, locale)
+        );
     }
 
     public boolean isWaxingPhase() {
@@ -61,8 +96,38 @@ public class LunarService {
                 .toList();
     }
 
+    private List<String> getRecommendedCrops(int month, MoonPhase phase, Locale locale) {
+        List<String> crops = plantingCalendarRepository.findByMonthAndLunarPhaseOrderByIdAsc(month, phase.name()).stream()
+                .map(calendar -> localizeCropCode(calendar.getCropCode(), locale))
+                .distinct()
+                .toList();
+
+        if (!crops.isEmpty()) {
+            return crops;
+        }
+
+        if (phase == MoonPhase.NEW_MOON || phase == MoonPhase.WANING_CRESCENT) {
+            return List.of(localizeCropCode("BEANS", locale), localizeCropCode("SQUASH", locale));
+        }
+
+        if (phase == MoonPhase.FIRST_QUARTER || phase == MoonPhase.WAXING_CRESCENT) {
+            return List.of(localizeCropCode("CORN", locale), localizeCropCode("BEANS", locale));
+        }
+
+        return List.of(localizeCropCode("CORN", locale), localizeCropCode("SQUASH", locale));
+    }
+
     private String message(String key, Locale locale) {
         return messageSource.getMessage(key, null, key, locale);
+    }
+
+    private String localizeCropCode(String cropCode, Locale locale) {
+        return switch (cropCode.toUpperCase(Locale.ROOT)) {
+            case "CORN" -> messageSource.getMessage("crop.name.corn", null, cropCode, locale);
+            case "BEANS" -> messageSource.getMessage("crop.name.beans", null, cropCode, locale);
+            case "SQUASH" -> messageSource.getMessage("crop.name.squash", null, cropCode, locale);
+            default -> cropCode;
+        };
     }
 
     private enum MoonPhase {

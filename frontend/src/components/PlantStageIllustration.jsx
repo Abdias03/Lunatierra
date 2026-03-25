@@ -115,7 +115,7 @@ function resolveArtVariant(stageName = '') {
   return 'growth';
 }
 
-export default function PlantStageIllustration({ stageName }) {
+export default function PlantStageIllustration({ stageName, animateGrowth = false }) {
   const variant = resolveArtVariant(stageName);
 
   return (
@@ -125,7 +125,7 @@ export default function PlantStageIllustration({ stageName }) {
       <div className="absolute left-1/2 top-[18%] h-[110px] w-[210px] -translate-x-1/2 rounded-full bg-[radial-gradient(circle,_rgba(255,255,255,0.35)_0%,_transparent_70%)] blur-xl" />
       <div className="absolute inset-x-0 top-0 h-[59%] rounded-[44px] bg-[radial-gradient(circle_at_50%_15%,_rgba(247,255,224,0.98),_rgba(223,242,177,0.16)_55%,_transparent_72%)]" />
 
-      <div className="plant-float absolute left-1/2 top-[1%] h-[280px] w-[280px] -translate-x-1/2 drop-shadow-[0_24px_36px_rgba(34,24,16,0.18)]">
+      <div className={`plant-float absolute left-1/2 top-[1%] h-[280px] w-[280px] -translate-x-1/2 drop-shadow-[0_24px_36px_rgba(34,24,16,0.18)] ${animateGrowth ? 'plant-evolve' : ''}`}>
         {variant === 'seed' ? <SeedArt /> : null}
         {variant === 'sprout' ? <SproutArt /> : null}
         {variant === 'growth' ? <GrowthArt /> : null}

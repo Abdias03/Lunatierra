@@ -4,18 +4,43 @@ import { useTranslation } from 'react-i18next';
 export default function QuickQuestionI18n({ onAsk, loading, answer }) {
   const { t } = useTranslation();
   const [question, setQuestion] = useState('');
+  const [lastQuestion, setLastQuestion] = useState('');
 
   const submit = async (event) => {
     event.preventDefault();
-    if (!question.trim()) {
+    const nextQuestion = question.trim();
+    if (!nextQuestion) {
       return;
     }
 
-    await onAsk(question);
+    setLastQuestion(nextQuestion);
+    await onAsk(nextQuestion);
+    setQuestion('');
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
+      <div className="space-y-3">
+        <div className="mr-8 rounded-[24px] rounded-bl-md border border-white/65 bg-white/82 px-4 py-4 shadow-sm backdrop-blur-sm">
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-sky-500">{t('quickQuestion.helper')}</p>
+          <p className="mt-2 text-sm leading-6 text-earth-700">{t('quickQuestion.prompt')}</p>
+        </div>
+
+        {lastQuestion ? (
+          <div className="ml-10 rounded-[24px] rounded-br-md bg-sky-500 px-4 py-4 text-white shadow-[0_16px_28px_rgba(56,132,177,0.18)]">
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-white/72">{t('quickQuestion.you')}</p>
+            <p className="mt-2 text-sm leading-6 text-white">{lastQuestion}</p>
+          </div>
+        ) : null}
+
+        {answer ? (
+          <div className="mr-8 rounded-[24px] rounded-bl-md border border-white/65 bg-white/82 px-4 py-4 shadow-sm backdrop-blur-sm">
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-leaf-700">{t('quickQuestion.helper')}</p>
+            <p className="mt-2 text-sm leading-6 text-earth-700">{answer}</p>
+          </div>
+        ) : null}
+      </div>
+
       <form className="space-y-4" onSubmit={submit}>
         <textarea
           rows="3"
@@ -32,8 +57,6 @@ export default function QuickQuestionI18n({ onAsk, loading, answer }) {
           {loading ? t('quickQuestion.thinking') : t('quickQuestion.submit')}
         </button>
       </form>
-
-      {answer ? <p className="rounded-[22px] bg-white/75 p-4 text-sm leading-6 text-sky-700 shadow-sm">{answer}</p> : null}
     </div>
   );
 }

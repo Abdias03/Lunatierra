@@ -1,12 +1,14 @@
 package com.lunatierra.backend.service;
 
 import com.lunatierra.backend.dto.CropDetailRecommendation;
+import com.lunatierra.backend.dto.DailyProgressResponse;
 import com.lunatierra.backend.dto.RecommendationItem;
 import com.lunatierra.backend.dto.RecommendationResponse;
 import com.lunatierra.backend.dto.UserCropResponse;
 import com.lunatierra.backend.dto.WeatherSummary;
 import com.lunatierra.backend.model.Recommendation;
 import com.lunatierra.backend.model.RecommendationType;
+import java.time.LocalDate;
 import com.lunatierra.backend.repository.CropStageRepository;
 import com.lunatierra.backend.repository.RecommendationRepository;
 import java.util.ArrayList;
@@ -52,11 +54,11 @@ public class RecommendationService {
         this.messageSource = messageSource;
     }
 
-    public RecommendationResponse getTodayRecommendations(Locale locale) {
+    public RecommendationResponse getTodayRecommendations(Long userId, Locale locale) {
         Locale effectiveLocale = locale != null ? locale : LocaleContextHolder.getLocale();
         logger.debug("Building recommendations for locale {}", effectiveLocale);
 
-        List<UserCropResponse> crops = userCropService.getAll(effectiveLocale);
+        List<UserCropResponse> crops = userCropService.getAll(userId, effectiveLocale);
         WeatherSummary weather = weatherService.getTodayForecast(effectiveLocale);
         String lunarPhase = lunarService.getCurrentPhaseDisplayName(effectiveLocale);
         List<RecommendationItem> items = new ArrayList<>();
@@ -128,13 +130,16 @@ public class RecommendationService {
         }
 
         String dailyFocus = items.get(0).getMessage();
+        DailyProgressResponse dailyProgress = dailyProgressService.getProgress(userId);
+        String dailyMessage = buildDailyMessage(crops, weather, dailyProgress, effectiveLocale);
         return new RecommendationResponse(
                 lunarPhase,
                 weather,
                 dailyFocus,
+                dailyMessage,
                 items,
                 cropDetails,
-                dailyProgressService.getProgress()
+                dailyProgress
         );
     }
 
@@ -149,6 +154,35 @@ public class RecommendationService {
     private boolean growthStageMatchesHarvest(String stageName, Locale locale) {
         return message("crop.stage.maturation", locale).equals(stageName)
                 || message("crop.stage.harvest", locale).equals(stageName);
+    }
+
+    private String buildDailyMessage(List<UserCropResponse> crops, WeatherSummary weather,
+                                     DailyProgressResponse dailyProgress, Locale locale) {
+        LocalDate today = LocalDate.now();
+        UserCropResponse featuredCrop = crops.isEmpty() ? null : crops.get(0);
+
+        if (weather.getRainChance() > 70) {
+            return message("daily.message.rain", locale);
+        }
+
+        if (dailyProgress.getLastCheckDate() != null
+                && dailyProgress.getLastCheckDate().isBefore(today.minusDays(1))) {
+            return message("daily.message.missed", locale);
+        }
+
+        if (dailyProgress.getStreakCount() == 0) {
+            return message("daily.message.waiting", locale);
+        }
+
+        if (featuredCrop != null && !featuredCrop.isWaterAvailable()) {
+            return message("daily.message.low_water", locale);
+        }
+
+        if (featuredCrop != null && featuredCrop.getDaysSincePlanting() >= 15 && dailyProgress.getStreakCount() >= 3) {
+            return message("daily.message.progress", locale);
+        }
+
+        return message("daily.message.default", locale);
     }
 
     public RecommendationInsight resolveInsight(String cropName, Long stageId, String stageKey, List<String> conditionKeys,

@@ -1,6 +1,8 @@
 package com.lunatierra.backend.service;
 
 import com.lunatierra.backend.dto.CreateUserCropRequest;
+import com.lunatierra.backend.dto.MigrateCropItem;
+import com.lunatierra.backend.dto.MigrateUserDataRequest;
 import com.lunatierra.backend.dto.StageInsight;
 import com.lunatierra.backend.dto.UserCropResponse;
 import com.lunatierra.backend.model.Crop;
@@ -39,19 +41,19 @@ public class UserCropService {
         this.messageSource = messageSource;
     }
 
-    public UserCropResponse create(CreateUserCropRequest request, Locale locale) {
+    public UserCropResponse create(Long userId, CreateUserCropRequest request, Locale locale) {
         Crop crop = cropRepository.findByCodeIgnoreCase(request.getCropName())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Crop not supported"));
-        User user = userRepository.findFirstByOrderByIdAsc()
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Default user missing"));
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not found"));
 
         UserCrop userCrop = new UserCrop(user, crop, request.getPlantingDate(), Boolean.TRUE.equals(request.getWaterAvailable()));
         UserCrop saved = userCropRepository.save(userCrop);
         return toResponse(saved, locale);
     }
 
-    public List<UserCropResponse> getAll(Locale locale) {
-        List<UserCrop> userCrops = userCropRepository.findAllByOrderByPlantingDateDesc();
+    public List<UserCropResponse> getAll(Long userId, Locale locale) {
+        List<UserCrop> userCrops = userCropRepository.findAllByUser_IdOrderByPlantingDateDesc(userId);
         Map<Long, List<CropStage>> stagesByCropId = stageService.getStagesByCropIds(
                 userCrops.stream().map(UserCrop::getCrop).distinct().toList()
         );
@@ -67,12 +69,45 @@ public class UserCropService {
         return buildResponse(userCrop, stage, days);
     }
 
-    public UserCropResponse getById(Long id, Locale locale) {
-        UserCrop userCrop = userCropRepository.findById(id)
+    public UserCropResponse getById(Long userId, Long id, Locale locale) {
+        UserCrop userCrop = userCropRepository.findByIdAndUser_Id(id, userId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Crop not found"));
         long days = ChronoUnit.DAYS.between(userCrop.getPlantingDate(), LocalDate.now());
         StageInsight stage = stageService.resolveStage(userCrop.getCrop(), Math.max(0, days), locale);
         return buildResponse(userCrop, stage, days);
+    }
+
+    public void migrateGuestCrops(Long userId, MigrateUserDataRequest request) {
+        if (request == null || request.getCrops() == null || request.getCrops().isEmpty()) {
+            return;
+        }
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not found"));
+
+        List<UserCrop> migrated = request.getCrops().stream()
+                .map(item -> toUserCrop(user, item))
+                .filter(item -> item != null)
+                .toList();
+
+        if (!migrated.isEmpty()) {
+            userCropRepository.saveAll(migrated);
+        }
+    }
+
+    private UserCrop toUserCrop(User user, MigrateCropItem item) {
+        if (item == null || item.getCropName() == null || item.getPlantingDate() == null) {
+            return null;
+        }
+
+        Crop crop = cropRepository.findByCodeIgnoreCase(item.getCropName())
+                .orElseGet(() -> cropRepository.findByCodeIgnoreCase(item.getCropName().toUpperCase(Locale.ROOT)).orElse(null));
+
+        if (crop == null) {
+            return null;
+        }
+
+        return new UserCrop(user, crop, item.getPlantingDate(), Boolean.TRUE.equals(item.getWaterAvailable()));
     }
 
     private UserCropResponse toResponse(UserCrop userCrop, Locale locale, List<CropStage> stages) {

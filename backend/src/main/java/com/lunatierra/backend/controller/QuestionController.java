@@ -6,6 +6,7 @@ import com.lunatierra.backend.service.QuestionAnswerService;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -20,7 +21,11 @@ public class QuestionController {
     }
 
     @PostMapping
-    public QuestionResponse ask(@Valid @RequestBody QuestionRequest request) {
+    public QuestionResponse ask(@Valid @RequestBody QuestionRequest request,
+                                @RequestHeader(value = "Authorization", required = false) String authorizationHeader) {
+        if (!RequestUserContext.hasUserContext(authorizationHeader)) {
+            return new QuestionResponse("");
+        }
         return new QuestionResponse(questionAnswerService.answer(request.getQuestion()));
     }
 }

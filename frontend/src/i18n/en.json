@@ -41,8 +41,9 @@
     "fallbackSoilAction": "Check the soil moisture near the base",
     "fallbackWeedsAction": "Remove nearby weeds before they spread",
     "reviewed": "✔ I checked it",
-    "reviewedDone": "✔ Checked today",
-    "reviewing": "Saving today's check"
+    "reviewedDone": "✔ I cared for my crop",
+    "reviewing": "Saving today's check",
+    "rewardMessage": "Nice work 🌱"
   },
   "highlight": {
     "eyebrow": "Today's focus",
@@ -104,6 +105,10 @@
   },
   "crop": {
     "stage": "Current stage",
+    "progressEyebrow": "Growth",
+    "progressTitle": "How your crop is growing",
+    "progressLabel": "Growth progress",
+    "progressValue": "{{value}}% of the journey",
     "names": {
       "corn": "Corn",
       "beans": "Beans",
@@ -114,8 +119,11 @@
     "title": "Quick question",
     "subtitle": "A simple answer in seconds",
     "description": "Ask something short and get practical help without leaving the app.",
+    "helper": "Helper",
+    "you": "You",
+    "prompt": "Ask me something about your crop and I'll answer in a simple way.",
     "placeholder": "Why are my leaves turning yellow?",
-    "submit": "Ask",
+    "submit": "Ask me something 🌱",
     "thinking": "Thinking..."
   },
   "cropDetail": {

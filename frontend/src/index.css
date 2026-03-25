@@ -33,22 +33,226 @@ textarea {
   min-height: 100vh;
 }
 
-@keyframes plantFloat {
+@keyframes floatPlant {
   0% {
-    transform: translateX(-50%) translateY(0) scale(1);
+    transform: translateX(-50%) translateY(0);
   }
   50% {
-    transform: translateX(-50%) translateY(-10px) scale(1.03);
+    transform: translateX(-50%) translateY(-6px);
   }
   100% {
-    transform: translateX(-50%) translateY(0) scale(1);
+    transform: translateX(-50%) translateY(0);
   }
 }
 
 .plant-float {
-  animation: plantFloat 4.2s ease-in-out infinite;
+  animation: floatPlant 4s ease-in-out infinite;
   transform-origin: center bottom;
   will-change: transform;
+}
+
+@keyframes plantEvolve {
+  0% {
+    transform: translateX(-50%) scale(1);
+  }
+  50% {
+    transform: translateX(-50%) scale(1.1);
+  }
+  100% {
+    transform: translateX(-50%) scale(1);
+  }
+}
+
+.plant-evolve {
+  animation:
+    floatPlant 4s ease-in-out infinite,
+    plantEvolve 300ms ease-out 1;
+}
+
+@keyframes rewardBloom {
+  0% {
+    opacity: 0;
+    transform: translateY(8px) scale(0.96);
+  }
+  55% {
+    opacity: 1;
+    transform: translateY(-2px) scale(1.02);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.reward-bloom {
+  animation: rewardBloom 420ms ease-out;
+}
+
+.reward-button {
+  transition: all 0.2s ease;
+}
+
+@keyframes rewardPulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.reward-success {
+  animation: rewardPulse 260ms ease-out 1;
+}
+
+.lunar-day-button {
+  overflow: hidden;
+  position: relative;
+  transition:
+    transform 120ms ease,
+    box-shadow 180ms ease,
+    border-color 180ms ease,
+    background-color 180ms ease,
+    opacity 180ms ease;
+}
+
+.lunar-day-button:active {
+  transform: scale(0.96);
+}
+
+@keyframes lunarMonthSlideLeft {
+  0% {
+    opacity: 0;
+    transform: translateX(18px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes lunarMonthSlideRight {
+  0% {
+    opacity: 0;
+    transform: translateX(-18px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes lunarMonthEnter {
+  0% {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.lunar-month-slide-left {
+  animation: lunarMonthSlideLeft 300ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.lunar-month-slide-right {
+  animation: lunarMonthSlideRight 300ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.lunar-month-enter {
+  animation: lunarMonthEnter 300ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes todayGlowPulse {
+  0% {
+    box-shadow:
+      0 0 0 1px rgba(140, 191, 79, 0.28),
+      0 14px 28px rgba(98, 149, 57, 0.20);
+  }
+  50% {
+    box-shadow:
+      0 0 0 1px rgba(140, 191, 79, 0.34),
+      0 18px 34px rgba(98, 149, 57, 0.30);
+  }
+  100% {
+    box-shadow:
+      0 0 0 1px rgba(140, 191, 79, 0.28),
+      0 14px 28px rgba(98, 149, 57, 0.20);
+  }
+}
+
+.today-pulse {
+  animation: todayGlowPulse 3s ease-in-out infinite;
+}
+
+@keyframes moonFloatMini {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(-2px);
+  }
+}
+
+.moon-float {
+  animation: moonFloatMini 2s ease-in-out infinite alternate;
+}
+
+@keyframes lunarDaySelectedBounce {
+  0% {
+    transform: scale(0.96);
+  }
+  55% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.lunar-day-selected-bounce {
+  animation: lunarDaySelectedBounce 240ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes lunarDayFlash {
+  0% {
+    opacity: 0.34;
+    transform: scale(0.3);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.8);
+  }
+}
+
+.lunar-day-flash {
+  position: absolute;
+  inset: 50%;
+  width: 2.2rem;
+  height: 2.2rem;
+  margin-left: -1.1rem;
+  margin-top: -1.1rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.42);
+  pointer-events: none;
+  animation: lunarDayFlash 220ms ease-out forwards;
+}
+
+.lunar-insight-out {
+  opacity: 0.4;
+  transform: translateY(6px);
+  transition: opacity 140ms ease, transform 140ms ease;
+}
+
+.lunar-insight-in {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 180ms ease, transform 180ms ease;
 }
 
 ::-webkit-scrollbar {

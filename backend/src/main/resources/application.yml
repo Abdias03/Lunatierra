@@ -29,6 +29,11 @@ spring:
 
 server:
   port: ${SERVER_PORT:8080}
+  servlet:
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
 
 ai:
   ollama:
@@ -36,3 +41,16 @@ ai:
     base-url: ${AI_OLLAMA_BASE_URL:http://localhost:11434}
     model: ${AI_OLLAMA_MODEL:gemma:2b}
     timeout-ms: ${AI_OLLAMA_TIMEOUT_MS:4000}
+
+weather:
+  open-meteo:
+    enabled: ${WEATHER_OPEN_METEO_ENABLED:true}
+    base-url: ${WEATHER_OPEN_METEO_BASE_URL:https://api.open-meteo.com}
+    timeout-ms: ${WEATHER_OPEN_METEO_TIMEOUT_MS:2500}
+
+auth:
+  google:
+    client-id: ${GOOGLE_CLIENT_ID:}
+  jwt:
+    secret: ${JWT_SECRET:lunatierra-dev-secret-lunatierra-dev-secret}
+    expiration-ms: ${JWT_EXPIRATION_MS:2592000000}

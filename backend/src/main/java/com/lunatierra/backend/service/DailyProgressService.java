@@ -19,8 +19,8 @@ public class DailyProgressService {
     }
 
     @Transactional(readOnly = true)
-    public DailyProgressResponse getProgress() {
-        User user = getDefaultUser();
+    public DailyProgressResponse getProgress(Long userId) {
+        User user = getUser(userId);
         LocalDate today = LocalDate.now();
         LocalDate lastCheckDate = user.getLastCheckDate();
         boolean checkedToday = today.equals(lastCheckDate);
@@ -33,8 +33,8 @@ public class DailyProgressService {
     }
 
     @Transactional
-    public DailyProgressResponse registerCheckIn() {
-        User user = getDefaultUser();
+    public DailyProgressResponse registerCheckIn(Long userId) {
+        User user = getUser(userId);
         LocalDate today = LocalDate.now();
         LocalDate lastCheckDate = user.getLastCheckDate();
 
@@ -70,8 +70,8 @@ public class DailyProgressService {
         return streakCount != null ? streakCount : 0;
     }
 
-    private User getDefaultUser() {
-        return userRepository.findFirstByOrderByIdAsc()
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Default user missing"));
+    private User getUser(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not found"));
     }
 }
