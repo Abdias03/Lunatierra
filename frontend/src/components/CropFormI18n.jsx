@@ -1,20 +1,33 @@
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-const initialForm = {
-  cropName: 'corn',
-  plantingDate: '',
-  waterAvailable: true
-};
-
-export default function CropFormI18n({ onSubmit, loading }) {
+export default function CropFormI18n({ onSubmit, loading, cropOptions = [] }) {
   const { t } = useTranslation();
-  const [form, setForm] = useState(initialForm);
+  const defaultCropCode = useMemo(
+    () => cropOptions[0]?.code || '',
+    [cropOptions]
+  );
+  const [form, setForm] = useState({
+    cropName: defaultCropCode,
+    plantingDate: '',
+    waterAvailable: true
+  });
+
+  useEffect(() => {
+    setForm((current) => ({
+      ...current,
+      cropName: current.cropName || defaultCropCode
+    }));
+  }, [defaultCropCode]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     await onSubmit(form);
-    setForm(initialForm);
+    setForm({
+      cropName: defaultCropCode,
+      plantingDate: '',
+      waterAvailable: true
+    });
   };
 
   return (
@@ -25,10 +38,15 @@ export default function CropFormI18n({ onSubmit, loading }) {
           className="w-full rounded-[22px] border border-earth-100 bg-earth-50 px-4 py-4 text-base text-earth-900 outline-none transition focus:border-leaf-500 focus:bg-white"
           value={form.cropName}
           onChange={(event) => setForm((current) => ({ ...current, cropName: event.target.value }))}
+          disabled={!cropOptions.length}
         >
-          <option value="corn">{t('crop.names.corn')}</option>
-          <option value="beans">{t('crop.names.beans')}</option>
-          <option value="squash">{t('crop.names.squash')}</option>
+          {cropOptions.length ? cropOptions.map((crop) => (
+            <option key={crop.code} value={crop.code}>
+              {crop.displayName}
+            </option>
+          )) : (
+            <option value="">{t('dashboard.loading')}</option>
+          )}
         </select>
       </label>
 

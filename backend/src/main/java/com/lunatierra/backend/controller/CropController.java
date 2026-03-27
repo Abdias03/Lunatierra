@@ -2,9 +2,11 @@ package com.lunatierra.backend.controller;
 
 import com.lunatierra.backend.dto.CreateUserCropRequest;
 import com.lunatierra.backend.dto.CropIntelligenceResponse;
+import com.lunatierra.backend.dto.CropCatalogItemResponse;
 import com.lunatierra.backend.dto.UserCropResponse;
 import com.lunatierra.backend.service.CropEngineService;
 import com.lunatierra.backend.service.AuthenticatedUserService;
+import com.lunatierra.backend.service.CropCatalogService;
 import com.lunatierra.backend.service.UserCropService;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -27,12 +29,20 @@ public class CropController {
     private final UserCropService userCropService;
     private final CropEngineService cropEngineService;
     private final AuthenticatedUserService authenticatedUserService;
+    private final CropCatalogService cropCatalogService;
 
     public CropController(UserCropService userCropService, CropEngineService cropEngineService,
-                          AuthenticatedUserService authenticatedUserService) {
+                          AuthenticatedUserService authenticatedUserService,
+                          CropCatalogService cropCatalogService) {
         this.userCropService = userCropService;
         this.cropEngineService = cropEngineService;
         this.authenticatedUserService = authenticatedUserService;
+        this.cropCatalogService = cropCatalogService;
+    }
+
+    @GetMapping("/catalog")
+    public List<CropCatalogItemResponse> getCatalog() {
+        return cropCatalogService.getCatalog();
     }
 
     @PostMapping

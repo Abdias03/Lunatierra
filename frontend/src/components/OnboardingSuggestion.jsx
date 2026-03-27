@@ -1,17 +1,18 @@
-const cropOptions = {
-  corn: { label: 'Sembrar maíz', icon: '🌽' },
-  beans: { label: 'Sembrar frijol', icon: '🌱' },
-  squash: { label: 'Sembrar calabaza', icon: '🎃' }
-};
+import { useTranslation } from 'react-i18next';
 
 export default function OnboardingSuggestion({
   recommendation,
   loading,
+  cropOptions = [],
   onSelectCrop,
   onShowMore
 }) {
+  const { t } = useTranslation();
   const recommendedCrops = recommendation?.recommendedCrops?.slice(0, 2) || [];
   const canPlant = recommendation?.actionType === 'plant' && recommendedCrops.length > 0;
+  const catalogByCode = Object.fromEntries(
+    cropOptions.map((crop) => [String(crop.code).toLowerCase(), crop])
+  );
 
   return (
     <section className="rounded-[32px] border border-white/70 bg-white/88 p-6 shadow-[0_24px_50px_rgba(63,46,30,0.12)] backdrop-blur">
@@ -20,15 +21,15 @@ export default function OnboardingSuggestion({
       </div>
 
       <p className="mt-6 text-center text-base font-medium leading-7 text-earth-700">
-        Hoy la luna está en fase {recommendation?.lunarPhase?.toLowerCase() || 'especial'}
+        {`${t('onboarding.moonPhase')} ${(recommendation?.lunarPhase ? t(`lunarPhases.${recommendation.lunarPhase}`, { defaultValue: recommendation.lunarPhase }) : 'especial').toLowerCase()}`}
       </p>
       <h2 className="mt-3 text-center text-3xl font-semibold text-earth-900">
-        {recommendation?.message || 'Hoy puede ser un buen momento para empezar 🌱'}
+        {recommendation?.message || t('onboarding.goodTime')}
       </h2>
 
       <div className="mt-6 space-y-3">
         {canPlant ? recommendedCrops.map((cropKey) => {
-          const crop = cropOptions[cropKey];
+          const crop = catalogByCode[String(cropKey).toLowerCase()];
 
           if (!crop) {
             return null;
@@ -36,14 +37,14 @@ export default function OnboardingSuggestion({
 
           return (
             <button
-              key={cropKey}
+              key={crop.code}
               type="button"
-              onClick={() => onSelectCrop(cropKey)}
+              onClick={() => onSelectCrop(crop.code)}
               disabled={loading}
               className="flex w-full items-center justify-between rounded-[24px] border border-leaf-200 bg-leaf-100/80 px-5 py-4 text-left transition hover:border-leaf-400 active:scale-[0.98] disabled:opacity-70"
             >
-              <span className="text-lg font-semibold text-earth-900">{crop.label}</span>
-              <span className="text-3xl">{crop.icon}</span>
+              <span className="text-lg font-semibold text-earth-900">{`Sembrar ${crop.displayName}`}</span>
+              <span className="text-3xl">🌱</span>
             </button>
           );
         }) : (
@@ -58,7 +59,7 @@ export default function OnboardingSuggestion({
         onClick={onShowMore}
         className="mt-5 w-full rounded-[24px] bg-earth-900 px-5 py-4 text-lg font-semibold text-white transition active:scale-[0.98]"
       >
-        ➡️ Ver más opciones
+        Ver más opciones
       </button>
     </section>
   );

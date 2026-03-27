@@ -1,8 +1,21 @@
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 export default function LanguageSwitcher() {
   const { i18n, t } = useTranslation();
-  const currentLanguage = i18n.language?.split('-')[0] || 'es';
+  const [currentLanguage, setCurrentLanguage] = useState(i18n.language?.split('-')[0] || 'es');
+
+  useEffect(() => {
+    const handleLanguageChange = (language) => {
+      setCurrentLanguage(language.split('-')[0]);
+    };
+
+    i18n.on('languageChanged', handleLanguageChange);
+
+    return () => {
+      i18n.off('languageChanged', handleLanguageChange);
+    };
+  }, [i18n]);
 
   const languages = [
     { code: 'es', label: t('language.spanish') },

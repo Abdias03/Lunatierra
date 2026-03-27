@@ -47,7 +47,7 @@ export default function CropDetailPage({ crops, recommendationData }) {
         <CropHeroPremium crop={crop} />
 
         <section className="grid grid-cols-3 gap-3">
-          <CropStatusCard icon="🌙" label={t('dashboard.moon')} value={recommendationData?.lunarPhase || t('dashboard.loading')} tone="soft" />
+          <CropStatusCard icon="🌙" label={t('dashboard.moon')} value={recommendationData?.lunarPhase ? t(`lunarPhases.${recommendationData.lunarPhase}`, { defaultValue: recommendationData.lunarPhase }) : t('dashboard.loading')} tone="soft" />
           <CropStatusCard
             icon="🌧️"
             label={t('dashboard.weather')}

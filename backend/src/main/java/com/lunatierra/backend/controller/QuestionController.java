@@ -23,9 +23,11 @@ public class QuestionController {
     @PostMapping
     public QuestionResponse ask(@Valid @RequestBody QuestionRequest request,
                                 @RequestHeader(value = "Authorization", required = false) String authorizationHeader) {
+        // Permitir preguntas en modo invitado para que el flujo de quick question funcione sin token.
         if (!RequestUserContext.hasUserContext(authorizationHeader)) {
-            return new QuestionResponse("");
+            return new QuestionResponse(questionAnswerService.answer(request.getQuestion()));
         }
+
         return new QuestionResponse(questionAnswerService.answer(request.getQuestion()));
     }
 }

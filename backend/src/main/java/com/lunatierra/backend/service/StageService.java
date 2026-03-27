@@ -51,7 +51,9 @@ public class StageService {
             return new StageInsight(null, "Monitoreo",
                     "Monitoreo",
                     "Observa el cultivo y revisa su avance diario.",
-                    daysSincePlanting);
+                    daysSincePlanting,
+                    0,
+                    0);
         }
 
         return new StageInsight(
@@ -59,7 +61,9 @@ public class StageService {
                 stage.getName(),
                 stage.getName(),
                 stage.getDescription(),
-                daysSincePlanting
+                daysSincePlanting,
+                stage.getMinDay(),
+                stage.getMaxDay()
         );
     }
 }

@@ -23,14 +23,15 @@ i18n
       en: { translation: en },
       es: { translation: es }
     },
-    lng: 'es',
+    lng: detectInitialLanguage(),
     fallbackLng: 'es',
     interpolation: {
       escapeValue: false
+    },
+    react: {
+      useSuspense: false
     }
   });
-
-i18n.changeLanguage(detectInitialLanguage());
 
 i18n.on('languageChanged', (language) => {
   localStorage.setItem(STORAGE_KEY, language);

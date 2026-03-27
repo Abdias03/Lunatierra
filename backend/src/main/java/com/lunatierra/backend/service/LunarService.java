@@ -2,6 +2,7 @@ package com.lunatierra.backend.service;
 
 import com.lunatierra.backend.dto.LunarCalendarDayResponse;
 import com.lunatierra.backend.dto.LunarPhaseResponse;
+import com.lunatierra.backend.repository.CropRepository;
 import com.lunatierra.backend.repository.PlantingCalendarRepository;
 import com.lunatierra.backend.repository.LunarActivityRepository;
 import java.time.LocalDate;
@@ -22,12 +23,15 @@ public class LunarService {
     private final MessageSource messageSource;
     private final LunarActivityRepository lunarActivityRepository;
     private final PlantingCalendarRepository plantingCalendarRepository;
+    private final CropRepository cropRepository;
 
     public LunarService(MessageSource messageSource, LunarActivityRepository lunarActivityRepository,
-                        PlantingCalendarRepository plantingCalendarRepository) {
+                        PlantingCalendarRepository plantingCalendarRepository,
+                        CropRepository cropRepository) {
         this.messageSource = messageSource;
         this.lunarActivityRepository = lunarActivityRepository;
         this.plantingCalendarRepository = plantingCalendarRepository;
+        this.cropRepository = cropRepository;
     }
 
     public LunarPhaseResponse getCurrentPhase(Locale locale) {
@@ -122,12 +126,9 @@ public class LunarService {
     }
 
     private String localizeCropCode(String cropCode, Locale locale) {
-        return switch (cropCode.toUpperCase(Locale.ROOT)) {
-            case "CORN" -> messageSource.getMessage("crop.name.corn", null, cropCode, locale);
-            case "BEANS" -> messageSource.getMessage("crop.name.beans", null, cropCode, locale);
-            case "SQUASH" -> messageSource.getMessage("crop.name.squash", null, cropCode, locale);
-            default -> cropCode;
-        };
+        return cropRepository.findByCodeIgnoreCase(cropCode)
+                .map(crop -> crop.getName())
+                .orElse(cropCode);
     }
 
     private enum MoonPhase {

@@ -13,5 +13,7 @@ public interface CropStageRepository extends JpaRepository<CropStage, Long> {
 
     List<CropStage> findByCropInOrderByCropIdAscMinDayAsc(Collection<Crop> crops);
 
+    List<CropStage> findAllByOrderByCrop_NameAscMinDayAsc();
+
     Optional<CropStage> findByCrop_CodeIgnoreCaseAndName(String cropCode, String name);
 }

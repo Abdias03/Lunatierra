@@ -11,10 +11,14 @@ public class UserCropResponse {
     private boolean waterAvailable;
     private long daysSincePlanting;
     private String growthStage;
+    private String growthStageIcon;
     private String expectedBehavior;
+    private int stageMinDay;
+    private int stageMaxDay;
 
     public UserCropResponse(Long id, String cropName, String cropDisplayName, LocalDate plantingDate, boolean waterAvailable,
-                            long daysSincePlanting, String growthStage, String expectedBehavior) {
+                            long daysSincePlanting, String growthStage, String growthStageIcon, String expectedBehavior,
+                            int stageMinDay, int stageMaxDay) {
         this.id = id;
         this.cropName = cropName;
         this.cropDisplayName = cropDisplayName;
@@ -22,7 +26,10 @@ public class UserCropResponse {
         this.waterAvailable = waterAvailable;
         this.daysSincePlanting = daysSincePlanting;
         this.growthStage = growthStage;
+        this.growthStageIcon = growthStageIcon;
         this.expectedBehavior = expectedBehavior;
+        this.stageMinDay = stageMinDay;
+        this.stageMaxDay = stageMaxDay;
     }
 
     public Long getId() {
@@ -53,7 +60,19 @@ public class UserCropResponse {
         return growthStage;
     }
 
+    public String getGrowthStageIcon() {
+        return growthStageIcon;
+    }
+
     public String getExpectedBehavior() {
         return expectedBehavior;
+    }
+
+    public int getStageMinDay() {
+        return stageMinDay;
+    }
+
+    public int getStageMaxDay() {
+        return stageMaxDay;
     }
 }

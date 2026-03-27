@@ -10,11 +10,14 @@ export default function QuickQuestionI18n({ onAsk, loading, answer }) {
     event.preventDefault();
     const nextQuestion = question.trim();
     if (!nextQuestion) {
+      console.log('QuickQuestion: Question is empty, not submitting');
       return;
     }
 
+    console.log('QuickQuestion: Submitting question:', nextQuestion);
     setLastQuestion(nextQuestion);
     await onAsk(nextQuestion);
+    console.log('QuickQuestion: Question submitted successfully');
     setQuestion('');
   };
 

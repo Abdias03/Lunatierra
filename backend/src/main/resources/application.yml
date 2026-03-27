@@ -26,21 +26,34 @@ spring:
     init:
       mode: always
       encoding: UTF-8
+      data-locations: classpath:data.sql
 
 server:
   port: ${SERVER_PORT:8080}
+  address: 0.0.0.0
   servlet:
     encoding:
       charset: UTF-8
       enabled: true
       force: true
 
+logging:
+  level:
+    com.lunatierra.backend: DEBUG
+    org.springframework.web: DEBUG
+    org.springframework.security: DEBUG
+  file:
+    name: C:/APP/Lunatierra/logs/lunaTierra.log
+  pattern:
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+
 ai:
   ollama:
     enabled: ${AI_OLLAMA_ENABLED:true}
     base-url: ${AI_OLLAMA_BASE_URL:http://localhost:11434}
-    model: ${AI_OLLAMA_MODEL:gemma:2b}
-    timeout-ms: ${AI_OLLAMA_TIMEOUT_MS:4000}
+    model: ${AI_OLLAMA_MODEL:mistral}
+    timeout-ms: ${AI_OLLAMA_TIMEOUT_MS:80000}
 
 weather:
   open-meteo:
@@ -50,7 +63,7 @@ weather:
 
 auth:
   google:
-    client-id: ${GOOGLE_CLIENT_ID:}
+    client-id: ${GOOGLE_CLIENT_ID:505942313293-lgjbdeis2nocnuafq7cadop00hlsr7vh.apps.googleusercontent.com}
   jwt:
     secret: ${JWT_SECRET:lunatierra-dev-secret-lunatierra-dev-secret}
     expiration-ms: ${JWT_EXPIRATION_MS:2592000000}

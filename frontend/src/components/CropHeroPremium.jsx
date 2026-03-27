@@ -71,16 +71,16 @@ export default function CropHeroPremium({ crop }) {
 
       <div className="relative z-10">
         <div className="flex items-start justify-between gap-4">
-          <div className="max-w-[12rem]">
-            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-white/70">{t('cropDetail.heroEyebrow')}</p>
-            <h1 className="mt-3 text-4xl font-semibold capitalize leading-none">
-              {t(`crop.names.${crop.cropName}`, crop.cropName)}
+          <div className="max-w-[12rem] rounded-[24px] bg-[linear-gradient(180deg,_rgba(247,252,223,0.3)_0%,_rgba(247,252,223,0)_100%)] px-1 py-1">
+            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[#33411f]">{t('cropDetail.heroEyebrow')}</p>
+            <h1 className="mt-3 text-4xl font-semibold capitalize leading-none text-[#18210f] [text-shadow:0_1px_0_rgba(255,255,255,0.18)]">
+              {crop.cropDisplayName || crop.cropName}
             </h1>
             <p className="mt-3 inline-flex rounded-full border border-white/20 bg-black/30 px-3 py-1 text-sm font-medium text-white">
               {crop.growthStage}
             </p>
           </div>
-          <div className="mt-1 rounded-full border border-white/20 bg-white/10 px-3 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-white/82 backdrop-blur">
+          <div className="mt-1 rounded-full border border-black/8 bg-[rgba(247,252,223,0.72)] px-3 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-[#243017] shadow-[0_8px_22px_rgba(47,36,26,0.08)]">
             Lunatierra
           </div>
         </div>

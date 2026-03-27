@@ -45,23 +45,47 @@ public class AIService {
 
     public String generateAdvice(AIContext context) {
         if (!enabled) {
+            logger.info("AIService: Ollama disabled, returning null");
             return null;
         }
 
+        logger.info("AIService: Starting AI advice generation for crop: {}, stage: {}, day: {}",
+                   context.getCrop(), context.getStage(), context.getDay());
+
         try {
+            String prompt = buildPrompt(context);
+            logger.debug("AIService: Generated prompt: {}", prompt);
+
+            OllamaGenerateRequest request = new OllamaGenerateRequest(model, prompt, false);
+            logger.info("AIService: Sending request to Ollama at {} with model {}", model);
+
             OllamaGenerateResponse response = restClient.post()
                     .uri("/api/generate")
-                    .body(new OllamaGenerateRequest(model, buildPrompt(context), false))
+                    .body(request)
                     .retrieve()
                     .body(OllamaGenerateResponse.class);
 
-            if (response == null || response.response() == null || response.response().isBlank()) {
+            logger.info("AIService: Received response from Ollama: {}", response);
+
+            if (response == null) {
+                logger.warn("AIService: Ollama returned null response");
                 return null;
             }
 
-            return sanitizeResponse(response.response(), context);
+            String rawResponse = response.response();
+            logger.debug("AIService: Raw response from Ollama: {}", rawResponse);
+
+            if (rawResponse == null || rawResponse.isBlank()) {
+                logger.warn("AIService: Ollama returned empty response");
+                return null;
+            }
+
+            String sanitized = sanitizeResponse(rawResponse, context);
+            logger.info("AIService: Final sanitized response: {}", sanitized);
+
+            return sanitized;
         } catch (Exception exception) {
-            logger.warn("Ollama advice unavailable, continuing without AI explanation: {}", exception.getMessage());
+            logger.error("AIService: Ollama advice unavailable: {}", exception.getMessage(), exception);
             return null;
         }
     }

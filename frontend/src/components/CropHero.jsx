@@ -52,11 +52,11 @@ export default function CropHero({ crop }) {
               {t(`crop.names.${crop.cropName}`, crop.cropName)}
             </h1>
             <p className="mt-3 inline-flex rounded-full bg-white/14 px-3 py-1 text-sm font-medium text-white/92 backdrop-blur">
-              {crop.growthStage}
+              {crop.growthStageIcon ? `${crop.growthStageIcon} ` : ''}{crop.growthStage}
             </p>
           </div>
           <div className="flex h-20 w-20 items-center justify-center rounded-[28px] bg-white/14 text-5xl backdrop-blur">
-            {art.emoji}
+            {crop.growthStageIcon || art.emoji}
           </div>
         </div>
 

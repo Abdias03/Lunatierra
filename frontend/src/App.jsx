@@ -22,6 +22,7 @@ export default function App() {
   const [asking, setAsking] = useState(false);
   const [answer, setAnswer] = useState('');
   const [error, setError] = useState('');
+  const [cropSortOrder, setCropSortOrder] = useState(() => localStorage.getItem('cropSortOrder') || 'DESC'); // Desc por defecto (mayor a menor)
 
   const loadData = async () => {
     try {
@@ -40,6 +41,10 @@ export default function App() {
   useEffect(() => {
     loadData();
   }, []);
+
+  useEffect(() => {
+    localStorage.setItem('cropSortOrder', cropSortOrder);
+  }, [cropSortOrder]);
 
   const handleCreateCrop = async (payload) => {
     try {
@@ -104,7 +109,42 @@ export default function App() {
         </SectionCard>
 
         <SectionCard title="Crop Tracking" subtitle="Stage, behavior, and field follow-up" icon="🌾">
-          <CropTrackingList crops={crops} />
+          <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+            <div className="flex items-center gap-2 text-xs font-semibold text-earth-700">
+              <svg
+                className="h-4 w-4"
+                viewBox="0 0 20 20"
+                fill="none"
+                aria-hidden="true"
+              >
+                {cropSortOrder === 'DESC' ? (
+                  <path d="M5 8l5 5 5-5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                ) : (
+                  <path d="M5 12l5-5 5 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                )}
+              </svg>
+              <span>
+                Orden actual: <strong>{cropSortOrder === 'DESC' ? 'Mayor a menor' : 'Menor a mayor'}</strong>
+              </span>
+            </div>
+            <div className="flex gap-2">
+              <button
+                type="button"
+                className={`rounded-full px-3 py-1 text-xs font-semibold ${cropSortOrder === 'DESC' ? 'bg-earth-900 text-white' : 'bg-white text-earth-900 ring-1 ring-earth-200'}`}
+                onClick={() => setCropSortOrder('DESC')}
+              >
+                Mayor a menor
+              </button>
+              <button
+                type="button"
+                className={`rounded-full px-3 py-1 text-xs font-semibold ${cropSortOrder === 'ASC' ? 'bg-earth-900 text-white' : 'bg-white text-earth-900 ring-1 ring-earth-200'}`}
+                onClick={() => setCropSortOrder('ASC')}
+              >
+                Menor a mayor
+              </button>
+            </div>
+          </div>
+          <CropTrackingList crops={crops} sortOrder={cropSortOrder} />
         </SectionCard>
 
         <SectionCard title="Quick Question" subtitle="Simple predefined support" icon="💬">

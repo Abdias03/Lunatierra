@@ -29,15 +29,17 @@ public class UserCropService {
     private final CropRepository cropRepository;
     private final UserRepository userRepository;
     private final StageService stageService;
+    private final CropGrowthService cropGrowthService;
     private final MessageSource messageSource;
 
     public UserCropService(UserCropRepository userCropRepository, CropRepository cropRepository,
                            UserRepository userRepository, StageService stageService,
-                           MessageSource messageSource) {
+                           CropGrowthService cropGrowthService, MessageSource messageSource) {
         this.userCropRepository = userCropRepository;
         this.cropRepository = cropRepository;
         this.userRepository = userRepository;
         this.stageService = stageService;
+        this.cropGrowthService = cropGrowthService;
         this.messageSource = messageSource;
     }
 
@@ -117,15 +119,22 @@ public class UserCropService {
     }
 
     private UserCropResponse buildResponse(UserCrop userCrop, StageInsight stage, long days) {
+        String cropCode = userCrop.getCrop().getCode();
+        long normalizedDays = Math.max(0, days);
+        String icon = cropGrowthService.getGrowthStageIcon(cropCode, normalizedDays);
+
         return new UserCropResponse(
                 userCrop.getId(),
-                userCrop.getCrop().getCode().toLowerCase(Locale.ROOT),
+                cropCode.toLowerCase(Locale.ROOT),
                 userCrop.getCrop().getName(),
                 userCrop.getPlantingDate(),
                 Boolean.TRUE.equals(userCrop.getWaterAvailable()),
-                Math.max(0, days),
+                normalizedDays,
                 stage.getName(),
-                stage.getDescription()
+                icon,
+                stage.getDescription(),
+                stage.getMinDay(),
+                stage.getMaxDay()
         );
     }
 }

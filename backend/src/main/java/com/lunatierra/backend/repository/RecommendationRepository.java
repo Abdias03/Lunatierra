@@ -8,6 +8,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface RecommendationRepository extends JpaRepository<Recommendation, Long> {
 
+    List<Recommendation> findAllByOrderByPriorityAscIdAsc();
+
     List<Recommendation> findByCrop_CodeIgnoreCaseAndStage_IdAndConditionAndActiveTrueAndRegionIsNullOrderByPriorityAscVersionDesc(
             String cropCode, Long stageId, String condition
     );

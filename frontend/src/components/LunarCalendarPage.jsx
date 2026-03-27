@@ -1,25 +1,23 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { fetchLunarCalendar, fetchLunarDayInsight } from '../api';
 import AppCard from './AppCard';
 import SectionHeader from './SectionHeader';
 
-const WEEK_DAYS = ['LUN', 'MAR', 'MIÉ', 'JUE', 'VIE', 'SÁB', 'DOM'];
-const MONTH_FORMATTER = new Intl.DateTimeFormat('es-MX', { month: 'long', year: 'numeric' });
-
 const PHASE_META = {
-  NEW_MOON: { icon: '🌑', short: 'Nueva' },
-  WAXING_CRESCENT: { icon: '🌒', short: 'Creciente' },
-  FIRST_QUARTER: { icon: '🌓', short: 'Cuarto' },
-  WAXING_GIBBOUS: { icon: '🌒', short: 'Creciente' },
-  FULL_MOON: { icon: '🌕', short: 'Llena' },
-  WANING_GIBBOUS: { icon: '🌘', short: 'Menguante' },
-  LAST_QUARTER: { icon: '🌘', short: 'Menguante' },
-  WANING_CRESCENT: { icon: '🌘', short: 'Menguante' }
+  NEW_MOON: { icon: '🌑' },
+  WAXING_CRESCENT: { icon: '🌒' },
+  FIRST_QUARTER: { icon: '🌓' },
+  WAXING_GIBBOUS: { icon: '🌒' },
+  FULL_MOON: { icon: '🌕' },
+  WANING_GIBBOUS: { icon: '🌘' },
+  LAST_QUARTER: { icon: '🌘' },
+  WANING_CRESCENT: { icon: '🌘' }
 };
 
 function getPhaseMeta(phase, displayName) {
-  return PHASE_META[phase] || { icon: '🌙', short: displayName || 'Luna' };
+  return PHASE_META[phase] || { icon: '🌙', short: displayName || 'Moon' };
 }
 
 function toLocalDate(value) {
@@ -68,26 +66,26 @@ function buildGridDays(year, month, calendarDays) {
   ];
 }
 
-function buildInterpretation(day) {
+function buildInterpretation(day, t) {
   const topActivity = day?.activities?.[0];
 
   if (!topActivity) {
-    return 'Hoy conviene mirar tu cultivo con calma.';
+    return t('lunarCalendar.todayCalm');
   }
 
-  return `Hoy puedes ${topActivity.toLowerCase()}.`;
+  return t('lunarCalendar.todayInterpretation', { action: topActivity.toLowerCase() });
 }
 
 export default function LunarCalendarPage({
   lunarData,
   locationLabel = 'San Luis Acatlán, Guerrero'
 }) {
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const localToday = useMemo(() => {
     const today = new Date();
     return new Date(today.getFullYear(), today.getMonth(), today.getDate());
   }, []);
-  const todayKey = useMemo(() => localToday.toLocaleDateString('en-CA'), [localToday]);
   const swipeStartX = useRef(0);
   const swipeLocked = useRef(false);
 
@@ -101,6 +99,12 @@ export default function LunarCalendarPage({
   const [bounceDay, setBounceDay] = useState('');
   const [dayInsight, setDayInsight] = useState(null);
   const [insightTransitionClass, setInsightTransitionClass] = useState('lunar-insight-enter');
+
+  const weekDays = useMemo(() => t('lunarCalendar.weekDays', { returnObjects: true }), [t]);
+  const monthFormatter = useMemo(
+    () => new Intl.DateTimeFormat(i18n.language?.startsWith('en') ? 'en-US' : 'es-MX', { month: 'long', year: 'numeric' }),
+    [i18n.language]
+  );
 
   useEffect(() => {
     let active = true;
@@ -133,7 +137,7 @@ export default function LunarCalendarPage({
         });
       } catch {
         if (active) {
-          setError('No pude cargar el calendario lunar.');
+          setError(t('lunarCalendar.loadError'));
           setCalendarDays([]);
           setSelectedDate(localToday);
         }
@@ -149,7 +153,7 @@ export default function LunarCalendarPage({
     return () => {
       active = false;
     };
-  }, [localToday, viewDate]);
+  }, [localToday, t, viewDate]);
 
   useEffect(() => {
     if (!transitionClass) {
@@ -230,7 +234,7 @@ export default function LunarCalendarPage({
   );
 
   const currentPhase = selectedDay?.phase || lunarData?.phase;
-  const currentDisplayName = selectedDay?.displayName || lunarData?.displayName || 'Calendario lunar';
+  const currentDisplayName = selectedDay?.displayName || lunarData?.displayName || t('lunarCalendar.headerEyebrow');
   const currentPhaseMeta = getPhaseMeta(currentPhase, currentDisplayName);
   const selectedActivities = dayInsight?.actions?.slice(0, 3)
     || selectedDay?.activities?.slice(0, 3)
@@ -241,7 +245,7 @@ export default function LunarCalendarPage({
     || lunarData?.recommendedCrops?.slice(0, 3)
     || [];
   const avoidActions = dayInsight?.avoid?.slice(0, 2) || [];
-  const monthLabel = MONTH_FORMATTER.format(viewDate);
+  const monthLabel = monthFormatter.format(viewDate);
 
   const changeMonth = (direction) => {
     setTransitionClass(direction === 'next' ? 'lunar-month-slide-left' : 'lunar-month-slide-right');
@@ -298,11 +302,11 @@ export default function LunarCalendarPage({
           onClick={() => navigate(-1)}
           className="inline-flex items-center gap-2 rounded-full bg-white/70 px-[14px] py-2 text-sm font-medium text-[#2F2F2F] shadow-sm backdrop-blur-md transition hover:bg-white/85 active:scale-95"
         >
-          ← Volver
+          {`← ${t('common.back')}`}
         </button>
 
         <section className="overflow-hidden rounded-[32px] bg-[linear-gradient(160deg,_rgba(249,244,223,0.98)_0%,_rgba(255,255,255,0.94)_54%,_rgba(238,229,249,0.96)_100%)] p-5 shadow-[0_24px_50px_rgba(63,46,30,0.12)]">
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-earth-500">Calendario lunar</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-earth-500">{t('lunarCalendar.headerEyebrow')}</p>
           <div className="mt-3 flex items-center gap-3">
             <span className="moon-float text-4xl">{currentPhaseMeta.icon}</span>
             <div>
@@ -318,7 +322,7 @@ export default function LunarCalendarPage({
               type="button"
               onClick={() => changeMonth('previous')}
               className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-earth-100 text-lg font-semibold text-earth-900 transition hover:bg-earth-200 active:scale-[0.97]"
-              aria-label="Mes anterior"
+              aria-label={t('lunarCalendar.previousMonth')}
             >
               ←
             </button>
@@ -331,7 +335,7 @@ export default function LunarCalendarPage({
               type="button"
               onClick={() => changeMonth('next')}
               className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-earth-100 text-lg font-semibold text-earth-900 transition hover:bg-earth-200 active:scale-[0.97]"
-              aria-label="Mes siguiente"
+              aria-label={t('lunarCalendar.nextMonth')}
             >
               →
             </button>
@@ -340,10 +344,10 @@ export default function LunarCalendarPage({
 
         <section className="grid grid-cols-4 gap-3">
           {[
-            { label: 'Llena', icon: '🌕' },
-            { label: 'Menguante', icon: '🌘' },
-            { label: 'Nueva', icon: '🌑' },
-            { label: 'Creciente', icon: '🌒' }
+            { label: t('lunarCalendar.phaseLegend.full'), icon: '🌕' },
+            { label: t('lunarCalendar.phaseLegend.waning'), icon: '🌘' },
+            { label: t('lunarCalendar.phaseLegend.new'), icon: '🌑' },
+            { label: t('lunarCalendar.phaseLegend.waxing'), icon: '🌒' }
           ].map((item) => (
             <AppCard key={item.label} className="bg-white/88 p-3 text-center">
               <p className="moon-float text-2xl">{item.icon}</p>
@@ -362,7 +366,7 @@ export default function LunarCalendarPage({
           onTouchEnd={handleTouchEnd}
         >
           <div className="mb-4 grid grid-cols-7 gap-2">
-            {WEEK_DAYS.map((day) => (
+            {weekDays.map((day) => (
               <p key={day} className="text-center text-[11px] font-semibold uppercase tracking-[0.16em] text-earth-500">
                 {day}
               </p>
@@ -371,7 +375,7 @@ export default function LunarCalendarPage({
 
           {loading ? (
             <div className="rounded-[24px] bg-earth-50 px-4 py-8 text-center text-sm text-earth-600">
-              Cargando calendario...
+              {t('lunarCalendar.loading')}
             </div>
           ) : (
             <div className={`grid grid-cols-7 gap-2 ${transitionClass}`}>
@@ -429,16 +433,16 @@ export default function LunarCalendarPage({
 
         {selectedDay ? (
           <section className={`space-y-4 reward-bloom ${insightTransitionClass}`}>
-            <SectionHeader eyebrow="🌙 Día elegido" title={selectedDay.displayName} />
+            <SectionHeader eyebrow={t('lunarCalendar.selectedEyebrow')} title={selectedDay.displayName} />
 
             <AppCard className="bg-[linear-gradient(160deg,_rgba(255,255,255,0.98)_0%,_rgba(246,242,233,0.98)_100%)]">
               <p className="text-sm leading-6 text-earth-700">
-                {dayInsight?.message || buildInterpretation(selectedDay)}
+                {dayInsight?.message || buildInterpretation(selectedDay, t)}
               </p>
             </AppCard>
 
             <AppCard className="bg-white/92">
-              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-earth-500">Hoy puedes hacer</p>
+              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-earth-500">{t('lunarCalendar.actionsEyebrow')}</p>
               <div className="mt-3 space-y-2">
                 {selectedActivities.map((activity, index) => (
                   <div key={`${activity}-${index}`} className="flex items-start gap-3 rounded-[20px] bg-earth-50 px-3 py-3">
@@ -451,7 +455,7 @@ export default function LunarCalendarPage({
 
             {avoidActions.length ? (
               <AppCard className="bg-white/92">
-                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-earth-500">Hoy mejor evita</p>
+                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-earth-500">{t('lunarCalendar.avoidEyebrow')}</p>
                 <div className="mt-3 flex flex-wrap gap-2">
                   {avoidActions.map((item, index) => (
                     <span
@@ -467,7 +471,7 @@ export default function LunarCalendarPage({
             ) : null}
 
             <AppCard className="bg-white/92">
-              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-earth-500">Recomendado hoy</p>
+              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-earth-500">{t('lunarCalendar.cropsEyebrow')}</p>
               <div className="mt-3 flex flex-wrap gap-2">
                 {recommendedCrops.map((crop, index) => (
                   <span
@@ -478,6 +482,9 @@ export default function LunarCalendarPage({
                     {crop}
                   </span>
                 ))}
+                {!recommendedCrops.length ? (
+                  <p className="text-sm leading-6 text-earth-700">{t('lunarCalendar.noCrops')}</p>
+                ) : null}
               </div>
             </AppCard>
           </section>

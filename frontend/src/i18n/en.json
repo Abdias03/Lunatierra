@@ -2,6 +2,16 @@
   "app": {
     "greeting": "Hello"
   },
+  "common": {
+    "back": "Back"
+  },
+  "assistant": {
+    "defaultMessage": "Hi, I'm Luno 🌱",
+    "checkedToday": "You're doing great, keep it up"
+  },
+  "achievements": {
+    "unlocked": "🏆 Achievement unlocked"
+  },
   "nav": {
     "home": "Home",
     "crops": "Crops",
@@ -41,7 +51,7 @@
     "fallbackSoilAction": "Check the soil moisture near the base",
     "fallbackWeedsAction": "Remove nearby weeds before they spread",
     "reviewed": "✔ I checked it",
-    "reviewedDone": "✔ I cared for my crop",
+    "reviewedDone": "✔ Well done",
     "reviewing": "Saving today's check",
     "rewardMessage": "Nice work 🌱"
   },
@@ -75,6 +85,16 @@
     "rainChance": "{{value}}% chance of rain",
     "temperature": "{{condition}}, {{value}}°C"
   },
+  "lunarPhases": {
+    "New Moon": "New Moon",
+    "Waxing Crescent": "Waxing Crescent",
+    "First Quarter": "First Quarter",
+    "Waxing Gibbous": "Waxing Gibbous",
+    "Full Moon": "Full Moon",
+    "Waning Gibbous": "Waning Gibbous",
+    "Last Quarter": "Last Quarter",
+    "Waning Crescent": "Waning Crescent"
+  },
   "recommendations": {
     "title": "Recommendations",
     "subtitle": "Simple actions for today",
@@ -101,7 +121,10 @@
     "empty": "There are no crops yet. Add one and we'll start tracking it.",
     "plantedOn": "Planted on {{date}} | {{days}} days ago",
     "waterReady": "Water ready",
-    "lowWater": "Low water"
+    "lowWater": "Low water",
+    "currentOrder": "Current order",
+    "sortDesc": "Highest to lowest",
+    "sortAsc": "Lowest to highest"
   },
   "crop": {
     "stage": "Current stage",
@@ -148,5 +171,168 @@
     "saveCrop": "I couldn't save that crop. Check the date and try again.",
     "questionUnavailable": "The question helper is not available right now.",
     "dailyReview": "I couldn't save today's check. Please try again."
+  },
+  "reminders": {
+    "plantWaiting": "Your plant is waiting for you today 🌱",
+    "plantRisk": "Your plant might be at risk ⚠️",
+    "plantAttention": "Your plant needs attention 👀",
+    "todayTouch": "Today",
+    "softRisk": "Soft risk"
+  },
+  "onboarding": {
+    "moonPhase": "Today the moon is in",
+    "goodTime": "Today might be a good time to start 🌱",
+    "started": "Your crop has started 🚀"
+  },
+  "login": {
+    "saveProgress": "Save your progress 🌱",
+    "saveProgressDesc": "Save your progress and access from any device",
+    "signIn": "Sign in",
+    "continueWithGoogle": "Continue with Google",
+    "photosSaved": "Your progress and photos are now saved 🌱",
+    "progressSaved": "Progress saved",
+    "googleError": "We couldn't sign you in with Google. Please try again."
+  },
+  "profile": {
+    "title": "Your profile",
+    "description": "Your progress is already saved so you can continue anywhere.",
+    "account": "Your account",
+    "logout": "Log out",
+    "avatarAlt": "Profile"
+  },
+  "growthLog": {
+    "eyeBrow": "GROWTH LOG",
+    "title": "Photo History",
+    "addPhoto": "Add Photo",
+    "uploading": "Uploading...",
+    "uploadError": "I couldn't save the photo. Try a lighter image.",
+    "delete": "Delete",
+    "deleting": "Deleting...",
+    "photoAlt": "Growth photo",
+    "noPhotos": "No photos yet. Add your first growth photo!",
+    "signInRequired": "Sign in to save growth photos in your account.",
+    "guestSingleCrop": "You can save photos without signing in for one crop on this device.",
+    "singleCropLimit": "Without signing in, you can only save photos for one crop. Use the same crop or sign in."
+  },
+  "weatherDetail": {
+    "headerEyebrow": "Today's weather",
+    "headerSubtitle": "Look at the weather and moon to decide better what to do today.",
+    "weatherEyebrow": "🌧️ Overview",
+    "weatherTitle": "Weather",
+    "temperature": "Temperature",
+    "humidity": "Humidity",
+    "rain": "Rain",
+    "interpretationEyebrow": "☀️ Simple reading",
+    "interpretationTitle": "Interpretation",
+    "lunarEyebrow": "🌙 Moon",
+    "lunarTitle": "Lunar",
+    "phase": "Phase",
+    "lunarEmpty": "Today, simply observe your crop calmly.",
+    "interpretation": {
+      "loading": "Today's weather is still updating. In a moment we'll tell you what to do.",
+      "rainHigh": "There is a high chance of rain today. Avoid applying pesticides.",
+      "dry": "The air feels dry today. Check soil moisture before watering.",
+      "cloudy": "The weather feels softer today. Take the chance to check your plant calmly.",
+      "stable": "The weather looks stable today. A light check will be enough."
+    }
+  },
+  "lunarCalendar": {
+    "headerEyebrow": "Lunar calendar",
+    "previousMonth": "Previous month",
+    "nextMonth": "Next month",
+    "loading": "Loading calendar...",
+    "loadError": "I couldn't load the lunar calendar.",
+    "selectedEyebrow": "🌙 Selected day",
+    "actionsEyebrow": "Today you can do",
+    "avoidEyebrow": "Better avoid today",
+    "cropsEyebrow": "Recommended today",
+    "todayCalm": "Today is good for calmly observing your crop.",
+    "todayInterpretation": "Today you can {{action}}.",
+    "phaseLegend": {
+      "full": "Full",
+      "waning": "Waning",
+      "new": "New",
+      "waxing": "Waxing"
+    },
+    "weekDays": ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"],
+    "noCrops": "Today it's better to focus on care and observation."
+  },
+  "achievement": {
+    "firstCare": "First care",
+    "threeDays": "3 days in a row",
+    "sevenDays": "7 days in a row",
+    "firstHealthyPlant": "First healthy plant"
+  },
+  "admin": {
+    "internal": "Internal panel",
+    "title": "Agricultural Admin",
+    "subtitle": "From here you can add new crops, stages, recommendations, and lunar activities without touching code.",
+    "loadError": "I couldn't load the agricultural panel.",
+    "cropSaved": "Crop added successfully.",
+    "cropSaveError": "I couldn't save the crop.",
+    "stageSaved": "Stage added successfully.",
+    "stageSaveError": "I couldn't save the stage.",
+    "recommendationSaved": "Recommendation added successfully.",
+    "recommendationSaveError": "I couldn't save the recommendation.",
+    "lunarSaved": "Lunar activity added successfully.",
+    "lunarSaveError": "I couldn't save the lunar activity.",
+    "stats": {
+      "users": "Users",
+      "activeToday": "Active today",
+      "activeWeek": "Active 7 days",
+      "crops": "Crops",
+      "stages": "Stages",
+      "rules": "Rules",
+      "lunar": "Moon"
+    },
+    "catalogEyebrow": "Catalog",
+    "newCrop": "New crop",
+    "code": "Code",
+    "displayName": "Display name",
+    "type": "Type",
+    "description": "Description",
+    "save": "Saving...",
+    "addCrop": "Add crop",
+    "stagesEyebrow": "Stages",
+    "newStage": "New stage",
+    "crop": "Crop",
+    "selectCrop": "Select a crop",
+    "stageName": "Stage name",
+    "minDay": "Minimum day",
+    "maxDay": "Maximum day",
+    "addStage": "Add stage",
+    "rulesEyebrow": "Rules",
+    "newRecommendation": "New recommendation",
+    "general": "General",
+    "allStages": "All stages",
+    "condition": "Condition",
+    "message": "Message",
+    "priority": "Priority",
+    "version": "Version",
+    "active": "Active",
+    "yes": "Yes",
+    "no": "No",
+    "addRecommendation": "Add recommendation",
+    "moonEyebrow": "Moon",
+    "newLunar": "New lunar activity",
+    "moonPhase": "Lunar phase",
+    "suggestedActivity": "Suggested activity",
+    "addLunar": "Add lunar activity",
+    "usersEyebrow": "Users",
+    "activeUsers": "Active users",
+    "noEmail": "No email yet",
+    "noActivity": "no activity",
+    "streakLine": "Streak: {{count}} · Last check: {{date}}",
+    "emptyUsers": "There are no active users to show yet.",
+    "currentCatalog": "Current catalog",
+    "registeredCrops": "Registered crops",
+    "noDescription": "No description",
+    "savedStages": "Saved stages",
+    "quickView": "Quick view",
+    "daysRange": "Days {{min}}-{{max}}",
+    "savedRules": "Saved rules",
+    "recommendations": "Recommendations",
+    "lunarCalendar": "Lunar calendar",
+    "registeredActivities": "Registered activities"
   }
 }

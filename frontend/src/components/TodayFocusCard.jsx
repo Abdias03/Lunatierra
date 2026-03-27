@@ -120,7 +120,7 @@ export default function TodayFocusCard({ crop, cropDetail, recommendationData, p
     () => buildActions(crop, cropDetail, recommendationData, fallbackActions),
     [crop, cropDetail, recommendationData, fallbackActions]
   );
-  const cropName = crop?.cropDisplayName || t(`crop.names.${crop?.cropName}`, crop?.cropName || '');
+  const cropName = crop?.cropDisplayName || crop?.cropName || '';
   const streakCount = recommendationData?.dailyProgress?.streakCount ?? 0;
   const reviewed = Boolean(recommendationData?.dailyProgress?.checkedToday);
   const streakLabel = t('today.streak', { count: streakCount });

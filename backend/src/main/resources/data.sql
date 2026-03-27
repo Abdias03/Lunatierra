@@ -1,66 +1,87 @@
 INSERT INTO users (id, name, streak_count, last_check_date) VALUES
     (1, 'Farmer Demo', 0, NULL)
-ON CONFLICT (id) DO NOTHING;
+ON CONFLICT (id) DO UPDATE SET
+    name = EXCLUDED.name,
+    streak_count = EXCLUDED.streak_count,
+    last_check_date = EXCLUDED.last_check_date;
 
-INSERT INTO regions (id, name, climate_type) VALUES
-    (1, 'Altiplano Central', 'templado-seco'),
-    (2, 'Golfo Húmedo', 'cálido-húmedo')
-ON CONFLICT (id) DO NOTHING;
+INSERT INTO regions (name, climate_type) VALUES
+    ('Altiplano Central', 'templado-seco'),
+    ('Golfo Humedo', 'calido-humedo')
+ON CONFLICT (name) DO UPDATE SET
+    climate_type = EXCLUDED.climate_type;
 
-INSERT INTO crops (id, code, name, type, description) VALUES
-    (1, 'CORN', 'Maíz', 'ANNUAL', 'Maíz de ciclo anual para manejo diario.'),
-    (2, 'BEANS', 'Frijol', 'ANNUAL', 'Frijol de ciclo corto con seguimiento por etapa.'),
-    (3, 'SQUASH', 'Calabaza', 'ANNUAL', 'Calabaza de desarrollo rastrero y fruto visible.')
-ON CONFLICT (id) DO NOTHING;
+INSERT INTO crops (code, name, type, description) VALUES
+    ('CORN', 'Maiz', 'ANNUAL', 'Maiz de ciclo anual para manejo diario.'),
+    ('BEANS', 'Frijol', 'ANNUAL', 'Frijol de ciclo corto con seguimiento por etapa.'),
+    ('SQUASH', 'Calabaza', 'ANNUAL', 'Calabaza de desarrollo rastrero y fruto visible.')
+ON CONFLICT (code) DO UPDATE SET
+    name = EXCLUDED.name,
+    type = EXCLUDED.type,
+    description = EXCLUDED.description;
 
 INSERT INTO crop_stages (id, crop_id, name, min_day, max_day, description) VALUES
-    (1, 1, 'Germinación', 0, 7, 'La semilla debe brotar si el suelo conserva buena humedad.'),
-    (2, 1, 'Crecimiento inicial', 8, 25, 'Deben salir las primeras hojas y el tallo debe empezar a agarrar fuerza.'),
-    (3, 1, 'Vegetativo', 26, 50, 'La planta debe crecer pareja, con hojas verdes y buen vigor.'),
-    (4, 1, 'Floración', 51, 70, 'Observa espiga y jilote. El cultivo necesita humedad pareja.'),
-    (5, 1, 'Formación de mazorca', 71, 90, 'La mazorca debe empezar a llenarse. Revisa fuerza de la planta y color de hojas.'),
-    (6, 1, 'Maduración', 91, 9999, 'La mazorca debe endurecerse y secarse poco a poco para la cosecha.'),
-    (7, 2, 'Germinación', 0, 5, 'La semilla debe salir pareja si la humedad del suelo es suficiente.'),
-    (8, 2, 'Crecimiento inicial', 6, 20, 'Deben abrirse las primeras hojas y el tallo debe fortalecerse.'),
-    (9, 2, 'Vegetativo', 21, 40, 'La planta debe ramificarse y mantener un verde sano.'),
-    (10, 2, 'Floración', 41, 55, 'Empiezan a salir flores. Evita estresar el cultivo.'),
-    (11, 2, 'Formación de vainas', 56, 75, 'Las vainas deben empezar a llenarse. Observa plagas y crecimiento disparejo.'),
-    (12, 2, 'Maduración', 76, 9999, 'Las vainas deben secarse y madurar para la cosecha.'),
-    (13, 3, 'Germinación', 0, 7, 'La semilla debe emerger rápido si hay calor y humedad ligera.'),
-    (14, 3, 'Crecimiento inicial', 8, 20, 'Las primeras hojas deben abrirse y la base debe fortalecerse.'),
-    (15, 3, 'Desarrollo de guías', 21, 40, 'Las guías deben alargarse y cubrir más espacio.'),
-    (16, 3, 'Floración', 41, 60, 'Deben aparecer flores y la polinización se vuelve clave.'),
-    (17, 3, 'Desarrollo del fruto', 61, 90, 'El fruto debe empezar a engordar. Mantén humedad constante.'),
-    (18, 3, 'Maduración', 91, 9999, 'El fruto debe ponerse firme y tomar su color final.')
-ON CONFLICT (id) DO NOTHING;
+    (1, (SELECT id FROM crops WHERE code = 'CORN'), 'Germinacion', 0, 7, 'La semilla debe brotar si el suelo conserva buena humedad.'),
+    (2, (SELECT id FROM crops WHERE code = 'CORN'), 'Crecimiento inicial', 8, 25, 'Deben salir las primeras hojas y el tallo debe empezar a agarrar fuerza.'),
+    (3, (SELECT id FROM crops WHERE code = 'CORN'), 'Vegetativo', 26, 50, 'La planta debe crecer pareja, con hojas verdes y buen vigor.'),
+    (4, (SELECT id FROM crops WHERE code = 'CORN'), 'Floracion', 51, 70, 'Observa espiga y jilote. El cultivo necesita humedad pareja.'),
+    (5, (SELECT id FROM crops WHERE code = 'CORN'), 'Formacion de mazorca', 71, 90, 'La mazorca debe empezar a llenarse. Revisa fuerza de la planta y color de hojas.'),
+    (6, (SELECT id FROM crops WHERE code = 'CORN'), 'Maduracion', 91, 9999, 'La mazorca debe endurecerse y secarse poco a poco para la cosecha.'),
+    (7, (SELECT id FROM crops WHERE code = 'BEANS'), 'Germinacion', 0, 5, 'La semilla debe salir pareja si la humedad del suelo es suficiente.'),
+    (8, (SELECT id FROM crops WHERE code = 'BEANS'), 'Crecimiento inicial', 6, 20, 'Deben abrirse las primeras hojas y el tallo debe fortalecerse.'),
+    (9, (SELECT id FROM crops WHERE code = 'BEANS'), 'Vegetativo', 21, 40, 'La planta debe ramificarse y mantener un verde sano.'),
+    (10, (SELECT id FROM crops WHERE code = 'BEANS'), 'Floracion', 41, 55, 'Empiezan a salir flores. Evita estresar el cultivo.'),
+    (11, (SELECT id FROM crops WHERE code = 'BEANS'), 'Formacion de vainas', 56, 75, 'Las vainas deben empezar a llenarse. Observa plagas y crecimiento disparejo.'),
+    (12, (SELECT id FROM crops WHERE code = 'BEANS'), 'Maduracion', 76, 9999, 'Las vainas deben secarse y madurar para la cosecha.'),
+    (13, (SELECT id FROM crops WHERE code = 'SQUASH'), 'Germinacion', 0, 7, 'La semilla debe emerger rapido si hay calor y humedad ligera.'),
+    (14, (SELECT id FROM crops WHERE code = 'SQUASH'), 'Crecimiento inicial', 8, 20, 'Las primeras hojas deben abrirse y la base debe fortalecerse.'),
+    (15, (SELECT id FROM crops WHERE code = 'SQUASH'), 'Desarrollo de guias', 21, 40, 'Las guias deben alargarse y cubrir mas espacio.'),
+    (16, (SELECT id FROM crops WHERE code = 'SQUASH'), 'Floracion', 41, 60, 'Deben aparecer flores y la polinizacion se vuelve clave.'),
+    (17, (SELECT id FROM crops WHERE code = 'SQUASH'), 'Desarrollo del fruto', 61, 90, 'El fruto debe empezar a engordar. Manten humedad constante.'),
+    (18, (SELECT id FROM crops WHERE code = 'SQUASH'), 'Maduracion', 91, 9999, 'El fruto debe ponerse firme y tomar su color final.')
+ON CONFLICT (id) DO UPDATE SET
+    crop_id = EXCLUDED.crop_id,
+    name = EXCLUDED.name,
+    min_day = EXCLUDED.min_day,
+    max_day = EXCLUDED.max_day,
+    description = EXCLUDED.description;
 
 INSERT INTO recommendations (id, crop_id, stage_id, condition, type, message, priority, version, active, region_id) VALUES
-    (1, 1, 1, 'ANY', 'ACTION', 'Espera humedad pareja antes de mover la tierra.', 1, 1, true, NULL),
-    (2, 1, 1, 'ANY', 'OBSERVATION', 'Revisa si el brote sale parejo y si la tierra conserva humedad.', 2, 1, true, NULL),
-    (3, 1, 2, 'ANY', 'ACTION', 'Si la planta se ve floja, puedes dar un abono orgánico ligero.', 1, 1, true, NULL),
-    (4, 1, 2, 'ANY', 'OBSERVATION', 'Observa color de hojas nuevas y fuerza del tallo.', 2, 1, true, NULL),
-    (5, 1, 4, 'ANY', 'ACTION', 'Conserva humedad estable y evita trabajos bruscos alrededor de la planta.', 1, 1, true, NULL),
-    (6, 1, 6, 'ANY', 'ACTION', 'Prepara la cosecha y deja que la mazorca termine de secarse en la planta.', 1, 1, true, NULL),
-    (7, 2, 7, 'ANY', 'ACTION', 'Revisa que la salida sea pareja y mantén la tierra suelta.', 1, 1, true, NULL),
-    (8, 2, 10, 'ANY', 'ACTION', 'Evita estresar el cultivo mientras van abriendo las flores.', 1, 1, true, NULL),
-    (9, 2, 10, 'ANY', 'OBSERVATION', 'Mira si la flor abre bien y si hay presencia de insectos.', 2, 1, true, NULL),
-    (10, 2, 12, 'ANY', 'ACTION', 'Prepara la recolección y deja que las vainas maduren bien.', 1, 1, true, NULL),
-    (11, 3, 13, 'ANY', 'ACTION', 'Mantén humedad ligera y evita apretar la tierra.', 1, 1, true, NULL),
-    (12, 3, 15, 'ANY', 'ACTION', 'Acomoda las guías y deja espacio para que crezcan sanas.', 1, 1, true, NULL),
-    (13, 3, 17, 'ANY', 'ACTION', 'Mantén humedad constante para que el fruto engorde bien.', 1, 1, true, NULL),
-    (14, 3, 18, 'ANY', 'ACTION', 'Revisa la firmeza del fruto y alista la cosecha.', 1, 1, true, NULL),
+    (1, (SELECT id FROM crops WHERE code = 'CORN'), 1, 'ANY', 'ACTION', 'Espera humedad pareja antes de mover la tierra.', 1, 1, true, NULL),
+    (2, (SELECT id FROM crops WHERE code = 'CORN'), 1, 'ANY', 'OBSERVATION', 'Revisa si el brote sale parejo y si la tierra conserva humedad.', 2, 1, true, NULL),
+    (3, (SELECT id FROM crops WHERE code = 'CORN'), 2, 'ANY', 'ACTION', 'Si la planta se ve floja, puedes dar un abono organico ligero.', 1, 1, true, NULL),
+    (4, (SELECT id FROM crops WHERE code = 'CORN'), 2, 'ANY', 'OBSERVATION', 'Observa color de hojas nuevas y fuerza del tallo.', 2, 1, true, NULL),
+    (5, (SELECT id FROM crops WHERE code = 'CORN'), 4, 'ANY', 'ACTION', 'Conserva humedad estable y evita trabajos bruscos alrededor de la planta.', 1, 1, true, NULL),
+    (6, (SELECT id FROM crops WHERE code = 'CORN'), 6, 'ANY', 'ACTION', 'Prepara la cosecha y deja que la mazorca termine de secarse en la planta.', 1, 1, true, NULL),
+    (7, (SELECT id FROM crops WHERE code = 'BEANS'), 7, 'ANY', 'ACTION', 'Revisa que la salida sea pareja y manten la tierra suelta.', 1, 1, true, NULL),
+    (8, (SELECT id FROM crops WHERE code = 'BEANS'), 10, 'ANY', 'ACTION', 'Evita estresar el cultivo mientras van abriendo las flores.', 1, 1, true, NULL),
+    (9, (SELECT id FROM crops WHERE code = 'BEANS'), 10, 'ANY', 'OBSERVATION', 'Mira si la flor abre bien y si hay presencia de insectos.', 2, 1, true, NULL),
+    (10, (SELECT id FROM crops WHERE code = 'BEANS'), 12, 'ANY', 'ACTION', 'Prepara la recoleccion y deja que las vainas maduren bien.', 1, 1, true, NULL),
+    (11, (SELECT id FROM crops WHERE code = 'SQUASH'), 13, 'ANY', 'ACTION', 'Manten humedad ligera y evita apretar la tierra.', 1, 1, true, NULL),
+    (12, (SELECT id FROM crops WHERE code = 'SQUASH'), 15, 'ANY', 'ACTION', 'Acomoda las guias y deja espacio para que crezcan sanas.', 1, 1, true, NULL),
+    (13, (SELECT id FROM crops WHERE code = 'SQUASH'), 17, 'ANY', 'ACTION', 'Manten humedad constante para que el fruto engorde bien.', 1, 1, true, NULL),
+    (14, (SELECT id FROM crops WHERE code = 'SQUASH'), 18, 'ANY', 'ACTION', 'Revisa la firmeza del fruto y alista la cosecha.', 1, 1, true, NULL),
     (15, NULL, NULL, 'RAIN_HIGH', 'WARNING', 'Evita fumigar hoy, porque la lluvia puede reducir el efecto.', 1, 1, true, NULL),
     (16, NULL, NULL, 'RAIN_HIGH', 'WARNING', 'La lluvia fuerte puede lavar aplicaciones y subir el riesgo de enfermedad.', 2, 1, true, NULL),
     (17, NULL, NULL, 'DRY', 'WARNING', 'El terreno se siente seco. Revisa la humedad antes de hacer trabajo extra.', 1, 1, true, NULL),
     (18, NULL, NULL, 'LOW_WATER', 'WARNING', 'No hay suficiente agua disponible, prioriza riego.', 1, 1, true, NULL),
-    (19, 1, 4, 'RAIN_HIGH', 'WARNING', 'Con lluvia alta, evita aplicar productos foliares sobre el maíz.', 1, 1, true, NULL),
-    (20, 2, 10, 'RAIN_HIGH', 'WARNING', 'Con humedad y lluvia, vigila hongos en floración de frijol.', 1, 1, true, NULL),
-    (21, 3, 17, 'RAIN_HIGH', 'WARNING', 'Con lluvia alta, revisa hongos y manchas en hojas de calabaza.', 1, 1, true, NULL)
-ON CONFLICT (id) DO NOTHING;
+    (19, (SELECT id FROM crops WHERE code = 'CORN'), 4, 'RAIN_HIGH', 'WARNING', 'Con lluvia alta, evita aplicar productos foliares sobre el maiz.', 1, 1, true, NULL),
+    (20, (SELECT id FROM crops WHERE code = 'BEANS'), 10, 'RAIN_HIGH', 'WARNING', 'Con humedad y lluvia, vigila hongos en floracion de frijol.', 1, 1, true, NULL),
+    (21, (SELECT id FROM crops WHERE code = 'SQUASH'), 17, 'RAIN_HIGH', 'WARNING', 'Con lluvia alta, revisa hongos y manchas en hojas de calabaza.', 1, 1, true, NULL)
+ON CONFLICT (id) DO UPDATE SET
+    crop_id = EXCLUDED.crop_id,
+    stage_id = EXCLUDED.stage_id,
+    condition = EXCLUDED.condition,
+    type = EXCLUDED.type,
+    message = EXCLUDED.message,
+    priority = EXCLUDED.priority,
+    version = EXCLUDED.version,
+    active = EXCLUDED.active,
+    region_id = EXCLUDED.region_id;
 
 INSERT INTO lunar_activities (id, phase, activity) VALUES
     (1, 'NEW_MOON', 'Preparar la tierra'),
-    (2, 'NEW_MOON', 'Sembrar cultivos de raíz'),
+    (2, 'NEW_MOON', 'Sembrar cultivos de raiz'),
     (3, 'WAXING_CRESCENT', 'Sembrar nuevas semillas'),
     (4, 'WAXING_CRESCENT', 'Aplicar abono ligero'),
     (5, 'FIRST_QUARTER', 'Sembrar cultivos de hoja'),
@@ -75,7 +96,9 @@ INSERT INTO lunar_activities (id, phase, activity) VALUES
     (14, 'LAST_QUARTER', 'Limpiar el terreno'),
     (15, 'WANING_CRESCENT', 'Dejar descansar la tierra'),
     (16, 'WANING_CRESCENT', 'Planear el siguiente ciclo')
-ON CONFLICT (id) DO NOTHING;
+ON CONFLICT (id) DO UPDATE SET
+    phase = EXCLUDED.phase,
+    activity = EXCLUDED.activity;
 
 INSERT INTO planting_calendar (id, month, lunar_phase, crop_code) VALUES
     (1, 3, 'WAXING_CRESCENT', 'CORN'),
@@ -98,7 +121,10 @@ INSERT INTO planting_calendar (id, month, lunar_phase, crop_code) VALUES
     (18, 9, 'WAXING_CRESCENT', 'SQUASH'),
     (19, 10, 'WANING_CRESCENT', 'BEANS'),
     (20, 10, 'WANING_CRESCENT', 'SQUASH')
-ON CONFLICT (id) DO NOTHING;
+ON CONFLICT (id) DO UPDATE SET
+    month = EXCLUDED.month,
+    lunar_phase = EXCLUDED.lunar_phase,
+    crop_code = EXCLUDED.crop_code;
 
 SELECT setval('users_id_seq', (SELECT MAX(id) FROM users));
 SELECT setval('regions_id_seq', (SELECT MAX(id) FROM regions));

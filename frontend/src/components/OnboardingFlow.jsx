@@ -1,17 +1,11 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { fetchOnboardingRecommendation } from '../api';
 import OnboardingSuggestion from './OnboardingSuggestion';
-
-const cropOptions = [
-  { key: 'corn', label: 'Maíz', icon: '🌽' },
-  { key: 'beans', label: 'Frijol', icon: '🌱' },
-  { key: 'squash', label: 'Calabaza', icon: '🎃' }
-];
 
 function buildFirstActions(result, selectedCropKey) {
   const cropDetails = result?.recommendationResponse?.cropDetails || [];
   const crops = result?.cropData || [];
-  const createdCrop = crops.find((item) => item.cropName === selectedCropKey) || crops[0];
+  const createdCrop = crops.find((item) => String(item.cropName).toLowerCase() === String(selectedCropKey).toLowerCase()) || crops[0];
   const cropDetail = cropDetails.find((item) => item.cropId === createdCrop?.id);
   const generalRecommendations = result?.recommendationResponse?.recommendations || [];
 
@@ -23,9 +17,9 @@ function buildFirstActions(result, selectedCropKey) {
   ].filter(Boolean).filter((value, index, array) => array.indexOf(value) === index).slice(0, 3);
 }
 
-export default function OnboardingFlow({ onSetupComplete, onQuickStart, onFinish }) {
+export default function OnboardingFlow({ cropOptions = [], onSetupComplete, onQuickStart, onFinish }) {
   const [step, setStep] = useState(0);
-  const [selectedCrop, setSelectedCrop] = useState('corn');
+  const [selectedCrop, setSelectedCrop] = useState(cropOptions[0]?.code || '');
   const [plantingDate, setPlantingDate] = useState('');
   const [waterAvailable, setWaterAvailable] = useState(true);
   const [loading, setLoading] = useState(false);
@@ -33,6 +27,12 @@ export default function OnboardingFlow({ onSetupComplete, onQuickStart, onFinish
   const [error, setError] = useState('');
   const [recommendationLoading, setRecommendationLoading] = useState(false);
   const [recommendation, setRecommendation] = useState(null);
+
+  useEffect(() => {
+    if (!selectedCrop && cropOptions.length) {
+      setSelectedCrop(cropOptions[0].code);
+    }
+  }, [cropOptions, selectedCrop]);
 
   const firstActions = useMemo(
     () => buildFirstActions(setupResult, selectedCrop),
@@ -57,10 +57,10 @@ export default function OnboardingFlow({ onSetupComplete, onQuickStart, onFinish
     }
   };
 
-  const handleQuickStart = async (cropKey) => {
+  const handleQuickStart = async (cropCode) => {
     try {
       setRecommendationLoading(true);
-      await onQuickStart(cropKey);
+      await onQuickStart(cropCode);
     } catch {
       setError('No pude comenzar tu cultivo ahora. Intenta de nuevo.');
       setStep(2);
@@ -178,6 +178,7 @@ export default function OnboardingFlow({ onSetupComplete, onQuickStart, onFinish
         <OnboardingSuggestion
           recommendation={recommendation}
           loading={recommendationLoading}
+          cropOptions={cropOptions}
           onSelectCrop={handleQuickStart}
           onShowMore={() => setStep(3)}
         />
@@ -199,21 +200,21 @@ export default function OnboardingFlow({ onSetupComplete, onQuickStart, onFinish
         <section className="space-y-4">
           {cropOptions.map((crop) => (
             <button
-              key={crop.key}
+              key={crop.code}
               type="button"
-              onClick={() => setSelectedCrop(crop.key)}
+              onClick={() => setSelectedCrop(crop.code)}
               className={`w-full rounded-[28px] border px-5 py-5 text-left transition ${
-                selectedCrop === crop.key
+                selectedCrop === crop.code
                   ? 'border-leaf-500 bg-leaf-100 shadow-[0_18px_35px_rgba(100,145,63,0.14)]'
                   : 'border-white/70 bg-white/88'
               }`}
             >
               <div className="flex items-center justify-between gap-4">
                 <div>
-                  <p className="text-2xl font-semibold">{crop.label}</p>
+                  <p className="text-2xl font-semibold">{crop.displayName}</p>
                   <p className="mt-1 text-sm text-earth-600">Vamos a acompañarlo día a día.</p>
                 </div>
-                <span className="text-4xl">{crop.icon}</span>
+                <span className="text-4xl">🌱</span>
               </div>
             </button>
           ))}

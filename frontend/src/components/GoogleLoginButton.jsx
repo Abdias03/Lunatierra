@@ -1,4 +1,5 @@
 import { useEffect, useId } from 'react';
+import { loginWithGoogle, migrateLocalData } from '../api';
 
 export default function GoogleLoginButton({ onSuccess, onError, disabled = false }) {
   const buttonId = useId().replace(/:/g, '');
@@ -33,16 +34,15 @@ export default function GoogleLoginButton({ onSuccess, onError, disabled = false
 
         console.log('Decoded user:', user);
 
-        localStorage.removeItem('auth_token');
-        localStorage.removeItem('token');
-        localStorage.setItem('user', JSON.stringify({
-          email: user.email,
-          name: user.name,
-          picture: user.picture
-        }));
-
-        onSuccess?.({ user });
-        window.location.reload();
+        loginWithGoogle(response.credential)
+          .then(async (authResponse) => {
+            await migrateLocalData();
+            onSuccess?.(authResponse);
+          })
+          .catch((error) => {
+            console.error('Error completing backend Google login', error);
+            onError?.(error);
+          });
       } catch (error) {
         console.error('Error decoding credential', error);
         onError?.(error);

@@ -2,6 +2,16 @@
   "app": {
     "greeting": "Hola"
   },
+  "common": {
+    "back": "Volver"
+  },
+  "assistant": {
+    "defaultMessage": "Hola, soy Luno 🌱",
+    "checkedToday": "Vas muy bien, sigue así"
+  },
+  "achievements": {
+    "unlocked": "🏆 Logro desbloqueado"
+  },
   "nav": {
     "home": "Inicio",
     "crops": "Cultivos",
@@ -75,6 +85,16 @@
     "rainChance": "{{value}}% de probabilidad de lluvia",
     "temperature": "{{condition}}, {{value}}°C"
   },
+  "lunarPhases": {
+    "New Moon": "Luna nueva",
+    "Waxing Crescent": "Creciente",
+    "First Quarter": "Cuarto creciente",
+    "Waxing Gibbous": "Gibosa creciente",
+    "Full Moon": "Luna llena",
+    "Waning Gibbous": "Gibosa menguante",
+    "Last Quarter": "Cuarto menguante",
+    "Waning Crescent": "Menguante"
+  },
   "recommendations": {
     "title": "Recomendaciones",
     "subtitle": "Acciones simples para hoy",
@@ -101,7 +121,10 @@
     "empty": "Todavía no hay cultivos. Agrega uno y empezamos a acompañarlo.",
     "plantedOn": "Sembrado el {{date}} | hace {{days}} días",
     "waterReady": "Con agua",
-    "lowWater": "Poca agua"
+    "lowWater": "Poca agua",
+    "currentOrder": "Orden actual",
+    "sortDesc": "Mayor a menor",
+    "sortAsc": "Menor a mayor"
   },
   "crop": {
     "stage": "Etapa actual",
@@ -148,5 +171,168 @@
     "saveCrop": "No pude guardar ese cultivo. Revisa la fecha e inténtalo otra vez.",
     "questionUnavailable": "La ayuda rápida no está disponible en este momento.",
     "dailyReview": "No pude guardar la revisión de hoy. Inténtalo otra vez."
+  },
+  "reminders": {
+    "plantWaiting": "Tu planta te espera hoy 🌱",
+    "plantRisk": "Tu planta podría estar en riesgo ⚠️",
+    "plantAttention": "Tu planta necesita atención 👀",
+    "todayTouch": "Hoy toca",
+    "softRisk": "Riesgo leve"
+  },
+  "onboarding": {
+    "moonPhase": "Hoy la luna está en fase",
+    "goodTime": "Hoy puede ser un buen momento para empezar 🌱",
+    "started": "Tu cultivo ha comenzado 🚀"
+  },
+  "login": {
+    "saveProgress": "Guarda tu progreso 🌱",
+    "saveProgressDesc": "Guarda tu progreso y accede desde cualquier dispositivo",
+    "signIn": "Iniciar sesión",
+    "continueWithGoogle": "Continuar con Google",
+    "photosSaved": "Tu progreso y tus fotos ya están guardados 🌱",
+    "progressSaved": "Progreso guardado",
+    "googleError": "No pudimos iniciar con Google. Intenta de nuevo."
+  },
+  "profile": {
+    "title": "Tu perfil",
+    "description": "Tu avance ya está guardado para que sigas donde quieras.",
+    "account": "Tu cuenta",
+    "logout": "Cerrar sesión",
+    "avatarAlt": "Perfil"
+  },
+  "growthLog": {
+    "eyeBrow": "BITÁCORA DE CRECIMIENTO",
+    "title": "Historial de fotos",
+    "addPhoto": "Agregar foto",
+    "uploading": "Subiendo...",
+    "uploadError": "No pude guardar la foto. Intenta con una imagen más ligera.",
+    "delete": "Eliminar",
+    "deleting": "Eliminando...",
+    "photoAlt": "Foto de crecimiento",
+    "noPhotos": "Aún no hay fotos. Agrega tu primera foto de crecimiento.",
+    "signInRequired": "Inicia sesión para guardar fotos de crecimiento en tu cuenta.",
+    "guestSingleCrop": "Puedes guardar fotos sin iniciar sesión para un solo cultivo en este dispositivo.",
+    "singleCropLimit": "Sin iniciar sesión solo puedes guardar fotos para un cultivo. Usa el mismo cultivo o inicia sesión."
+  },
+  "weatherDetail": {
+    "headerEyebrow": "Clima de hoy",
+    "headerSubtitle": "Mira el clima y la luna para decidir mejor qué hacer hoy.",
+    "weatherEyebrow": "🌧️ Panorama",
+    "weatherTitle": "Clima",
+    "temperature": "Temperatura",
+    "humidity": "Humedad",
+    "rain": "Lluvia",
+    "interpretationEyebrow": "☀️ Lectura simple",
+    "interpretationTitle": "Interpretación",
+    "lunarEyebrow": "🌙 Luna",
+    "lunarTitle": "Lunar",
+    "phase": "Fase",
+    "lunarEmpty": "Hoy basta con observar tu cultivo con calma.",
+    "interpretation": {
+      "loading": "Hoy el clima se sigue actualizando. En un momento te diremos qué hacer.",
+      "rainHigh": "Hoy hay alta probabilidad de lluvia. Evita aplicar pesticidas.",
+      "dry": "Hoy el ambiente se siente seco. Revisa la humedad del suelo antes de regar.",
+      "cloudy": "Hoy el clima está más suave. Aprovecha para revisar tu planta con calma.",
+      "stable": "Hoy el clima se ve estable. Una revisión ligera será suficiente."
+    }
+  },
+  "lunarCalendar": {
+    "headerEyebrow": "Calendario lunar",
+    "previousMonth": "Mes anterior",
+    "nextMonth": "Mes siguiente",
+    "loading": "Cargando calendario...",
+    "loadError": "No pude cargar el calendario lunar.",
+    "selectedEyebrow": "🌙 Día elegido",
+    "actionsEyebrow": "Hoy puedes hacer",
+    "avoidEyebrow": "Hoy mejor evita",
+    "cropsEyebrow": "Recomendado hoy",
+    "todayCalm": "Hoy conviene mirar tu cultivo con calma.",
+    "todayInterpretation": "Hoy puedes {{action}}.",
+    "phaseLegend": {
+      "full": "Llena",
+      "waning": "Menguante",
+      "new": "Nueva",
+      "waxing": "Creciente"
+    },
+    "weekDays": ["LUN", "MAR", "MIÉ", "JUE", "VIE", "SÁB", "DOM"],
+    "noCrops": "Hoy es mejor enfocarte en el cuidado y la observación."
+  },
+  "achievement": {
+    "firstCare": "Primer cuidado",
+    "threeDays": "3 días seguidos",
+    "sevenDays": "7 días seguidos",
+    "firstHealthyPlant": "Primera planta sana"
+  },
+  "admin": {
+    "internal": "Panel interno",
+    "title": "Admin agrícola",
+    "subtitle": "Desde aquí puedes agregar nuevos cultivos, etapas, recomendaciones y actividades lunares sin tocar código.",
+    "loadError": "No pude cargar el panel agrícola.",
+    "cropSaved": "Cultivo agregado correctamente.",
+    "cropSaveError": "No pude guardar el cultivo.",
+    "stageSaved": "Etapa agregada correctamente.",
+    "stageSaveError": "No pude guardar la etapa.",
+    "recommendationSaved": "Recomendación agregada correctamente.",
+    "recommendationSaveError": "No pude guardar la recomendación.",
+    "lunarSaved": "Actividad lunar agregada correctamente.",
+    "lunarSaveError": "No pude guardar la actividad lunar.",
+    "stats": {
+      "users": "Usuarios",
+      "activeToday": "Activos hoy",
+      "activeWeek": "Activos 7 días",
+      "crops": "Cultivos",
+      "stages": "Etapas",
+      "rules": "Reglas",
+      "lunar": "Luna"
+    },
+    "catalogEyebrow": "Catálogo",
+    "newCrop": "Nuevo cultivo",
+    "code": "Código",
+    "displayName": "Nombre visible",
+    "type": "Tipo",
+    "description": "Descripción",
+    "save": "Guardando...",
+    "addCrop": "Agregar cultivo",
+    "stagesEyebrow": "Etapas",
+    "newStage": "Nueva etapa",
+    "crop": "Cultivo",
+    "selectCrop": "Selecciona un cultivo",
+    "stageName": "Nombre de la etapa",
+    "minDay": "Día mínimo",
+    "maxDay": "Día máximo",
+    "addStage": "Agregar etapa",
+    "rulesEyebrow": "Reglas",
+    "newRecommendation": "Nueva recomendación",
+    "general": "General",
+    "allStages": "Todas",
+    "condition": "Condición",
+    "message": "Mensaje",
+    "priority": "Prioridad",
+    "version": "Versión",
+    "active": "Activa",
+    "yes": "Sí",
+    "no": "No",
+    "addRecommendation": "Agregar recomendación",
+    "moonEyebrow": "Luna",
+    "newLunar": "Nueva actividad lunar",
+    "moonPhase": "Fase lunar",
+    "suggestedActivity": "Actividad sugerida",
+    "addLunar": "Agregar actividad lunar",
+    "usersEyebrow": "Usuarios",
+    "activeUsers": "Usuarios activos",
+    "noEmail": "Sin correo todavía",
+    "noActivity": "sin actividad",
+    "streakLine": "Racha: {{count}} · Última revisión: {{date}}",
+    "emptyUsers": "Todavía no hay usuarios activos para mostrar.",
+    "currentCatalog": "Catálogo actual",
+    "registeredCrops": "Cultivos registrados",
+    "noDescription": "Sin descripción",
+    "savedStages": "Etapas guardadas",
+    "quickView": "Vista rápida",
+    "daysRange": "Días {{min}}-{{max}}",
+    "savedRules": "Reglas guardadas",
+    "recommendations": "Recomendaciones",
+    "lunarCalendar": "Calendario lunar",
+    "registeredActivities": "Actividades registradas"
   }
 }

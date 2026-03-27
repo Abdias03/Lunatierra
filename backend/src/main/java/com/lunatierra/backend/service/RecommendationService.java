@@ -92,14 +92,14 @@ public class RecommendationService {
                     insight.warnings()
             ));
             items.add(new RecommendationItem(
-                    localizeCropName(crop.getCropName(), effectiveLocale),
+                    crop.getCropDisplayName(),
                     insight.actionToday(),
                     "info"
             ));
             if (growthStageMatchesHarvest(crop.getGrowthStage(), effectiveLocale)) {
                 items.add(new RecommendationItem(
                         message("recommendation.ready_harvest.title", effectiveLocale),
-                        message("recommendation.ready_harvest.message", effectiveLocale, localizeCropName(crop.getCropName(), effectiveLocale)),
+                        message("recommendation.ready_harvest.message", effectiveLocale, crop.getCropDisplayName()),
                         "success"
                 ));
             }
@@ -145,10 +145,6 @@ public class RecommendationService {
 
     private String message(String key, Locale locale, Object... args) {
         return messageSource.getMessage(key, args, key, locale);
-    }
-
-    private String localizeCropName(String cropName, Locale locale) {
-        return message("crop.name." + cropName.toLowerCase(Locale.ROOT), locale);
     }
 
     private boolean growthStageMatchesHarvest(String stageName, Locale locale) {

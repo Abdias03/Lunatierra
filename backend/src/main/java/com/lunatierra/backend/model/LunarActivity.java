@@ -17,6 +17,14 @@ public class LunarActivity {
     private String phase;
     private String activity;
 
+    public LunarActivity() {
+    }
+
+    public LunarActivity(String phase, String activity) {
+        this.phase = phase;
+        this.activity = activity;
+    }
+
     public Long getId() {
         return id;
     }
@@ -27,5 +35,13 @@ public class LunarActivity {
 
     public String getActivity() {
         return activity;
+    }
+
+    public void setPhase(String phase) {
+        this.phase = phase;
+    }
+
+    public void setActivity(String activity) {
+        this.activity = activity;
     }
 }
