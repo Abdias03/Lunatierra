@@ -21,3 +21,9 @@ Thumbs.db
 .env
 
 *.zip
+
+backend/target/
+*.jar
+
+node_modules/
+frontend/node_modules/
