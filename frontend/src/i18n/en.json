@@ -10,7 +10,7 @@
     "checkedToday": "You're doing great, keep it up"
   },
   "achievements": {
-    "unlocked": "🏆 Achievement unlocked"
+    "unlocked": "Achievement unlocked"
   },
   "nav": {
     "home": "Home",
@@ -21,6 +21,31 @@
   "home": {
     "welcome": "Your field is ready for today. Let's take a quick look together.",
     "moreActions": "More ideas for today"
+  },
+  "home": {
+    "section": {
+      "title": "Your field 🌱",
+      "subtitle": "How your crops are doing"
+    }
+  },
+  "mitzi": {
+    "message": "Mitzi is waiting for you 🐦",
+    "successMessage": "Well done 🎉",
+    "worriedMessage": "Your crop needs a review today",
+    "neutralMessage": "Check that the soil is moist 🌿",
+    "checkedAction": "✅ I checked it",
+    "checkedSuccess": "✔ Well done",
+    "viewDetail": "See details",
+    "action": "Review my crop"
+  },
+  "buttons": {
+    "review": "🌱 Review my crop",
+    "done": "✅ I checked it",
+    "details": "👀 See details"
+  },
+  "stats": {
+    "streak": "Streak",
+    "level": "Level"
   },
   "today": {
     "eyebrow": "TODAY",
@@ -46,18 +71,22 @@
       }
     },
     "actionsTitle": "Today you can do this:",
+    "levelValue": "Level {{value}}",
     "streak": "Streak: {{count}} days",
     "fallbackWaterAction": "Give light water if the soil feels dry",
     "fallbackSoilAction": "Check the soil moisture near the base",
     "fallbackWeedsAction": "Remove nearby weeds before they spread",
+    "reviewNow": "Review today",
     "reviewed": "✔ I checked it",
     "reviewedDone": "✔ Well done",
     "reviewing": "Saving today's check",
-    "rewardMessage": "Nice work 🌱"
+    "rewardMessage": "Nice work 🌱",
+    "missionComplete": "✔ Mission complete",
+    "quickCheck": "A quick check today is enough"
   },
   "highlight": {
     "eyebrow": "Today's focus",
-    "title": "What matters today?",
+    "title": "What matters today",
     "cta": "Open questions"
   },
   "summary": {
@@ -74,7 +103,7 @@
   },
   "dashboard": {
     "brand": "Lunatierra",
-    "title": "What should I do today?",
+    "title": "What should I do today",
     "subtitle": "Simple daily guidance for small farmers, based on stage, weather, and moon cycle.",
     "dailyFocus": "Today's focus",
     "moon": "Moon",
@@ -111,7 +140,7 @@
     "description": "Choose the crop, planting date, and water availability so the daily guidance feels more useful.",
     "crop": "Crop",
     "plantingDate": "Planting date",
-    "waterAvailable": "Do you have water available?",
+    "waterAvailable": "Do you have water available",
     "submit": "Save crop",
     "saving": "Saving..."
   },
@@ -145,7 +174,7 @@
     "helper": "Helper",
     "you": "You",
     "prompt": "Ask me something about your crop and I'll answer in a simple way.",
-    "placeholder": "Why are my leaves turning yellow?",
+    "placeholder": "Why are my leaves turning yellow",
     "submit": "Ask me something 🌱",
     "thinking": "Thinking..."
   },
@@ -174,7 +203,7 @@
   },
   "reminders": {
     "plantWaiting": "Your plant is waiting for you today 🌱",
-    "plantRisk": "Your plant might be at risk ⚠️",
+    "plantRisk": "Your plant might be at risk ",
     "plantAttention": "Your plant needs attention 👀",
     "todayTouch": "Today",
     "softRisk": "Soft risk"
@@ -212,17 +241,18 @@
     "noPhotos": "No photos yet. Add your first growth photo!",
     "signInRequired": "Sign in to save growth photos in your account.",
     "guestSingleCrop": "You can save photos without signing in for one crop on this device.",
-    "singleCropLimit": "Without signing in, you can only save photos for one crop. Use the same crop or sign in."
+    "singleCropLimit": "Without signing in, you can only save photos for one crop. Use the same crop or sign in.",
+    "authRequired": "Authentication required. Please sign in again."
   },
   "weatherDetail": {
     "headerEyebrow": "Today's weather",
     "headerSubtitle": "Look at the weather and moon to decide better what to do today.",
-    "weatherEyebrow": "🌧️ Overview",
+    "weatherEyebrow": " Overview",
     "weatherTitle": "Weather",
     "temperature": "Temperature",
     "humidity": "Humidity",
     "rain": "Rain",
-    "interpretationEyebrow": "☀️ Simple reading",
+    "interpretationEyebrow": "Simple reading",
     "interpretationTitle": "Interpretation",
     "lunarEyebrow": "🌙 Moon",
     "lunarTitle": "Lunar",
@@ -254,7 +284,15 @@
       "new": "New",
       "waxing": "Waxing"
     },
-    "weekDays": ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"],
+    "weekDays": [
+      "MON",
+      "TUE",
+      "WED",
+      "THU",
+      "FRI",
+      "SAT",
+      "SUN"
+    ],
     "noCrops": "Today it's better to focus on care and observation."
   },
   "achievement": {

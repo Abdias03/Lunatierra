@@ -70,8 +70,16 @@ public class Recommendation {
         return id;
     }
 
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     public Crop getCrop() {
         return crop;
+    }
+
+    public void setCrop(Crop crop) {
+        this.crop = crop;
     }
 
     public CropStage getStage() {
@@ -82,28 +90,56 @@ public class Recommendation {
         return condition;
     }
 
+    public void setCondition(String condition) {
+        this.condition = condition;
+    }
+
     public RecommendationType getType() {
         return type;
+    }
+
+    public void setType(RecommendationType type) {
+        this.type = type;
     }
 
     public String getMessage() {
         return message;
     }
 
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
     public Integer getPriority() {
         return priority;
+    }
+
+    public void setPriority(Integer priority) {
+        this.priority = priority;
     }
 
     public Integer getVersion() {
         return version;
     }
 
+    public void setVersion(Integer version) {
+        this.version = version;
+    }
+
     public Boolean getActive() {
         return active;
     }
 
+    public void setActive(Boolean active) {
+        this.active = active;
+    }
+
     public Region getRegion() {
         return region;
+    }
+
+    public void setRegion(Region region) {
+        this.region = region;
     }
 
     public void setStage(CropStage stage) {

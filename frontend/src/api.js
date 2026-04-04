@@ -1,13 +1,19 @@
 import i18n from './i18n';
+import { STORAGE_KEYS } from './constants/storageKeys';
 
-const GUEST_CROPS_KEY = 'guest_crops';
-const GUEST_LAST_CHECK_KEY = 'guest_last_check_date';
-const GUEST_STREAK_KEY = 'guest_streak_count';
-const GUEST_GROWTH_LOGS_KEY = 'guest_growth_logs';
-const GUEST_GROWTH_LOG_CROP_KEY = 'guest_growth_log_crop_id';
-const AUTH_TOKEN_KEY = 'auth_token';
-const LEGACY_TOKEN_KEY = 'token';
-const AUTH_USER_KEY = 'user';
+const {
+  GUEST_CROPS: GUEST_CROPS_KEY,
+  GUEST_LAST_CHECK: GUEST_LAST_CHECK_KEY,
+  GUEST_STREAK: GUEST_STREAK_KEY,
+  GUEST_GROWTH_LOGS: GUEST_GROWTH_LOGS_KEY,
+  GUEST_GROWTH_LOG_CROP: GUEST_GROWTH_LOG_CROP_KEY,
+  AUTH_TOKEN: AUTH_TOKEN_KEY,
+  LEGACY_AUTH_TOKEN: LEGACY_TOKEN_KEY,
+  AUTH_USER: AUTH_USER_KEY
+} = STORAGE_KEYS;
+const FORCE_BACKEND = true; // permite usar backend aunque sea guest
+const API_BASE_URL = import.meta.env.VITE_API_URL || '/api';
+
 
 const cropDisplayNames = {
   es: {
@@ -50,8 +56,7 @@ const stageDefinitions = {
 };
 
 function buildHeaders(headers = {}) {
-  return {
-    'Accept-Language': i18n.language || 'es',
+  return { 'Accept-Language': i18n.language || 'es',
     ...headers
   };
 }
@@ -91,7 +96,7 @@ export function getStoredUser() {
 }
 
 export function saveAuthSession(authResponse) {
-  if (!authResponse?.token) {
+  if (!authResponse.token) {
     return;
   }
 
@@ -121,6 +126,11 @@ function clearGuestGrowthLogs() {
 
 async function handleResponse(response) {
   if (!response.ok) {
+    if (response.status === 401) {
+      clearAuthSession();
+      throw new Error('Unauthorized: Please log in again');
+    }
+
     const message = await response.text();
     throw new Error(message || 'Request failed');
   }
@@ -156,9 +166,33 @@ function getGuestGrowthLogs() {
   }
 }
 
+function parsePlantingDate(dateText) {
+  if (!dateText || typeof dateText !== 'string') {
+    return null;
+  }
+  // Accept both pure date and full ISO datetime strings
+  const raw = dateText.trim();
+  let parsed = new Date(raw);
+
+  if (Number.isNaN(parsed.getTime())) {
+    const [datePart] = raw.split('T');
+    if (!datePart) return null;
+    parsed = new Date(`${datePart}T00:00:00`);
+    if (Number.isNaN(parsed.getTime())) {
+      return null;
+    }
+  }
+
+  return new Date(parsed.getFullYear(), parsed.getMonth(), parsed.getDate());
+}
+
 function daysSince(dateText) {
-  const planted = new Date(`${dateText}T00:00:00`);
-  const today = new Date(`${getTodayDate()}T00:00:00`);
+  const planted = parsePlantingDate(dateText);
+  if (!planted) {
+    console.warn('[daysSince]Invalid planting date:', dateText);
+    return 0;
+  }
+  const today = new Date(getTodayDate());
   return Math.max(0, Math.floor((today - planted) / (1000 * 60 * 60 * 24)));
 }
 
@@ -191,8 +225,7 @@ function normalizeCropName(cropName) {
 function findMatchingServerCrop(serverCrops, guestCrop) {
   const normalizedGuestCode = normalizeCropName(guestCrop.cropName);
 
-  return serverCrops.find((serverCrop) => (
-    normalizeCropName(serverCrop.cropName) === normalizedGuestCode
+  return serverCrops.find((serverCrop) => ( normalizeCropName(serverCrop.cropName) === normalizedGuestCode
       && serverCrop.plantingDate === guestCrop.plantingDate
   )) || null;
 }
@@ -233,24 +266,21 @@ async function migrateGuestGrowthLogs(serverCrops, guestCrops) {
     }
 
     guestPhotos.forEach((photo, index) => {
-      if (!photo?.imageUrl?.startsWith('data:')) {
+      if (!photo.imageUrl.startsWith('data:')) {
         return;
       }
 
-      uploadTasks.push(
-        dataUrlToFile(photo.imageUrl, `growth-log-${matchedServerCrop.id}-${index + 1}.jpg`)
+      uploadTasks.push( dataUrlToFile(photo.imageUrl, `growth-log-${matchedServerCrop.id}-${index + 1}.jpg`)
           .then((file) => uploadGrowthLogPhoto(matchedServerCrop.id, file, photo.description || ''))
       );
     });
   });
 
-  if (!uploadTasks.length) {
-    clearGuestGrowthLogs();
+  if (!uploadTasks.length) { clearGuestGrowthLogs();
     return;
   }
 
-  await Promise.all(uploadTasks);
-  clearGuestGrowthLogs();
+  await Promise.all(uploadTasks); clearGuestGrowthLogs();
 }
 
 function stageIndexFor(days, cropName) {
@@ -332,7 +362,7 @@ function buildGuestLunarActivities() {
 function buildGuestRecommendedCrops() {
   const month = new Date().getMonth() + 1;
   const lang = getLanguage();
-    const phase = buildGuestLunarPhase().toLowerCase();
+  const phase = buildGuestLunarPhase().toLowerCase();
 
   if (phase.includes('nueva') || phase.includes('new') || phase.includes('menguante') || phase.includes('waning')) {
     return month >= 3 && month <= 8 ? ['beans', 'squash'] : ['beans'];
@@ -431,11 +461,11 @@ function buildGuestRecommendations(crops) {
     ...buildGuestInsight(crop, weather)
   }));
   const recommendations = cropDetails.slice(0, 3).map((detail, index) => ({
-    title: crops[index]?.cropDisplayName || '',
+    title: crops[index].cropDisplayName || '',
     message: detail.actionToday,
     severity: 'info'
   }));
-  const dailyFocus = recommendations[0]?.message || (getLanguage() === 'es'
+  const dailyFocus = recommendations[0].message || (getLanguage() === 'es'
     ? 'Hoy basta con una revisión tranquila.'
     : 'A calm check is enough for today.');
 
@@ -501,8 +531,7 @@ export async function fetchAdminLunarActivities() {
 export async function createAdminCrop(payload) {
   const response = await fetch('/api/admin/crops', {
     method: 'POST',
-    headers: buildAuthHeaders({
-      'Content-Type': 'application/json'
+    headers: buildAuthHeaders({ 'Content-Type': 'application/json'
     }),
     body: JSON.stringify(payload)
   });
@@ -512,8 +541,7 @@ export async function createAdminCrop(payload) {
 export async function createAdminStage(payload) {
   const response = await fetch('/api/admin/stages', {
     method: 'POST',
-    headers: buildAuthHeaders({
-      'Content-Type': 'application/json'
+    headers: buildAuthHeaders({ 'Content-Type': 'application/json'
     }),
     body: JSON.stringify(payload)
   });
@@ -523,8 +551,7 @@ export async function createAdminStage(payload) {
 export async function createAdminRecommendation(payload) {
   const response = await fetch('/api/admin/recommendations', {
     method: 'POST',
-    headers: buildAuthHeaders({
-      'Content-Type': 'application/json'
+    headers: buildAuthHeaders({ 'Content-Type': 'application/json'
     }),
     body: JSON.stringify(payload)
   });
@@ -534,8 +561,7 @@ export async function createAdminRecommendation(payload) {
 export async function createAdminLunarActivity(payload) {
   const response = await fetch('/api/admin/lunar-activities', {
     method: 'POST',
-    headers: buildAuthHeaders({
-      'Content-Type': 'application/json'
+    headers: buildAuthHeaders({ 'Content-Type': 'application/json'
     }),
     body: JSON.stringify(payload)
   });
@@ -545,14 +571,12 @@ export async function createAdminLunarActivity(payload) {
 export async function loginWithGoogle(token) {
   const response = await fetch('/api/auth/google', {
     method: 'POST',
-    headers: buildHeaders({
-      'Content-Type': 'application/json'
+    headers: buildHeaders({ 'Content-Type': 'application/json'
     }),
     body: JSON.stringify({ token })
   });
 
-  const authResponse = await handleResponse(response);
-  saveAuthSession(authResponse);
+  const authResponse = await handleResponse(response); saveAuthSession(authResponse);
   return authResponse;
 }
 
@@ -567,8 +591,7 @@ export async function migrateLocalData() {
   if (guestCrops.length) {
     await fetch('/api/user/migrate', {
       method: 'POST',
-      headers: buildAuthHeaders({
-        'Content-Type': 'application/json'
+      headers: buildAuthHeaders({ 'Content-Type': 'application/json'
       }),
       body: JSON.stringify({
         crops: guestCrops.map((crop) => ({
@@ -585,8 +608,7 @@ export async function migrateLocalData() {
       headers: buildAuthHeaders()
     }).then(handleResponse);
 
-    await migrateGuestGrowthLogs(Array.isArray(serverCrops) ? serverCrops : [], guestCrops);
-    clearGuestData();
+    await migrateGuestGrowthLogs(Array.isArray(serverCrops) ? serverCrops : [], guestCrops); clearGuestData();
   } catch (error) {
     console.error('No se pudieron migrar las fotos locales al backend.', error);
   }
@@ -601,15 +623,13 @@ export async function createCrop(payload) {
       cropName: normalizedCode,
       plantingDate: payload.plantingDate,
       waterAvailable: payload.waterAvailable
-    };
-    setGuestCrops([...currentCrops, createdCrop]);
+    }; setGuestCrops([...currentCrops, createdCrop]);
     return buildGuestCrop(createdCrop, currentCrops.length);
   }
 
   const response = await fetch('/api/crops', {
     method: 'POST',
-    headers: buildAuthHeaders({
-      'Content-Type': 'application/json'
+    headers: buildAuthHeaders({ 'Content-Type': 'application/json'
     }),
     body: JSON.stringify(payload),
   });
@@ -662,7 +682,10 @@ export async function fetchLunarRecommendations() {
 }
 
 export async function fetchOnboardingRecommendation() {
-  if (isGuestMode()) {
+  const useGuestFallback = isGuestMode() && !FORCE_BACKEND;
+  console.log("Onboarding mode:", useGuestFallback ? "GUEST" : "BACKEND");
+ // MODO GUEST (solo si NO forzamos backend) -- isGuestMode()
+  if (useGuestFallback) {
     const lang = getLanguage();
     const phaseName = buildGuestLunarPhase();
     const recommendedCrops = buildGuestRecommendedCrops().slice(0, 2);
@@ -694,10 +717,33 @@ export async function fetchOnboardingRecommendation() {
     };
   }
 
-  const response = await fetch('/api/onboarding/recommendation', {
-    headers: buildAuthHeaders()
-  });
-  return handleResponse(response);
+  // MODO BACKEND (forzado o usuario autenticado)
+  try {
+    console.log("🚀 Calling backend /api/onboarding/recommendation");
+
+    const response = await fetch('/api/onboarding/recommendation', {
+      headers: buildHeaders() // sin necesidad de auth
+    });
+
+    const data = await handleResponse(response);
+
+    console.log("Backend response:", data);
+
+    return data;
+  } catch (error) {
+    console.error("Backend failed, fallback to guest mode:", error);
+
+    // fallback automático
+    const lang = getLanguage();
+    return {
+      lunarPhase: '',
+      message: lang === 'es'
+        ? 'No pudimos obtener recomendación, pero puedes elegir un cultivo.'
+        : 'We could not fetch recommendation, but you can choose a crop.',
+      recommendedCrops: ['corn', 'beans'], // fallback útil
+      actionType: 'plant'
+    };
+  }
 }
 
 export async function fetchLunarCalendar(month, year) {
@@ -839,8 +885,7 @@ export async function askQuestion(question) {
 
   const response = await fetch('/api/questions', {
     method: 'POST',
-    headers: buildAuthHeaders({
-      'Content-Type': 'application/json'
+    headers: buildAuthHeaders({ 'Content-Type': 'application/json'
     }),
     body: JSON.stringify({ question }),
   });

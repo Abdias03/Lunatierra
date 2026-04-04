@@ -1,12 +1,15 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { askQuestion, createCrop, fetchCrops, fetchRecommendations } from './api';
-import CropFormI18n from './components/CropFormI18n';
-import CropTrackingListI18n from './components/CropTrackingListI18n';
-import LanguageSwitcher from './components/LanguageSwitcher';
-import QuickQuestionI18n from './components/QuickQuestionI18n';
-import RecommendationListI18n from './components/RecommendationListI18n';
-import SectionCard from './components/SectionCard';
+import CropFormI18n from './components/cultivo/CropFormI18n';
+import CropTrackingListI18n from './components/cultivo/CropTrackingListI18n';
+import LanguageSwitcher from './components/shared/LanguageSwitcher';
+import QuickQuestionI18n from './components/question/QuickQuestionI18n';
+import RecommendationListI18n from './components/recommendation/RecommendationListI18n';
+import SectionCard from './components/shared/SectionCard';
+import { STORAGE_KEYS } from './constants/storageKeys';
+
+const { CROP_SORT_ORDER } = STORAGE_KEYS;
 
 function StatPill({ label, value }) {
   return (
@@ -25,52 +28,33 @@ export default function AppI18n() {
   const [asking, setAsking] = useState(false);
   const [answer, setAnswer] = useState('');
   const [error, setError] = useState('');
-  const [cropSortOrder, setCropSortOrder] = useState(() => localStorage.getItem('cropSortOrder') || 'DESC'); // Desc por defecto
+  const [cropSortOrder, setCropSortOrder] = useState(() => localStorage.getItem(CROP_SORT_ORDER) || 'DESC'); // Desc por defecto
 
   const loadData = async () => {
-    try {
-      setError('');
-      const [cropData, recommendationResponse] = await Promise.all([
-        fetchCrops(),
-        fetchRecommendations()
-      ]);
-      setCrops(cropData);
-      setRecommendationData(recommendationResponse);
-    } catch {
-      setError(t('errors.load'));
+    try { setError('');
+      const [cropData, recommendationResponse] = await Promise.all([ fetchCrops(), fetchRecommendations()
+      ]); setCrops(cropData); setRecommendationData(recommendationResponse);
+    } catch { setError(t('errors.load'));
     }
-  };
-
-  useEffect(() => {
-    loadData();
-  }, []);
-
-  useEffect(() => {
-    localStorage.setItem('cropSortOrder', cropSortOrder);
+  }; useEffect(() => { loadData();
+  }, []); useEffect(() => {
+    localStorage.setItem(CROP_SORT_ORDER, cropSortOrder);
   }, [cropSortOrder]);
 
   const handleCreateCrop = async (payload) => {
-    try {
-      setSavingCrop(true);
-      setError('');
+    try { setSavingCrop(true); setError('');
       await createCrop(payload);
       await loadData();
-    } catch {
-      setError(t('errors.saveCrop'));
-    } finally {
-      setSavingCrop(false);
+    } catch { setError(t('errors.saveCrop'));
+    } finally { setSavingCrop(false);
     }
   };
 
   const handleQuestion = async (question) => {
-    try {
-      setAsking(true);
-      const response = await askQuestion(question);
-      setAnswer(response.answer);
-    } catch {
-      setAnswer(t('errors.questionUnavailable'));
-    } finally {
-      setAsking(false);
+    try { setAsking(true);
+      const response = await askQuestion(question); setAnswer(response.answer);
+    } catch { setAnswer(t('errors.questionUnavailable'));
+    } finally { setAsking(false);
     }
   };
 
@@ -90,12 +74,12 @@ export default function AppI18n() {
           {recommendationData ? (
             <div className="mt-5 rounded-[28px] bg-white/10 p-4">
               <p className="text-xs font-semibold uppercase tracking-[0.2em] text-earth-100">{t('dashboard.dailyFocus')}</p>
-              <p className="mt-2 text-xl font-semibold">{recommendationData.dailyFocus}</p>
+              <p className="mt-2 text-xl font-semibold">{recommendationData?.dailyFocus}</p>
             </div>
           ) : null}
         </header>
 
-        {error ? <div className="rounded-2xl bg-rose-100 px-4 py-3 text-sm text-rose-700">{error}</div> : null}
+        {error  <div className="rounded-2xl bg-rose-100 px-4 py-3 text-sm text-rose-700">{error}</div> : null}
 
         <section className="grid grid-cols-2 gap-3">
           <StatPill label={t('dashboard.moon')} value={recommendationData?.lunarPhase ? t(`lunarPhases.${recommendationData.lunarPhase}`, { defaultValue: recommendationData.lunarPhase }) : t('dashboard.loading')} />
@@ -108,7 +92,7 @@ export default function AppI18n() {
         </section>
 
         <SectionCard title={t('recommendations.title')} subtitle={t('recommendations.subtitle')} icon="🌱">
-          <RecommendationListI18n items={recommendationData?.recommendations || []} />
+          <RecommendationListI18n items={recommendationData.recommendations || []} />
         </SectionCard>
 
         <SectionCard title={t('register.title')} subtitle={t('register.subtitle')} icon="📝">

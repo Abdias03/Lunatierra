@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Work+Sans:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2family=Fraunces:wght@600;700&family=Work+Sans:wght@400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -31,6 +31,38 @@ textarea {
 
 #root {
   min-height: 100vh;
+}
+
+@keyframes premiumCardRise {
+  0% {
+    opacity: 0;
+    transform: translateY(10px) scale(0.985);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.premium-card-rise {
+  animation: premiumCardRise 420ms ease-out;
+}
+
+@keyframes leafDrift {
+  0% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-4px) scale(1.03);
+  }
+  100% {
+    transform: translateY(0) scale(1);
+  }
+}
+
+.leaf-drift {
+  animation: leafDrift 3.8s ease-in-out infinite;
+  transform-origin: center bottom;
 }
 
 @keyframes floatPlant {
@@ -106,6 +138,98 @@ textarea {
 
 .reward-success {
   animation: rewardPulse 260ms ease-out 1;
+}
+
+@keyframes mitziBubbleEnter {
+  0% {
+    opacity: 0;
+    transform: translateY(12px) scale(0.96);
+  }
+  60% {
+    opacity: 1;
+    transform: translateY(-2px) scale(1.02);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.mitzi-bubble-enter {
+  animation: mitziBubbleEnter 280ms ease-out;
+}
+
+@keyframes petFloatSoft {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(-3px);
+  }
+}
+
+.pet-float-soft {
+  animation: petFloatSoft 2.6s ease-in-out infinite alternate;
+}
+
+@keyframes petBounceSoft {
+  0% {
+    transform: translateY(0) scale(1);
+  }
+  45% {
+    transform: translateY(-4px) scale(1.04);
+  }
+  100% {
+    transform: translateY(0) scale(1);
+  }
+}
+
+.pet-bounce-soft {
+  animation: petBounceSoft 540ms ease-out 1;
+}
+
+@keyframes petWorriedSoft {
+  0% {
+    transform: translateY(0);
+    opacity: 0.96;
+  }
+  100% {
+    transform: translateY(-2px);
+    opacity: 1;
+  }
+}
+
+.pet-worried-soft {
+  animation: petWorriedSoft 2.1s ease-in-out infinite alternate;
+}
+
+@keyframes wingFlutterSoft {
+  0% {
+    transform: translateY(0) rotate(0deg);
+  }
+  100% {
+    transform: translateY(-1px) rotate(-6deg);
+  }
+}
+
+.wing-flutter-soft {
+  animation: wingFlutterSoft 700ms ease-in-out infinite alternate;
+  transform-origin: center;
+}
+
+@keyframes mitziAuraPulse {
+  0% {
+    opacity: 0.7;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1.08);
+  }
+}
+
+.mitzi-aura-pulse {
+  animation: mitziAuraPulse 2.4s ease-in-out infinite alternate;
 }
 
 @keyframes successToastBloom {

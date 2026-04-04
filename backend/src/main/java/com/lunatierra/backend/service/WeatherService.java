@@ -65,7 +65,7 @@ public class WeatherService {
     private WeatherSummary fetchFromOpenMeteo(double latitude, double longitude, Locale locale)
             throws IOException, InterruptedException {
         String url = openMeteoBaseUrl + "/v1/forecast"
-                + "?latitude=" + encode(latitude)
+                + "latitude=" + encode(latitude)
                 + "&longitude=" + encode(longitude)
                 + "&current_weather=true"
                 + "&hourly=precipitation,temperature_2m,relativehumidity_2m"

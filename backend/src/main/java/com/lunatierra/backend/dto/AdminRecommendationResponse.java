@@ -1,19 +1,35 @@
 package com.lunatierra.backend.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
+@Schema(description = "Vista administrativa de una regla de recomendación.")
 public class AdminRecommendationResponse {
 
+    @Schema(description = "Identificador de la regla.", example = "51")
     private final Long id;
+    @Schema(description = "Identificador del cultivo asociado.", example = "1")
     private final Long cropId;
+    @Schema(description = "Nombre visible del cultivo.", example = "Maíz")
     private final String cropName;
+    @Schema(description = "Identificador de la etapa asociada.", example = "3")
     private final Long stageId;
+    @Schema(description = "Nombre visible de la etapa.", example = "Germinación")
     private final String stageName;
+    @Schema(description = "Condición disparadora.", example = "RAIN_HIGH")
     private final String condition;
+    @Schema(description = "Tipo de salida.", example = "WARNING")
     private final String type;
+    @Schema(description = "Mensaje que verá el usuario.", example = "Evita aplicar pesticidas hoy.")
     private final String message;
+    @Schema(description = "Prioridad de la regla.", example = "20")
     private final Integer priority;
+    @Schema(description = "Versión de la regla.", example = "1")
     private final Integer version;
+    @Schema(description = "Indica si la regla está activa.", example = "true")
     private final Boolean active;
+    @Schema(description = "Identificador de la región si aplica.", example = "2")
     private final Long regionId;
+    @Schema(description = "Nombre de la región si aplica.", example = "Guerrero Costa")
     private final String regionName;
 
     public AdminRecommendationResponse(Long id, Long cropId, String cropName, Long stageId, String stageName,

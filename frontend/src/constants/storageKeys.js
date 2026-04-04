@@ -1,0 +1,23 @@
+export const STORAGE_KEYS = {
+  LAST_CHECK_DATE: 'lunatierra-last-check-date',
+  REMINDER_DISMISSED_DATE: 'lunatierra-reminder-dismissed-date',
+  XP: 'lunatierra-xp',
+  ACHIEVEMENTS: 'lunatierra-achievements',
+  ONBOARDING_DONE: 'onboarding_completed',
+  ONBOARDING_LEGACY_DONE: 'lunatierra-onboarding-complete',
+  ONBOARDING_SUCCESS: 'lunatierra-onboarding-success',
+  LOGIN_SUCCESS: 'lunatierra-login-success',
+  MITZI_COMPLETION: 'lunatierra-mitzi-last-completion-time',
+  CROP_SORT_ORDER: 'cropSortOrder',
+  LANGUAGE: 'lunatierra-language',
+  LEGACY_LANGUAGE: 'i18nextLng',
+  AUTH_TOKEN: 'auth_token',
+  LEGACY_AUTH_TOKEN: 'token',
+  AUTH_USER: 'user',
+  GUEST_CROPS: 'guest_crops',
+  GUEST_LAST_CHECK: 'guest_last_check_date',
+  GUEST_STREAK: 'guest_streak_count',
+  GUEST_GROWTH_LOGS: 'guest_growth_logs',
+  GUEST_GROWTH_LOG_CROP: 'guest_growth_log_crop_id',
+  STAGE_PREFIX: 'lunatierra-stage-'
+};

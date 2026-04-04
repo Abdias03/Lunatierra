@@ -91,7 +91,7 @@ public class AIService {
     }
 
     private String buildPrompt(AIContext context) {
-        String warnings = context.getWarnings() == null || context.getWarnings().isEmpty()
+        String warnings = (context.getWarnings() == null || context.getWarnings().isEmpty())
                 ? "- No hay advertencias importantes hoy"
                 : context.getWarnings().stream()
                         .map(warning -> "- " + warning)
@@ -151,8 +151,8 @@ public class AIService {
         }
 
         String withoutMetaText = normalized
-                .replaceAll("(?i)^(claro|por supuesto|aqui tienes|respuesta:)\\s*[:,.-]*\\s*", "")
-                .replaceAll("(?i)\\b(como ia|no soy experto|te recomiendo consultar|segun expertos)\\b.*", "")
+                .replaceAll("(i)^(claro|por supuesto|aqui tienes|respuesta:)\\s*[:,.-]*\\s*", "")
+                .replaceAll("(i)\\b(como ia|no soy experto|te recomiendo consultar|segun expertos)\\b.*", "")
                 .trim();
 
         List<String> sentences = splitSentences(withoutMetaText);
@@ -178,7 +178,7 @@ public class AIService {
     }
 
     private List<String> splitSentences(String text) {
-        return List.of(text.split("(?<=[.!?])\\s+")).stream()
+        return List.of(text.split("(<=[.!])\\s+")).stream()
                 .map(String::trim)
                 .filter(sentence -> !sentence.isBlank())
                 .toList();
@@ -251,10 +251,10 @@ public class AIService {
     private String softenSentence(String source, boolean actionLine) {
         String cleaned = source.trim()
                 .replaceAll("\\s+", " ")
-                .replaceAll("(?i)^mant[eé]n\\b", "Mantén")
-                .replaceAll("(?i)^revisa\\b", "Revisa")
-                .replaceAll("(?i)^observa\\b", "Observa")
-                .replaceAll("(?i)^evita\\b", "Evita");
+                .replaceAll("(i)^mant[eé]n\\b", "Mantén")
+                .replaceAll("(i)^revisa\\b", "Revisa")
+                .replaceAll("(i)^observa\\b", "Observa")
+                .replaceAll("(i)^evita\\b", "Evita");
 
         if (actionLine) {
             return "Hoy " + lowercaseFirst(cleaned);

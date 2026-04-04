@@ -10,7 +10,7 @@
     "checkedToday": "Vas muy bien, sigue así"
   },
   "achievements": {
-    "unlocked": "🏆 Logro desbloqueado"
+    "unlocked": "Logro desbloqueado"
   },
   "nav": {
     "home": "Inicio",
@@ -21,6 +21,31 @@
   "home": {
     "welcome": "Tu parcela está lista para hoy. Vamos a verla juntos.",
     "moreActions": "Más ideas para hoy"
+  },
+  "home": {
+    "section": {
+      "title": "Tu parcela 🌱",
+      "subtitle": "Así van tus cultivos"
+    }
+  },
+  "mitzi": {
+    "message": "Mitzi te está esperando 🐦",
+    "successMessage": "Bien hecho 🎉",
+    "worriedMessage": "Tu cultivo necesita una revisión hoy",
+    "neutralMessage": "Revisa que la tierra siga húmeda 🌿",
+    "checkedAction": "✅ Ya revisé",
+    "checkedSuccess": "✔ Bien hecho",
+    "viewDetail": "Ver detalle",
+    "action": "Revisar cultivo hoy"
+  },
+  "buttons": {
+    "review": "🌱 Revisar mi cultivo",
+    "done": "✅ Ya revisé",
+    "details": "👀 Ver detalles"
+  },
+  "stats": {
+    "streak": "Racha",
+    "level": "Nivel"
   },
   "today": {
     "eyebrow": "HOY",
@@ -46,18 +71,22 @@
       }
     },
     "actionsTitle": "Hoy puedes hacer esto:",
+    "levelValue": "Nivel {{value}}",
     "streak": "Racha: {{count}} días",
     "fallbackWaterAction": "Dale un riego ligero si la tierra se siente seca",
     "fallbackSoilAction": "Revisa si la tierra sigue húmeda cerca de la planta",
     "fallbackWeedsAction": "Quita la maleza cercana antes de que avance",
+    "reviewNow": "Revisar hoy",
     "reviewed": "✔ Ya revisé",
     "reviewedDone": "✔ Bien hecho",
     "reviewing": "Guardando tu revisión de hoy",
-    "rewardMessage": "Buen trabajo 🌱"
+    "rewardMessage": "Buen trabajo 🌱",
+    "missionComplete": "✔ Misión completada",
+    "quickCheck": "Una revisión rápida hoy será suficiente"
   },
   "highlight": {
     "eyebrow": "Enfoque del día",
-    "title": "¿Qué importa hoy?",
+    "title": "¿Qué importa hoy",
     "cta": "Abrir preguntas"
   },
   "summary": {
@@ -74,7 +103,7 @@
   },
   "dashboard": {
     "brand": "Lunatierra",
-    "title": "¿Qué hago hoy?",
+    "title": "¿Qué hago hoy",
     "subtitle": "Una guía simple para acompañarte cada día con tu cultivo.",
     "dailyFocus": "Enfoque de hoy",
     "moon": "Luna",
@@ -111,7 +140,7 @@
     "description": "Elige el cultivo, la fecha de siembra y si tienes agua disponible para darte una guía más útil.",
     "crop": "Cultivo",
     "plantingDate": "Fecha de siembra",
-    "waterAvailable": "¿Tienes agua disponible?",
+    "waterAvailable": "¿Tienes agua disponible",
     "submit": "Guardar cultivo",
     "saving": "Guardando..."
   },
@@ -145,7 +174,7 @@
     "helper": "Ayuda",
     "you": "Tú",
     "prompt": "Pregúntame algo sobre tu cultivo y te responderé de forma simple.",
-    "placeholder": "¿Por qué mis hojas se ven amarillas?",
+    "placeholder": "¿Por qué mis hojas se ven amarillas",
     "submit": "Pregúntame algo 🌱",
     "thinking": "Pensando..."
   },
@@ -174,7 +203,7 @@
   },
   "reminders": {
     "plantWaiting": "Tu planta te espera hoy 🌱",
-    "plantRisk": "Tu planta podría estar en riesgo ⚠️",
+    "plantRisk": "Tu planta podra estar en riesgo ",
     "plantAttention": "Tu planta necesita atención 👀",
     "todayTouch": "Hoy toca",
     "softRisk": "Riesgo leve"
@@ -212,17 +241,18 @@
     "noPhotos": "Aún no hay fotos. Agrega tu primera foto de crecimiento.",
     "signInRequired": "Inicia sesión para guardar fotos de crecimiento en tu cuenta.",
     "guestSingleCrop": "Puedes guardar fotos sin iniciar sesión para un solo cultivo en este dispositivo.",
-    "singleCropLimit": "Sin iniciar sesión solo puedes guardar fotos para un cultivo. Usa el mismo cultivo o inicia sesión."
+    "singleCropLimit": "Sin iniciar sesión solo puedes guardar fotos para un cultivo. Usa el mismo cultivo o inicia sesión.",
+    "authRequired": "Se requiere autenticación. Por favor inicia sesión de nuevo."
   },
   "weatherDetail": {
     "headerEyebrow": "Clima de hoy",
     "headerSubtitle": "Mira el clima y la luna para decidir mejor qué hacer hoy.",
-    "weatherEyebrow": "🌧️ Panorama",
+    "weatherEyebrow": " Panorama",
     "weatherTitle": "Clima",
     "temperature": "Temperatura",
     "humidity": "Humedad",
     "rain": "Lluvia",
-    "interpretationEyebrow": "☀️ Lectura simple",
+    "interpretationEyebrow": "Lectura simple",
     "interpretationTitle": "Interpretación",
     "lunarEyebrow": "🌙 Luna",
     "lunarTitle": "Lunar",
@@ -254,7 +284,15 @@
       "new": "Nueva",
       "waxing": "Creciente"
     },
-    "weekDays": ["LUN", "MAR", "MIÉ", "JUE", "VIE", "SÁB", "DOM"],
+    "weekDays": [
+      "LUN",
+      "MAR",
+      "MIÉ",
+      "JUE",
+      "VIE",
+      "SÁB",
+      "DOM"
+    ],
     "noCrops": "Hoy es mejor enfocarte en el cuidado y la observación."
   },
   "achievement": {

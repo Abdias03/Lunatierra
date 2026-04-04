@@ -14,7 +14,8 @@ ON CONFLICT (name) DO UPDATE SET
 INSERT INTO crops (code, name, type, description) VALUES
     ('CORN', 'Maiz', 'ANNUAL', 'Maiz de ciclo anual para manejo diario.'),
     ('BEANS', 'Frijol', 'ANNUAL', 'Frijol de ciclo corto con seguimiento por etapa.'),
-    ('SQUASH', 'Calabaza', 'ANNUAL', 'Calabaza de desarrollo rastrero y fruto visible.')
+    ('SQUASH', 'Calabaza', 'ANNUAL', 'Calabaza de desarrollo rastrero y fruto visible.'),
+    ('JITOMATE', 'Jitomate', 'ANNUAL', 'Jitomate de mesa para seguimiento diario.')
 ON CONFLICT (code) DO UPDATE SET
     name = EXCLUDED.name,
     type = EXCLUDED.type,
@@ -38,7 +39,13 @@ INSERT INTO crop_stages (id, crop_id, name, min_day, max_day, description) VALUE
     (15, (SELECT id FROM crops WHERE code = 'SQUASH'), 'Desarrollo de guias', 21, 40, 'Las guias deben alargarse y cubrir mas espacio.'),
     (16, (SELECT id FROM crops WHERE code = 'SQUASH'), 'Floracion', 41, 60, 'Deben aparecer flores y la polinizacion se vuelve clave.'),
     (17, (SELECT id FROM crops WHERE code = 'SQUASH'), 'Desarrollo del fruto', 61, 90, 'El fruto debe empezar a engordar. Manten humedad constante.'),
-    (18, (SELECT id FROM crops WHERE code = 'SQUASH'), 'Maduracion', 91, 9999, 'El fruto debe ponerse firme y tomar su color final.')
+    (18, (SELECT id FROM crops WHERE code = 'SQUASH'), 'Maduracion', 91, 9999, 'El fruto debe ponerse firme y tomar su color final.'),
+    (19, (SELECT id FROM crops WHERE code = 'JITOMATE'), 'Germinacion', 0, 7, 'La semilla debe brotar si el suelo conserva buena humedad.'),
+    (20, (SELECT id FROM crops WHERE code = 'JITOMATE'), 'Crecimiento inicial', 8, 25, 'Deben salir las primeras hojas y el tallo debe empezar a agarrar fuerza.'),
+    (21, (SELECT id FROM crops WHERE code = 'JITOMATE'), 'Vegetativo', 26, 50, 'La planta debe crecer pareja, con hojas verdes y buen vigor.'),
+    (22, (SELECT id FROM crops WHERE code = 'JITOMATE'), 'Floracion', 51, 70, 'Observa la salida de flores. El cultivo necesita humedad pareja.'),
+    (23, (SELECT id FROM crops WHERE code = 'JITOMATE'), 'Formacion de fruto', 71, 90, 'Los frutos deben empezar a formarse. Revisa fuerza de la planta y color de hojas.'),
+    (24, (SELECT id FROM crops WHERE code = 'JITOMATE'), 'Maduracion', 91, 9999, 'Los frutos deben madurar para la cosecha.')
 ON CONFLICT (id) DO UPDATE SET
     crop_id = EXCLUDED.crop_id,
     name = EXCLUDED.name,
@@ -61,13 +68,17 @@ INSERT INTO recommendations (id, crop_id, stage_id, condition, type, message, pr
     (12, (SELECT id FROM crops WHERE code = 'SQUASH'), 15, 'ANY', 'ACTION', 'Acomoda las guias y deja espacio para que crezcan sanas.', 1, 1, true, NULL),
     (13, (SELECT id FROM crops WHERE code = 'SQUASH'), 17, 'ANY', 'ACTION', 'Manten humedad constante para que el fruto engorde bien.', 1, 1, true, NULL),
     (14, (SELECT id FROM crops WHERE code = 'SQUASH'), 18, 'ANY', 'ACTION', 'Revisa la firmeza del fruto y alista la cosecha.', 1, 1, true, NULL),
-    (15, NULL, NULL, 'RAIN_HIGH', 'WARNING', 'Evita fumigar hoy, porque la lluvia puede reducir el efecto.', 1, 1, true, NULL),
-    (16, NULL, NULL, 'RAIN_HIGH', 'WARNING', 'La lluvia fuerte puede lavar aplicaciones y subir el riesgo de enfermedad.', 2, 1, true, NULL),
-    (17, NULL, NULL, 'DRY', 'WARNING', 'El terreno se siente seco. Revisa la humedad antes de hacer trabajo extra.', 1, 1, true, NULL),
-    (18, NULL, NULL, 'LOW_WATER', 'WARNING', 'No hay suficiente agua disponible, prioriza riego.', 1, 1, true, NULL),
-    (19, (SELECT id FROM crops WHERE code = 'CORN'), 4, 'RAIN_HIGH', 'WARNING', 'Con lluvia alta, evita aplicar productos foliares sobre el maiz.', 1, 1, true, NULL),
-    (20, (SELECT id FROM crops WHERE code = 'BEANS'), 10, 'RAIN_HIGH', 'WARNING', 'Con humedad y lluvia, vigila hongos en floracion de frijol.', 1, 1, true, NULL),
-    (21, (SELECT id FROM crops WHERE code = 'SQUASH'), 17, 'RAIN_HIGH', 'WARNING', 'Con lluvia alta, revisa hongos y manchas en hojas de calabaza.', 1, 1, true, NULL)
+    (15, (SELECT id FROM crops WHERE code = 'JITOMATE'), 19, 'ANY', 'ACTION', 'Espera humedad pareja antes de mover la tierra.', 1, 1, true, NULL),
+    (16, (SELECT id FROM crops WHERE code = 'JITOMATE'), 19, 'ANY', 'OBSERVATION', 'Revisa si el brote sale parejo y si la tierra conserva humedad.', 2, 1, true, NULL),
+    (17, (SELECT id FROM crops WHERE code = 'JITOMATE'), 21, 'ANY', 'ACTION', 'Si la planta se ve floja, puedes dar un abono organico ligero.', 1, 1, true, NULL),
+    (18, (SELECT id FROM crops WHERE code = 'JITOMATE'), 21, 'ANY', 'OBSERVATION', 'Observa color de hojas nuevas y fuerza del tallo.', 2, 1, true, NULL),
+    (19, NULL, NULL, 'RAIN_HIGH', 'WARNING', 'Evita fumigar hoy, porque la lluvia puede reducir el efecto.', 1, 1, true, NULL),
+    (20, NULL, NULL, 'RAIN_HIGH', 'WARNING', 'La lluvia fuerte puede lavar aplicaciones y subir el riesgo de enfermedad.', 2, 1, true, NULL),
+    (21, NULL, NULL, 'DRY', 'WARNING', 'El terreno se siente seco. Revisa la humedad antes de hacer trabajo extra.', 1, 1, true, NULL),
+    (22, NULL, NULL, 'LOW_WATER', 'WARNING', 'No hay suficiente agua disponible, prioriza riego.', 1, 1, true, NULL),
+    (23, (SELECT id FROM crops WHERE code = 'CORN'), 4, 'RAIN_HIGH', 'WARNING', 'Con lluvia alta, evita aplicar productos foliares sobre el maiz.', 1, 1, true, NULL),
+    (24, (SELECT id FROM crops WHERE code = 'BEANS'), 10, 'RAIN_HIGH', 'WARNING', 'Con humedad y lluvia, vigila hongos en floracion de frijol.', 1, 1, true, NULL),
+    (25, (SELECT id FROM crops WHERE code = 'SQUASH'), 17, 'RAIN_HIGH', 'WARNING', 'Con lluvia alta, revisa hongos y manchas en hojas de calabaza.', 1, 1, true, NULL)
 ON CONFLICT (id) DO UPDATE SET
     crop_id = EXCLUDED.crop_id,
     stage_id = EXCLUDED.stage_id,

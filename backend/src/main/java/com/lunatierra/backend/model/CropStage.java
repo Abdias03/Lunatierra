@@ -49,23 +49,47 @@ public class CropStage {
         return id;
     }
 
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     public Crop getCrop() {
         return crop;
+    }
+
+    public void setCrop(Crop crop) {
+        this.crop = crop;
     }
 
     public String getName() {
         return name;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public String getDescription() {
         return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public int getMinDay() {
         return minDay;
     }
 
+    public void setMinDay(int minDay) {
+        this.minDay = minDay;
+    }
+
     public int getMaxDay() {
         return maxDay;
+    }
+
+    public void setMaxDay(int maxDay) {
+        this.maxDay = maxDay;
     }
 }

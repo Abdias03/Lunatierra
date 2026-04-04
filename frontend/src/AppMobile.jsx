@@ -1,41 +1,38 @@
-import { useEffect, useState } from 'react';
+﻿import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Route, Routes, useNavigate } from 'react-router-dom';
-import {
-  askQuestion,
-  checkInDaily,
-  clearAuthSession,
-  createCrop,
-  fetchCropCatalog,
-  fetchCrops,
-  fetchLunarPhase,
-  fetchRecommendations,
-  getStoredUser,
-  isGuestMode
-} from './api';
-import AppCard from './components/AppCard';
-import AssistantBubble from './components/AssistantBubble';
-import BottomNav from './components/BottomNav';
-import CropCard from './components/CropCard';
-import CropDetailPagePremium from './components/CropDetailPagePremium';
-import CropFormI18n from './components/CropFormI18n';
-import GoogleLoginButton from './components/GoogleLoginButton';
-import LanguageSwitcher from './components/LanguageSwitcher';
-import LunarCalendarPage from './components/LunarCalendarPage';
-import OnboardingFlow from './components/OnboardingFlow';
-import QuickQuestionI18n from './components/QuickQuestionI18n';
-import SectionHeader from './components/SectionHeader';
-import TodayFocusCard from './components/TodayFocusCard';
-import WeatherDetailPage from './components/WeatherDetailPage';
-import AdminAgricolaPage from './components/AdminAgricolaPage';
+import { askQuestion, checkInDaily, clearAuthSession, getStoredUser, isGuestMode } from './api';
+import { useCrops } from './hooks/useCrops';
+import { useWeather } from './hooks/useWeather';
+import { AppStoreProvider, useAppStore } from './store/useAppStore';
+import Card from './components/shared/Card';
+import BottomNav from './components/shared/BottomNav';
+import { STORAGE_KEYS } from './constants/storageKeys';
+import CropCard from './components/cultivo/CropCard';
+import CropDetailPagePremium from './components/cultivo/CropDetailPagePremium';
+import CropFormI18n from './components/cultivo/CropFormI18n';
+import FloatingMitziBubble from './components/assistant/FloatingMitziBubble';
+import GoogleLoginButton from './components/auth/GoogleLoginButton';
+import LunarCalendarPage from './components/lunar/LunarCalendarPage';
+import OnboardingFlow from './components/onboarding/OnboardingFlow';
+import QuickQuestionI18n from './components/question/QuickQuestionI18n';
+import SectionHeader from './components/shared/SectionHeader';
+import WeatherDetailPage from './components/weather/WeatherDetailPage';
+import AdminAgricolaPage from './components/admin/AdminAgricolaPage';
+import WeatherHighlightCard from './components/weather/WeatherHighlightCard';
 
-const LAST_CHECK_STORAGE_KEY = 'lunatierra-last-check-date';
-const REMINDER_DISMISSED_STORAGE_KEY = 'lunatierra-reminder-dismissed-date';
-const XP_STORAGE_KEY = 'lunatierra-xp';
-const ACHIEVEMENTS_STORAGE_KEY = 'lunatierra-achievements';
-const ONBOARDING_DONE_STORAGE_KEY = 'onboarding_completed';
-const ONBOARDING_SUCCESS_KEY = 'lunatierra-onboarding-success';
-const LOGIN_SUCCESS_KEY = 'lunatierra-login-success';
+const {
+  LAST_CHECK_DATE: LAST_CHECK_STORAGE_KEY,
+  REMINDER_DISMISSED_DATE: REMINDER_DISMISSED_STORAGE_KEY,
+  XP,
+  ACHIEVEMENTS: ACHIEVEMENTS_STORAGE_KEY,
+  ONBOARDING_DONE,
+  ONBOARDING_LEGACY_DONE,
+  ONBOARDING_SUCCESS,
+  LOGIN_SUCCESS,
+  MITZI_COMPLETION,
+  CROP_SORT_ORDER
+} = STORAGE_KEYS;
 
 function getLevelFromXp(xp) {
   if (xp >= 200) {
@@ -93,36 +90,6 @@ function triggerMicroFeedback() {
   }
 }
 
-function InfoCard({ icon, label, value, tone = 'soft', onClick }) {
-  const tones = {
-    soft: 'bg-white/88 text-earth-900',
-    sky: 'bg-sky-100 text-sky-700',
-    leaf: 'bg-leaf-100 text-leaf-700'
-  };
-
-  const content = (
-    <AppCard className={`${tones[tone]} p-4 ${onClick ? 'cursor-pointer active:scale-[0.98]' : ''}`}>
-      <div className="flex items-center justify-between gap-3">
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-earth-500">{label}</p>
-          <p className="mt-2 text-lg font-semibold text-current">{value}</p>
-        </div>
-        <span className="text-3xl">{icon}</span>
-      </div>
-    </AppCard>
-  );
-
-  if (onClick) {
-    return (
-      <button type="button" onClick={onClick} className="block w-full text-left">
-        {content}
-      </button>
-    );
-  }
-
-  return content;
-}
-
 function AchievementToast({ achievement, label }) {
   if (!achievement) {
     return null;
@@ -159,7 +126,7 @@ function ModalShell({ title, description, onClose, children }) {
             onClick={onClose}
             className="rounded-full bg-earth-100 px-3 py-1 text-sm font-medium text-earth-700 transition hover:bg-earth-200 active:scale-95"
           >
-            ✕
+            ×
           </button>
         </div>
         <div className="mt-5">{children}</div>
@@ -172,20 +139,38 @@ export default function AppMobile() {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const [currentScreen, setCurrentScreen] = useState('home');
-  const [crops, setCrops] = useState([]);
-  const [cropCatalog, setCropCatalog] = useState([]);
-  const [recommendationData, setRecommendationData] = useState(null);
-  const [lunarData, setLunarData] = useState(null);
+  const {
+    crops,
+    catalog: cropCatalog,
+    loadCrops,
+    createNewCrop,
+    loading: cropsLoading,
+    error: cropsError,
+    setError: setCropError
+  } = useCrops();
+  const {
+    recommendations: recommendationData,
+    lunarPhase: lunarData,
+    loadWeather,
+    loading: weatherLoading,
+    error: weatherError,
+    setError: setWeatherError
+  } = useWeather();
+  const { state, dispatch } = useAppStore();
+
+  useEffect(() => {
+    dispatch({ type: 'SET_CROPS', payload: crops });
+  }, [crops, dispatch]);
+
   const [savingCrop, setSavingCrop] = useState(false);
   const [reviewingToday, setReviewingToday] = useState(false);
   const [asking, setAsking] = useState(false);
   const [answer, setAnswer] = useState('');
   const [error, setError] = useState('');
-  const [cropSortOrder, setCropSortOrder] = useState(() => localStorage.getItem('cropSortOrder') || 'DESC'); // Desc por defecto
-  const [dismissedReminderDate, setDismissedReminderDate] = useState(
-    () => localStorage.getItem(REMINDER_DISMISSED_STORAGE_KEY) || ''
+  const [cropSortOrder, setCropSortOrder] = useState(() => localStorage.getItem(CROP_SORT_ORDER) || 'DESC'); // Desc por defecto
+  const [dismissedReminderDate, setDismissedReminderDate] = useState( () => localStorage.getItem(REMINDER_DISMISSED_STORAGE_KEY) || ''
   );
-  const [xp, setXp] = useState(() => Number(localStorage.getItem(XP_STORAGE_KEY) || '0'));
+  const [xp, setXp] = useState(() => Number(localStorage.getItem(XP) || '0'));
   const [unlockedAchievements, setUnlockedAchievements] = useState(() => {
     try {
       return JSON.parse(localStorage.getItem(ACHIEVEMENTS_STORAGE_KEY) || '[]');
@@ -198,12 +183,8 @@ export default function AppMobile() {
   const [dataLoaded, setDataLoaded] = useState(false);
   const [currentUser, setCurrentUser] = useState(() => getStoredUser());
   const [loginModalOpen, setLoginModalOpen] = useState(false);
-  const [profileModalOpen, setProfileModalOpen] = useState(false);
-  const [language, setLanguage] = useState(i18n.language);
-
-  useEffect(() => {
-    const handleLanguageChange = (lng) => {
-      setLanguage(lng);
+  const [language, setLanguage] = useState(i18n.language); useEffect(() => {
+    const handleLanguageChange = (lng) => { setLanguage(lng);
     };
 
     i18n.on('languageChanged', handleLanguageChange);
@@ -212,157 +193,117 @@ export default function AppMobile() {
       i18n.off('languageChanged', handleLanguageChange);
     };
   }, [i18n]);
-  const [onboardingComplete, setOnboardingComplete] = useState(
-    () => localStorage.getItem(ONBOARDING_DONE_STORAGE_KEY) === 'true'
-      || localStorage.getItem('lunatierra-onboarding-complete') === 'true'
+  const [onboardingComplete, setOnboardingComplete] = useState(() => localStorage.getItem(ONBOARDING_DONE) === 'true'
+      || localStorage.getItem(ONBOARDING_LEGACY_DONE) === 'true'
   );
-  const [onboardingSuccess, setOnboardingSuccess] = useState(
-    () => localStorage.getItem(ONBOARDING_SUCCESS_KEY) || ''
-  );
-  const [loginSuccessMessage, setLoginSuccessMessage] = useState(
-    () => localStorage.getItem(LOGIN_SUCCESS_KEY) || ''
-  );
+  const [onboardingSuccess, setOnboardingSuccess] = useState(() => localStorage.getItem(ONBOARDING_SUCCESS) || '');
+  const [loginSuccessMessage, setLoginSuccessMessage] = useState(() => localStorage.getItem(LOGIN_SUCCESS) || '');
+  const [mitziCelebrationVisible, setMitziCelebrationVisible] = useState(false);
 
   const loadData = async () => {
+    setDataLoaded(false);
+    setError('');
+
     try {
-      setError('');
-      const [cropData, catalogResponse, recommendationResponse, lunarPhaseResponse] = await Promise.all([
-        fetchCrops(),
-        fetchCropCatalog(),
-        fetchRecommendations(),
-        fetchLunarPhase()
-      ]);
-      setCrops(cropData);
-      setCropCatalog(catalogResponse);
-      setRecommendationData(recommendationResponse);
-      setLunarData(lunarPhaseResponse);
+      await Promise.all([loadCrops(), loadWeather()]);
       setCurrentUser(getStoredUser());
-    } catch {
+    } catch (err) {
+      console.error('[AppMobile] loadData failed', err);
       setError(t('errors.load'));
     } finally {
       setDataLoaded(true);
     }
-  };
-
-  useEffect(() => {
-    loadData();
-  }, [language]);
-
-  useEffect(() => {
-    localStorage.setItem('cropSortOrder', cropSortOrder);
-  }, [cropSortOrder]);
-
-  useEffect(() => {
-    if (localStorage.getItem('lunatierra-onboarding-complete') === 'true'
-        && localStorage.getItem(ONBOARDING_DONE_STORAGE_KEY) !== 'true') {      localStorage.setItem(ONBOARDING_DONE_STORAGE_KEY, 'true');
+  }; useEffect(() => { loadData();
+  }, [language]); useEffect(() => {
+    localStorage.setItem(CROP_SORT_ORDER, cropSortOrder);
+  }, [cropSortOrder]); useEffect(() => {
+    if (localStorage.getItem(ONBOARDING_LEGACY_DONE) === 'true'
+        && localStorage.getItem(ONBOARDING_DONE) !== 'true') {
+      localStorage.setItem(ONBOARDING_DONE, 'true');
     }
-  }, []);
-
-  useEffect(() => {
+  }, []); useEffect(() => {
     if (!onboardingSuccess) {
       return undefined;
     }
 
     const timeoutId = window.setTimeout(() => {
-      localStorage.removeItem(ONBOARDING_SUCCESS_KEY);
-      setOnboardingSuccess('');
+      localStorage.removeItem(ONBOARDING_SUCCESS); setOnboardingSuccess('');
     }, 4000);
 
     return () => window.clearTimeout(timeoutId);
-  }, [onboardingSuccess]);
-
-  useEffect(() => {
+  }, [onboardingSuccess]); useEffect(() => {
     if (!loginSuccessMessage) {
       return undefined;
     }
 
     const timeoutId = window.setTimeout(() => {
-      localStorage.removeItem(LOGIN_SUCCESS_KEY);
-      setLoginSuccessMessage('');
+      localStorage.removeItem(LOGIN_SUCCESS); setLoginSuccessMessage('');
     }, 4000);
 
     return () => window.clearTimeout(timeoutId);
-  }, [loginSuccessMessage]);
+  }, [loginSuccessMessage]); useEffect(() => {
+    if (!mitziCelebrationVisible) {
+      return undefined;
+    }
 
-  useEffect(() => {
+    const timeoutId = window.setTimeout(() => {
+      setMitziCelebrationVisible(false);
+    }, 1400);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [mitziCelebrationVisible]); useEffect(() => {
     const backendLastCheckDate = recommendationData?.dailyProgress?.lastCheckDate;
 
     if (backendLastCheckDate) {
       localStorage.setItem(LAST_CHECK_STORAGE_KEY, backendLastCheckDate);
     }
-  }, [recommendationData]);
-
-  useEffect(() => {
-    if (!activeAchievement && achievementQueue.length) {
-      setActiveAchievement(achievementQueue[0]);
-      setAchievementQueue((current) => current.slice(1));
+  }, [recommendationData]); useEffect(() => {
+    if (!activeAchievement && achievementQueue.length) { setActiveAchievement(achievementQueue[0]); setAchievementQueue((current) => current.slice(1));
     }
-  }, [achievementQueue, activeAchievement]);
-
-  useEffect(() => {
+  }, [achievementQueue, activeAchievement]); useEffect(() => {
     if (!activeAchievement) {
       return undefined;
     }
 
-    const timeoutId = window.setTimeout(() => {
-      setActiveAchievement('');
+    const timeoutId = window.setTimeout(() => { setActiveAchievement('');
     }, 2400);
 
     return () => window.clearTimeout(timeoutId);
   }, [activeAchievement]);
 
   const handleCreateCrop = async (payload) => {
-    try {
-      setSavingCrop(true);
-      setError('');
-      await createCrop(payload);
-      await loadData();
-      setCurrentScreen('crops');
-    } catch {
-      setError(t('errors.saveCrop'));
-    } finally {
-      setSavingCrop(false);
+    try { setSavingCrop(true); setError('');
+      await createNewCrop(payload);
+      await loadData(); setCurrentScreen('crops');
+    } catch { setError(t('errors.saveCrop'));
+    } finally { setSavingCrop(false);
     }
   };
 
   const handleQuestion = async (question) => {
     console.log('AppMobile: handleQuestion called with:', question);
     try {
-      console.log('AppMobile: Setting asking to true');
-      setAsking(true);
+      console.log('AppMobile: Setting asking to true'); setAsking(true);
       console.log('AppMobile: Calling askQuestion API');
       const response = await askQuestion(question);
-      console.log('AppMobile: API response received:', response);
-      setAnswer(response.answer);
+      console.log('AppMobile: API response received:', response); setAnswer(response.answer);
       console.log('AppMobile: Answer set to:', response.answer);
     } catch (error) {
-      console.error('AppMobile: Error in handleQuestion:', error);
-      setAnswer(t('errors.questionUnavailable'));
+      console.error('AppMobile: Error in handleQuestion:', error); setAnswer(t('errors.questionUnavailable'));
     } finally {
-      console.log('AppMobile: Setting asking to false');
-      setAsking(false);
+      console.log('AppMobile: Setting asking to false'); setAsking(false);
     }
   };
 
   const handleOnboardingSetup = async (payload) => {
-    const createdCrop = await createCrop(payload);
-    const [cropData, catalogResponse, recommendationResponse, lunarPhaseResponse] = await Promise.all([
-      fetchCrops(),
-      fetchCropCatalog(),
-      fetchRecommendations(),
-      fetchLunarPhase()
-    ]);
-
-    setCrops(cropData);
-    setCropCatalog(catalogResponse);
-    setRecommendationData(recommendationResponse);
-    setLunarData(lunarPhaseResponse);
-    return { createdCrop, cropData, recommendationResponse };
+    const createdCrop = await createNewCrop(payload);
+    await Promise.all([loadCrops(), loadWeather()]);
+    return { createdCrop };
   };
 
   const finishOnboarding = () => {
-    localStorage.setItem(ONBOARDING_DONE_STORAGE_KEY, 'true');
-    localStorage.removeItem('lunatierra-onboarding-complete');
+    localStorage.setItem(ONBOARDING_DONE, 'true');
+    localStorage.removeItem(ONBOARDING_LEGACY_DONE);
     setOnboardingComplete(true);
     setCurrentScreen('home');
   };
@@ -374,44 +315,34 @@ export default function AppMobile() {
       waterAvailable: true
     });
     await loadData();
-    localStorage.setItem(ONBOARDING_SUCCESS_KEY, t('onboarding.started'));
-    setOnboardingSuccess(t('onboarding.started'));
-    finishOnboarding();
+    localStorage.setItem(ONBOARDING_SUCCESS, t('onboarding.started')); setOnboardingSuccess(t('onboarding.started')); finishOnboarding();
   };
 
-  const handleGoogleLoginSuccess = async (authResponse) => {
-    setCurrentUser(authResponse?.user || getStoredUser());
-    setError('');
-    setLoginModalOpen(false);
-    setProfileModalOpen(false);
-    localStorage.setItem(LOGIN_SUCCESS_KEY, t('login.photosSaved'));
-    setLoginSuccessMessage(t('login.photosSaved'));
+  const handleGoogleLoginSuccess = async (authResponse) => { setCurrentUser(authResponse.user || getStoredUser()); setError(''); setLoginModalOpen(false);
+    localStorage.setItem(LOGIN_SUCCESS, t('login.photosSaved')); setLoginSuccessMessage(t('login.photosSaved'));
     await loadData();
   };
 
-  const handleGoogleLoginError = () => {
-    setError(t('login.googleError'));
+  const handleGoogleLoginError = () => { setError(t('login.googleError'));
   };
 
   const handleTodayReview = async () => {
-    try {
-      setReviewingToday(true);
-      setError('');
+    try { setReviewingToday(true); setError('');
       const progress = await checkInDaily();
       const nextXp = xp + 10;
-      localStorage.setItem(XP_STORAGE_KEY, String(nextXp));
-      setXp(nextXp);
+      localStorage.setItem(MITZI_COMPLETION, new Date().toISOString());
+      localStorage.setItem(XP, String(nextXp)); setXp(nextXp);
       const nextAchievements = [];
 
-      if (!unlockedAchievements.includes(t('achievement.firstCare')) && progress?.streakCount >= 1) {
+      if (!unlockedAchievements.includes(t('achievement.firstCare')) && progress.streakCount >= 1) {
         nextAchievements.push(t('achievement.firstCare'));
       }
 
-      if (!unlockedAchievements.includes(t('achievement.threeDays')) && progress?.streakCount >= 3) {
+      if (!unlockedAchievements.includes(t('achievement.threeDays')) && progress.streakCount >= 3) {
         nextAchievements.push(t('achievement.threeDays'));
       }
 
-      if (!unlockedAchievements.includes(t('achievement.sevenDays')) && progress?.streakCount >= 7) {
+      if (!unlockedAchievements.includes(t('achievement.sevenDays')) && progress.streakCount >= 7) {
         nextAchievements.push(t('achievement.sevenDays'));
       }
 
@@ -421,22 +352,17 @@ export default function AppMobile() {
 
       if (nextAchievements.length) {
         const updatedAchievements = [...unlockedAchievements, ...nextAchievements];
-        localStorage.setItem(ACHIEVEMENTS_STORAGE_KEY, JSON.stringify(updatedAchievements));
-        setUnlockedAchievements(updatedAchievements);
-        setAchievementQueue((current) => [...current, ...nextAchievements]);
-      }
-
-      triggerMicroFeedback();
+        localStorage.setItem(ACHIEVEMENTS_STORAGE_KEY, JSON.stringify(updatedAchievements)); setUnlockedAchievements(updatedAchievements); setAchievementQueue((current) => [...current, ...nextAchievements]);
+      } setMitziCelebrationVisible(true); triggerMicroFeedback();
       await loadData();
-    } catch {
-      setError(t('errors.dailyReview'));
-    } finally {
-      setReviewingToday(false);
+    } catch { setError(t('errors.dailyReview'));
+    } finally { setReviewingToday(false);
     }
   };
 
   const weather = recommendationData?.weather;
   const progressProfile = getLevelFromXp(xp);
+  const streakCount = recommendationData?.dailyProgress?.streakCount ?? 0;
   const todayDate = new Date().toISOString().slice(0, 10);
   const lastCheckDate = recommendationData?.dailyProgress?.lastCheckDate
     || localStorage.getItem(LAST_CHECK_STORAGE_KEY)
@@ -445,7 +371,8 @@ export default function AppMobile() {
     home: t('nav.home'),
     crops: t('nav.crops'),
     add: t('nav.add'),
-    questions: t('nav.questions')
+    questions: t('nav.questions'),
+    profile: t('profile.account')
   };
   const cropsWithDetails = crops.map((crop) => ({
     crop,
@@ -453,11 +380,13 @@ export default function AppMobile() {
   }));
 
   const getStatusScore = ({ crop, cropDetail }) => {
-    if (!crop.waterAvailable || (cropDetail?.warnings?.length || 0) >= 2) {
+    const warningCount = cropDetail?.warnings?.length || 0;
+
+    if (!crop.waterAvailable || warningCount >= 2) {
       return 3;
     }
 
-    if ((cropDetail?.warnings?.length || 0) === 1) {
+    if (warningCount === 1) {
       return 2;
     }
 
@@ -465,7 +394,8 @@ export default function AppMobile() {
   };
 
   const featuredCrop = cropsWithDetails.length
-    ? [...cropsWithDetails].sort((left, right) => {
+    ?
+     [...cropsWithDetails].sort((left, right) => {
         const scoreDifference = getStatusScore(right) - getStatusScore(left);
 
         if (scoreDifference !== 0) {
@@ -542,119 +472,105 @@ export default function AppMobile() {
   const shouldShowSavePrompt = onboardingComplete
     && isGuestMode()
     && (crops.length > 0 || progressProfile.currentXp >= 30 || (recommendationData?.dailyProgress?.streakCount ?? 0) >= 3);
-  const assistantMessage = recommendationData?.dailyProgress?.checkedToday
-    ? t('assistant.checkedToday')
+  const checkedToday = recommendationData?.dailyProgress?.checkedToday;
+  const mitziReminderTime = localStorage.getItem(MITZI_COMPLETION) || '';
+  const companionMood = mitziCelebrationVisible
+    ? 'happy'
     : showReminderBanner
-      ? reminderMessage
-      : recommendationData?.dailyMessage || t('assistant.defaultMessage');
-  const assistantTone = recommendationData?.dailyProgress?.checkedToday
-    ? 'leaf'
+      ? 'worried'
+      : 'neutral';
+  const companionLevel = progressProfile.level;
+  const shouldDelayMitziUntilPreferredHour = (() => {
+    if (!mitziReminderTime || checkedToday) {
+      return false;
+    }
+
+    const completionDate = new Date(mitziReminderTime);
+
+    if (Number.isNaN(completionDate.getTime())) {
+      return false;
+    }
+
+    if (completionDate.toISOString().slice(0, 10) === todayDate) {
+      return false;
+    }
+
+    return new Date().getHours() < completionDate.getHours();
+  })();
+  const mitziMessage = mitziCelebrationVisible
+    ? t('mitzi.successMessage')
     : showReminderBanner
-      ? (inactivityRisk?.tone || 'warm')
-      : 'calm';
-  const assistantIcon = recommendationData?.dailyProgress?.checkedToday ? '🌙' : '🌱';
+      ? t('mitzi.worriedMessage')
+      : recommendationData?.dailyMessage || t('mitzi.neutralMessage');
+  const shouldShowMitziBubble = currentScreen === 'home'
+    && Boolean(featuredCrop?.crop)
+    && (mitziCelebrationVisible || (!checkedToday && !shouldDelayMitziUntilPreferredHour));
 
   const dismissReminder = () => {
-    localStorage.setItem(REMINDER_DISMISSED_STORAGE_KEY, todayDate);
-    setDismissedReminderDate(todayDate);
+    localStorage.setItem(REMINDER_DISMISSED_STORAGE_KEY, todayDate); setDismissedReminderDate(todayDate);
   };
 
-  const handleLogout = async () => {
-    clearAuthSession();
-    setCurrentUser(null);
-    setProfileModalOpen(false);
+  const handleLogout = async () => { clearAuthSession(); setCurrentUser(null);
     await loadData();
   };
 
-  const renderAuthAction = () => {
-    if (currentUser) {
-      return (
-        <button
-          type="button"
-          onClick={() => setProfileModalOpen(true)}
-          className="flex h-11 w-11 items-center justify-center overflow-hidden rounded-full border border-white/70 bg-white/80 shadow-[0_8px_20px_rgba(43,32,22,0.12)] backdrop-blur transition hover:bg-white active:scale-95"
-          aria-label={t('profile.avatarAlt')}
-        >
-          {currentUser.picture ? (
-            <img src={currentUser.picture} alt={currentUser.name || t('profile.avatarAlt')} className="h-full w-full object-cover" />
-          ) : (
-            <span className="text-lg">👤</span>
-          )}
-        </button>
-      );
-    }
-
-    return (
-      <button
-        type="button"
-        onClick={() => setLoginModalOpen(true)}
-        className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2.5 text-sm font-semibold text-earth-900 shadow-[0_10px_24px_rgba(43,32,22,0.14)] transition hover:bg-earth-50 active:scale-95"
-      >
-        <span>{t('login.signIn')}</span>
-        <span aria-hidden="true">🌱</span>
-      </button>
-    );
-  };
 
   const shouldShowOnboarding = dataLoaded && !onboardingComplete && crops.length === 0;
 
   const renderHome = () => (
     <div className="space-y-5">
-      <header className="flex items-start justify-between gap-4">
-        <div>
-          <p className="text-sm font-semibold uppercase tracking-[0.22em] text-earth-500">{t('dashboard.brand')}</p>
-          <h1 className="mt-2 text-3xl font-semibold text-earth-900">{t('app.greeting')}</h1>
-          <p className="mt-1 text-sm leading-6 text-earth-700">{t('home.welcome')}</p>
-          {currentUser?.name ? (
-            <p className="mt-2 text-xs font-medium text-earth-500">
-              {currentUser.name}
-            </p>
-          ) : null}
-        </div>
-        <div className="flex items-center gap-2">
-          <LanguageSwitcher />
-          {renderAuthAction()}
+      <header className="sticky top-3 z-30 -mx-1 rounded-[28px] border border-white/75 bg-[linear-gradient(180deg,_rgba(255,255,255,0.92)_0%,_rgba(247,243,235,0.94)_100%)] px-4 py-3 shadow-[0_18px_38px_rgba(58,43,30,0.10)] backdrop-blur">
+        <div className="flex items-center justify-center gap-3">
+          <div className="inline-flex rounded-full bg-earth-50 p-1 shadow-[inset_0_1px_0_rgba(255,255,255,0.6)]">
+            {[
+              { code: 'es', label: `🇲🇽 ${t('language.spanish')}` },
+              { code: 'en', label: `🇺🇸 ${t('language.english')}` }
+            ].map((option) => {
+              const active = language.startsWith(option.code);
+
+              return (
+                <button
+                  key={option.code}
+                  type="button"
+                  onClick={() => i18n.changeLanguage(option.code)}
+                  className={`rounded-full px-2.5 py-1.5 text-[11px] font-semibold transition ${
+                    active ? 'bg-[#6FAE4F] text-white shadow-[0_8px_18px_rgba(111,174,79,0.20)]' : 'text-earth-700'
+                  }`}
+                >
+                  {option.label}
+                </button>
+              );
+            })}
+          </div>
+
+          <div className="grid min-w-[280px] grid-cols-3 gap-2">
+            <div className="rounded-[18px] bg-earth-50 px-3 py-2">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-earth-500">{t('stats.streak')}</p>
+              <p className="mt-1 text-sm font-semibold text-earth-900">{streakCount}</p>
+            </div>
+            <div className="rounded-[18px] bg-earth-50 px-3 py-2">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-earth-500">XP</p>
+              <p className="mt-1 text-sm font-semibold text-earth-900">{progressProfile.currentXp}</p>
+            </div>
+            <div className="rounded-[18px] bg-earth-50 px-3 py-2">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-earth-500">{t('stats.level')}</p>
+              <p className="mt-1 text-sm font-semibold text-earth-900">
+                {t('today.levelValue', { value: progressProfile.level })}
+              </p>
+            </div>
+          </div>
         </div>
       </header>
 
-      <AssistantBubble
-        icon={assistantIcon}
-        name="Luno"
-        message={assistantMessage}
-        tone={assistantTone}
-        badge={showReminderBanner ? inactivityRisk?.badge : null}
-        dismissible={showReminderBanner}
-        onDismiss={dismissReminder}
-      />
-
-      <div className="grid grid-cols-2 gap-3">
-        <InfoCard
-          icon="🌧️"
-          label={t('dashboard.weather')}
-          value={weather ? t('dashboard.temperature', { condition: weather.condition, value: weather.maxTemperature }) : t('dashboard.loading')}
-          tone="soft"
-          onClick={() => navigate('/weather')}
-        />
-        <InfoCard
-          icon="🌙"
-          label={t('dashboard.moon')}
-          value={recommendationData?.lunarPhase ? t(`lunarPhases.${recommendationData.lunarPhase}`, { defaultValue: recommendationData.lunarPhase }) : t('dashboard.loading')}
-          tone="soft"
-          onClick={() => navigate('/lunar')}
-        />
-      </div>
-
-      <TodayFocusCard
-        crop={featuredCrop?.crop || null}
-        cropDetail={featuredCrop?.cropDetail || null}
-        recommendationData={recommendationData}
-        progressProfile={progressProfile}
-        reviewing={reviewingToday}
-        onReview={handleTodayReview}
+      <WeatherHighlightCard
+        weather={weather}
+        lunarPhase={recommendationData?.lunarPhase ? t(`lunarPhases.${recommendationData.lunarPhase}`, { defaultValue: recommendationData.lunarPhase }) : t('dashboard.loading')}
+        onOpenWeather={() => navigate('/weather')}
+        onOpenLunar={() => navigate('/lunar')}
       />
 
       {shouldShowSavePrompt ? (
-        <AppCard className="border border-leaf-100 bg-[linear-gradient(160deg,_rgba(248,252,242,0.98)_0%,_rgba(233,244,220,0.98)_100%)]">
+        <Card className="border border-leaf-100 bg-[linear-gradient(160deg,_rgba(248,252,242,0.98)_0%,_rgba(233,244,220,0.98)_100%)]">
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-earth-500">{t('login.saveProgress')}</p>
           <p className="mt-2 text-sm font-medium leading-6 text-earth-900">
             {t('login.saveProgressDesc')}
@@ -666,10 +582,10 @@ export default function AppMobile() {
               className="inline-flex items-center gap-2 rounded-full bg-earth-900 px-4 py-3 text-sm font-semibold text-white shadow-[0_12px_28px_rgba(48,36,24,0.18)] transition hover:bg-earth-800 active:scale-95"
             >
               <span>{t('login.continueWithGoogle')}</span>
-              <span aria-hidden="true">🌿</span>
+              <span aria-hidden="true">🌱</span>
             </button>
           </div>
-        </AppCard>
+        </Card>
       ) : null}
 
       <section className="space-y-4">
@@ -696,9 +612,9 @@ export default function AppMobile() {
             ))}
           </div>
         ) : (
-          <AppCard className="bg-earth-50/90">
+          <Card className="bg-earth-50/90">
             <p className="text-sm leading-6 text-earth-700">{t('summary.empty')}</p>
-          </AppCard>
+          </Card>
         )}
       </section>
     </div>
@@ -762,9 +678,9 @@ export default function AppMobile() {
             ))}
           </div>
         ) : (
-        <AppCard className="bg-earth-50/90">
+        <Card className="bg-earth-50/90">
           <p className="text-sm leading-6 text-earth-700">{t('tracking.empty')}</p>
-        </AppCard>
+        </Card>
       )}
     </div>
   );
@@ -777,9 +693,9 @@ export default function AppMobile() {
         <p className="text-sm leading-6 text-earth-700">{t('register.description')}</p>
       </header>
 
-      <AppCard className="bg-white/92">
+      <Card className="bg-white/92">
         <CropFormI18n onSubmit={handleCreateCrop} loading={savingCrop} cropOptions={cropCatalog} />
-      </AppCard>
+      </Card>
     </div>
   );
 
@@ -790,73 +706,23 @@ export default function AppMobile() {
         <p className="text-sm leading-6 text-earth-700">{t('quickQuestion.description')}</p>
       </header>
 
-      <AppCard className="bg-[linear-gradient(160deg,_rgba(214,237,243,0.95)_0%,_rgba(255,255,255,0.92)_100%)]">
+      <Card className="bg-[linear-gradient(160deg,_rgba(214,237,243,0.95)_0%,_rgba(255,255,255,0.92)_100%)]">
         <QuickQuestionI18n onAsk={handleQuestion} loading={asking} answer={answer} />
-      </AppCard>
+      </Card>
     </div>
   );
 
-  const shell = (
-    <main className="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(220,231,199,0.55),_rgba(247,242,231,0.95)_32%,_#efe2cf_100%)] px-4 pb-28 pt-6 text-earth-900">
-      <AchievementToast achievement={activeAchievement} label={t('achievements.unlocked')} />
-      <div className="mx-auto max-w-md">
-        <div className="space-y-5">
-          {error ? (
-            <AppCard className="border-rose-200 bg-rose-50/90 p-4">
-              <p className="text-sm leading-6 text-rose-700">{error}</p>
-            </AppCard>
-          ) : null}
+  const renderProfile = () => (
+    <div className="space-y-5">
+      <header className="space-y-2">
+        <SectionHeader eyebrow={t('profile.title')} title={currentUser ? (currentUser.name || t('profile.account')) : t('login.saveProgress')} />
+        <p className="text-sm leading-6 text-earth-700">
+          {currentUser ? t('profile.description') : t('login.saveProgressDesc')}
+        </p>
+      </header>
 
-          {onboardingSuccess ? (
-            <AppCard className="border-leaf-200 bg-[linear-gradient(160deg,_rgba(244,252,238,0.98)_0%,_rgba(231,245,216,0.98)_100%)] p-4">
-              <p className="text-sm font-medium leading-6 text-earth-900">{onboardingSuccess}</p>
-            </AppCard>
-          ) : null}
-
-          {loginSuccessMessage ? (
-            <AppCard className="success-toast-bloom border-leaf-200 bg-[linear-gradient(160deg,_rgba(244,252,238,0.98)_0%,_rgba(231,245,216,0.98)_100%)] p-4">
-              <div className="flex items-start gap-3">
-                <div className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white/75 text-lg shadow-[0_8px_18px_rgba(92,134,44,0.14)]">
-                  🌱
-                </div>
-                <div>
-                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-leaf-700">
-                    {t('login.progressSaved')}
-                  </p>
-                  <p className="mt-1 text-sm font-medium leading-6 text-earth-900">{loginSuccessMessage}</p>
-                </div>
-              </div>
-            </AppCard>
-          ) : null}
-
-          {currentScreen === 'home' ? renderHome() : null}
-          {currentScreen === 'crops' ? renderCrops() : null}
-          {currentScreen === 'add' ? renderAdd() : null}
-          {currentScreen === 'questions' ? renderQuestions() : null}
-        </div>
-      </div>
-
-      <BottomNav currentScreen={currentScreen} onChange={setCurrentScreen} labels={navLabels} />
-
-      {loginModalOpen ? (
-        <ModalShell
-          title={t('login.saveProgress')}
-          description={t('login.saveProgressDesc')}
-          onClose={() => setLoginModalOpen(false)}
-        >
-          <GoogleLoginButton
-            onSuccess={handleGoogleLoginSuccess}
-            onError={handleGoogleLoginError}
-          />
-        </ModalShell>
-      ) : null}
-
-      {profileModalOpen && currentUser ? (
-        <ModalShell
-          title={t('profile.title')}
-          description={t('profile.description')}
-          onClose={() => setProfileModalOpen(false)}
-        >
+      {currentUser ? (
+        <Card className="bg-white/92">
           <div className="flex items-center gap-4 rounded-[24px] bg-earth-50/90 p-4">
             <div className="flex h-14 w-14 items-center justify-center overflow-hidden rounded-full bg-leaf-100">
               {currentUser.picture ? (
@@ -877,6 +743,88 @@ export default function AppMobile() {
           >
             {t('profile.logout')}
           </button>
+        </Card>
+      ) : (
+        <Card className="bg-white/92">
+          <GoogleLoginButton
+            onSuccess={handleGoogleLoginSuccess}
+            onError={handleGoogleLoginError}
+          />
+        </Card>
+      )}
+    </div>
+  );
+
+  const shell = (
+    <main className="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(220,231,199,0.55),_rgba(247,242,231,0.95)_32%,_#efe2cf_100%)] px-4 pb-28 pt-6 text-earth-900">
+      <AchievementToast achievement={activeAchievement} label={t('achievements.unlocked')} />
+      <div className="mx-auto max-w-md">
+        <div className="space-y-5">
+          {error ? (
+            <Card className="border-rose-200 bg-rose-50/90 p-4">
+              <p className="text-sm leading-6 text-rose-700">{error}</p>
+            </Card>
+          ) : null}
+
+          {onboardingSuccess ? (
+            <Card className="border-leaf-200 bg-[linear-gradient(160deg,_rgba(244,252,238,0.98)_0%,_rgba(231,245,216,0.98)_100%)] p-4">
+              <p className="text-sm font-medium leading-6 text-earth-900">{onboardingSuccess}</p>
+            </Card>
+          ) : null}
+
+          {loginSuccessMessage ? (
+            <Card className="success-toast-bloom border-leaf-200 bg-[linear-gradient(160deg,_rgba(244,252,238,0.98)_0%,_rgba(231,245,216,0.98)_100%)] p-4">
+              <div className="flex items-start gap-3">
+                <div className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white/75 text-lg shadow-[0_8px_18px_rgba(92,134,44,0.14)]">
+                  🌱
+                </div>
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-leaf-700">
+                    {t('login.progressSaved')}
+                  </p>
+                  <p className="mt-1 text-sm font-medium leading-6 text-earth-900">{loginSuccessMessage}</p>
+                </div>
+              </div>
+            </Card>
+          ) : null}
+
+          {currentScreen === 'home' ? renderHome() : null}
+          {currentScreen === 'crops' ? renderCrops() : null}
+          {currentScreen === 'add' ? renderAdd() : null}
+          {currentScreen === 'questions' ? renderQuestions() : null}
+          {currentScreen === 'profile' ? renderProfile() : null}
+        </div>
+      </div>
+
+      <BottomNav currentScreen={currentScreen} onChange={setCurrentScreen} labels={navLabels} />
+      <FloatingMitziBubble
+        visible={shouldShowMitziBubble}
+        level={companionLevel}
+        mood={companionMood}
+        message={mitziMessage}
+        cropName={featuredCrop?.crop?.cropDisplayName || featuredCrop?.crop?.cropName || ''}
+        dayLabel={featuredCrop?.crop ? t('today.day', { value: featuredCrop.crop.daysSincePlanting }) : ''}
+        success={mitziCelebrationVisible}
+        reviewing={reviewingToday}
+        onReview={handleTodayReview}
+        onOpenDetail={() => {
+          if (featuredCrop?.crop?.id) {
+            navigate(`/crop/${featuredCrop.crop.id}`);
+          }
+        }}
+      />
+
+
+      {loginModalOpen ? (
+        <ModalShell
+          title={t('login.saveProgress')}
+          description={t('login.saveProgressDesc')}
+          onClose={() => setLoginModalOpen(false)}
+        >
+          <GoogleLoginButton
+            onSuccess={handleGoogleLoginSuccess}
+            onError={handleGoogleLoginError}
+          />
         </ModalShell>
       ) : null}
     </main>
@@ -902,3 +850,4 @@ export default function AppMobile() {
     </Routes>
   );
 }
+

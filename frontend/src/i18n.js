@@ -1,10 +1,14 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
+import { DEFAULT_LANGUAGE } from './constants/appConstants';
+import { STORAGE_KEYS } from './constants/storageKeys';
 import en from './i18n/en.json';
 import es from './i18n/es.json';
 
-const STORAGE_KEY = 'lunatierra-language';
-const LEGACY_STORAGE_KEY = 'i18nextLng';
+const {
+  LANGUAGE: STORAGE_KEY,
+  LEGACY_LANGUAGE: LEGACY_STORAGE_KEY
+} = STORAGE_KEYS;
 const SUPPORTED_LANGUAGES = ['en', 'es'];
 
 function detectInitialLanguage() {
@@ -13,7 +17,7 @@ function detectInitialLanguage() {
     return savedLanguage;
   }
 
-  return 'es';
+  return DEFAULT_LANGUAGE;
 }
 
 i18n
@@ -24,7 +28,7 @@ i18n
       es: { translation: es }
     },
     lng: detectInitialLanguage(),
-    fallbackLng: 'es',
+    fallbackLng: DEFAULT_LANGUAGE,
     interpolation: {
       escapeValue: false
     },
