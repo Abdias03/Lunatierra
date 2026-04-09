@@ -14,6 +14,22 @@ const {
 const FORCE_BACKEND = true; // permite usar backend aunque sea guest
 const API_BASE_URL = import.meta.env.VITE_API_URL || '/api';
 
+async function fetchWithTimeout(url, options = {}, timeout = 8000) {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeout);
+  try {
+    const response = await fetch(url, { ...options, signal: controller.signal });
+    clearTimeout(timeoutId);
+    return response;
+  } catch (error) {
+    clearTimeout(timeoutId);
+    if (error.name === 'AbortError') {
+      throw new Error('Request timed out after 8 seconds');
+    }
+    throw error;
+  }
+}
+
 
 const cropDisplayNames = {
   es: {
@@ -231,7 +247,7 @@ function findMatchingServerCrop(serverCrops, guestCrop) {
 }
 
 async function dataUrlToFile(dataUrl, fileName) {
-  const response = await fetch(dataUrl);
+  const response = await fetchWithTimeout(dataUrl);
   const blob = await response.blob();
   return new File([blob], fileName, { type: blob.type || 'image/jpeg' });
 }
@@ -244,7 +260,7 @@ async function uploadGrowthLogPhoto(userCropId, file, description = '') {
     formData.append('description', description);
   }
 
-  const response = await fetch('/api/growth-log', {
+  const response = await fetchWithTimeout(`${API_BASE_URL}/growth-log`, {
     method: 'POST',
     headers: buildAuthHeaders(),
     body: formData
@@ -485,14 +501,14 @@ export async function fetchCrops() {
     return getGuestCrops().map(buildGuestCrop);
   }
 
-  const response = await fetch('/api/crops', {
+  const response = await fetchWithTimeout(`${API_BASE_URL}/crops`, {
     headers: buildAuthHeaders()
   });
   return handleResponse(response);
 }
 
 export async function fetchCropCatalog() {
-  const response = await fetch('/api/crops/catalog', {
+  const response = await fetchWithTimeout(`${API_BASE_URL}/crops/catalog`, {
     headers: buildHeaders()
   });
 
@@ -501,35 +517,35 @@ export async function fetchCropCatalog() {
 }
 
 export async function fetchAdminOverview() {
-  const response = await fetch('/api/admin/overview', {
+  const response = await fetchWithTimeout(`${API_BASE_URL}/admin/overview`, {
     headers: buildAuthHeaders()
   });
   return handleResponse(response);
 }
 
 export async function fetchAdminStages() {
-  const response = await fetch('/api/admin/stages', {
+  const response = await fetchWithTimeout(`${API_BASE_URL}/admin/stages`, {
     headers: buildAuthHeaders()
   });
   return handleResponse(response);
 }
 
 export async function fetchAdminRecommendations() {
-  const response = await fetch('/api/admin/recommendations', {
+  const response = await fetchWithTimeout(`${API_BASE_URL}/admin/recommendations`, {
     headers: buildAuthHeaders()
   });
   return handleResponse(response);
 }
 
 export async function fetchAdminLunarActivities() {
-  const response = await fetch('/api/admin/lunar-activities', {
+  const response = await fetchWithTimeout(`${API_BASE_URL}/admin/lunar-activities`, {
     headers: buildAuthHeaders()
   });
   return handleResponse(response);
 }
 
 export async function createAdminCrop(payload) {
-  const response = await fetch('/api/admin/crops', {
+  const response = await fetchWithTimeout(`${API_BASE_URL}/admin/crops`, {
     method: 'POST',
     headers: buildAuthHeaders({ 'Content-Type': 'application/json'
     }),
@@ -539,7 +555,7 @@ export async function createAdminCrop(payload) {
 }
 
 export async function createAdminStage(payload) {
-  const response = await fetch('/api/admin/stages', {
+  const response = await fetchWithTimeout(`${API_BASE_URL}/admin/stages`, {
     method: 'POST',
     headers: buildAuthHeaders({ 'Content-Type': 'application/json'
     }),
@@ -549,7 +565,7 @@ export async function createAdminStage(payload) {
 }
 
 export async function createAdminRecommendation(payload) {
-  const response = await fetch('/api/admin/recommendations', {
+  const response = await fetchWithTimeout(`${API_BASE_URL}/admin/recommendations`, {
     method: 'POST',
     headers: buildAuthHeaders({ 'Content-Type': 'application/json'
     }),
@@ -559,7 +575,7 @@ export async function createAdminRecommendation(payload) {
 }
 
 export async function createAdminLunarActivity(payload) {
-  const response = await fetch('/api/admin/lunar-activities', {
+  const response = await fetchWithTimeout(`${API_BASE_URL}/admin/lunar-activities`, {
     method: 'POST',
     headers: buildAuthHeaders({ 'Content-Type': 'application/json'
     }),
@@ -569,7 +585,7 @@ export async function createAdminLunarActivity(payload) {
 }
 
 export async function loginWithGoogle(token) {
-  const response = await fetch('/api/auth/google', {
+  const response = await fetchWithTimeout(`${API_BASE_URL}/auth/google`, {
     method: 'POST',
     headers: buildHeaders({ 'Content-Type': 'application/json'
     }),
@@ -589,7 +605,7 @@ export async function migrateLocalData() {
   }
 
   if (guestCrops.length) {
-    await fetch('/api/user/migrate', {
+    await fetchWithTimeout(`${API_BASE_URL}/user/migrate`, {
       method: 'POST',
       headers: buildAuthHeaders({ 'Content-Type': 'application/json'
       }),
@@ -604,7 +620,7 @@ export async function migrateLocalData() {
   }
 
   try {
-    const serverCrops = await fetch('/api/crops', {
+    const serverCrops = await fetchWithTimeout(`${API_BASE_URL}/crops`, {
       headers: buildAuthHeaders()
     }).then(handleResponse);
 
@@ -627,7 +643,7 @@ export async function createCrop(payload) {
     return buildGuestCrop(createdCrop, currentCrops.length);
   }
 
-  const response = await fetch('/api/crops', {
+  const response = await fetchWithTimeout(`${API_BASE_URL}/crops`, {
     method: 'POST',
     headers: buildAuthHeaders({ 'Content-Type': 'application/json'
     }),
@@ -643,7 +659,7 @@ export async function fetchRecommendations() {
     return buildGuestRecommendations(crops);
   }
 
-  const response = await fetch('/api/recommendations', {
+  const response = await fetchWithTimeout(`${API_BASE_URL}/recommendations`, {
     headers: buildAuthHeaders()
   });
   return handleResponse(response);
@@ -659,7 +675,7 @@ export async function fetchLunarPhase() {
     };
   }
 
-  const response = await fetch('/api/lunar-phase', {
+  const response = await fetchWithTimeout(`${API_BASE_URL}/lunar-phase`, {
     headers: buildAuthHeaders()
   });
   return handleResponse(response);
@@ -675,7 +691,7 @@ export async function fetchLunarRecommendations() {
     };
   }
 
-  const response = await fetch('/api/lunar/recommendations', {
+  const response = await fetchWithTimeout(`${API_BASE_URL}/lunar/recommendations`, {
     headers: buildAuthHeaders()
   });
   return handleResponse(response);
@@ -721,7 +737,7 @@ export async function fetchOnboardingRecommendation() {
   try {
     console.log("🚀 Calling backend /api/onboarding/recommendation");
 
-    const response = await fetch('/api/onboarding/recommendation', {
+    const response = await fetchWithTimeout(`${API_BASE_URL}/onboarding/recommendation`, {
       headers: buildHeaders() // sin necesidad de auth
     });
 
@@ -777,7 +793,7 @@ export async function fetchLunarCalendar(month, year) {
     });
   }
 
-  const response = await fetch(`/api/lunar/calendar?month=${month}&year=${year}`, {
+  const response = await fetchWithTimeout(`${API_BASE_URL}/lunar/calendar?month=${month}&year=${year}`, {
     headers: buildAuthHeaders()
   });
   return handleResponse(response);
@@ -855,7 +871,7 @@ export async function checkInDaily() {
     };
   }
 
-  const response = await fetch('/api/daily-progress/check-in', {
+  const response = await fetch(`${API_BASE_URL}/daily-progress/check-in`, {
     method: 'POST',
     headers: buildAuthHeaders()
   });
@@ -883,7 +899,7 @@ export async function askQuestion(question) {
   console.log('API askQuestion: Making request to backend (forced for testing)');
   console.log('API askQuestion: Auth token present:', !!getAuthToken());
 
-  const response = await fetch('/api/questions', {
+  const response = await fetch(`${API_BASE_URL}/questions`, {
     method: 'POST',
     headers: buildAuthHeaders({ 'Content-Type': 'application/json'
     }),

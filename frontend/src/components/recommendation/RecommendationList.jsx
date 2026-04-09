@@ -1,3 +1,5 @@
+import { useTranslation } from 'react-i18next';
+
 const severityStyles = {
   success: 'bg-leaf-100 text-leaf-700',
   warning: 'bg-amber-100 text-amber-700',
@@ -5,8 +7,10 @@ const severityStyles = {
 };
 
 export default function RecommendationList({ items }) {
+  const { t } = useTranslation();
+
   if (!items.length) {
-    return <p className="text-sm text-earth-700">No recommendations yet.</p>;
+    return <p className="text-sm text-earth-700">{t('recommendations.noRecommendations')}</p>;
   }
 
   return (

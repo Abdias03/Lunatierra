@@ -1,7 +1,15 @@
 import { useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { fetchCropCatalog, fetchOnboardingRecommendation } from '../../api';
 import { mapCropToBackend } from '../../utils/cropMapper';
+import { useApiCall } from '../../hooks/useApiCall';
 import OnboardingSuggestion from './OnboardingSuggestion';
+
+const fallbackCrops = [
+  { code: 'tomato', displayName: 'Jitomate' },
+  { code: 'corn', displayName: 'Maíz' },
+  { code: 'beans', displayName: 'Frijol' }
+];
 
 function buildFirstActions(result, selectedCropKey) {
   const cropDetails = result?.recommendationResponse?.cropDetails || [];
@@ -25,31 +33,21 @@ function buildFirstActions(result, selectedCropKey) {
 }
 
 export default function OnboardingFlow({ cropOptions = [], onSetupComplete, onQuickStart, onFinish }) {
-  const [catalog, setCatalog] = useState([]);
+  const { t } = useTranslation();
+  const { data: catalog, loading: catalogLoading, error: catalogError, execute: loadCatalog, retry } = useApiCall([]);
   const [step, setStep] = useState(0);
   const [selectedCrop, setSelectedCrop] = useState('');
   const [plantingDate, setPlantingDate] = useState('');
   const [waterAvailable, setWaterAvailable] = useState(true);
   const [loading, setLoading] = useState(false);
   const [setupResult, setSetupResult] = useState(null);
-  const [error, setError] = useState('');
   const [recommendationLoading, setRecommendationLoading] = useState(false);
   const [recommendation, setRecommendation] = useState(null);
+  const [error, setError] = useState('');
 
   useEffect(() => {
-    async function loadCatalog() {
-      try {
-        console.log('🌱 Loading crop catalog...');
-        const data = await fetchCropCatalog();
-        console.log('✅ Catalog loaded:', data);
-        setCatalog(data);
-      } catch (catalogError) {
-        console.error('❌ Error loading catalog:', catalogError);
-      }
-    }
-
-    loadCatalog();
-  }, []);
+    loadCatalog(fetchCropCatalog);
+  }, [loadCatalog]);
 
   useEffect(() => {
     console.log('Catalog loaded, waiting for user selection');
@@ -158,7 +156,7 @@ export default function OnboardingFlow({ cropOptions = [], onSetupComplete, onQu
           <div className="mx-auto flex h-24 w-24 items-center justify-center rounded-[28px] bg-leaf-100 text-5xl shadow-[0_18px_40px_rgba(100,145,63,0.14)]">
             🌱
           </div>
-          <h1 className="mt-6 text-4xl font-semibold">Bienvenido a LunaTierra</h1>
+          <h1 className="mt-6 text-4xl font-semibold">{t('onboarding.welcome')}</h1>
           <p className="mt-4 text-lg leading-8 text-earth-700">
             Tu planta necesita cuidados todos los días.
             <br />
@@ -195,7 +193,7 @@ export default function OnboardingFlow({ cropOptions = [], onSetupComplete, onQu
             className="w-full rounded-[28px] border border-white/70 bg-white/88 px-5 py-5 text-left transition hover:border-earth-200 active:scale-[0.98]"
           >
             <p className="text-xl font-semibold text-earth-900">Sí</p>
-            <p className="mt-1 text-sm text-earth-600">Yo elijo qué quiero cuidar.</p>
+            <p className="mt-1 text-sm text-earth-600">{t('onboarding.chooseCare')}</p>
           </button>
 
           <button
@@ -252,8 +250,16 @@ export default function OnboardingFlow({ cropOptions = [], onSetupComplete, onQu
         </div>
 
         <section className="space-y-4">
-          {!catalog.length && <p className="text-center text-earth-500">Cargando cultivos...</p>}
-          {catalog.map((crop) => (
+          {catalogError && (
+            <div className="text-center">
+              <p className="text-red-500 mb-2">{t('onboarding.loadError')}</p>
+              <p className="text-sm text-earth-600 mb-4">{t('onboarding.fallbackMessage')}</p>
+              <button onClick={retry} className="px-4 py-2 bg-leaf-500 text-white rounded">{t('onboarding.retry')}</button>
+            </div>
+          )}
+          {catalogLoading ? (
+            <p className="text-center text-earth-500">{t('onboarding.loadingCrops')}</p>
+          ) : (catalog.length > 0 ? catalog : fallbackCrops).map((crop) => (
             <button
               key={crop.code}
               type="button"
@@ -267,7 +273,7 @@ export default function OnboardingFlow({ cropOptions = [], onSetupComplete, onQu
               <div className="flex items-center justify-between gap-4">
                 <div>
                   <p className="text-2xl font-semibold">{crop.displayName}</p>
-                  <p className="mt-1 text-sm text-earth-600">Vamos a acompañarlo día a día.</p>
+                  <p className="mt-1 text-sm text-earth-600">{t('onboarding.accompany')}</p>
                 </div>
                 <span className="text-4xl">🌱</span>
               </div>
@@ -302,7 +308,7 @@ export default function OnboardingFlow({ cropOptions = [], onSetupComplete, onQu
 
         <section className={`${panelBase} space-y-5`}>
           <label className="block">
-            <span className="mb-2 block text-sm font-medium text-earth-700">Fecha de siembra</span>
+            <span className="mb-2 block text-sm font-medium text-earth-700">{t('onboarding.plantingDate')}</span>
             <input
               type="date"
               value={plantingDate}
@@ -314,7 +320,7 @@ export default function OnboardingFlow({ cropOptions = [], onSetupComplete, onQu
           <label className="flex items-center justify-between rounded-[22px] border border-earth-100 bg-earth-50 px-4 py-4">
             <div>
               <p className="text-sm font-medium text-earth-700">¿Tienes agua disponible?</p>
-              <p className="mt-1 text-xs text-earth-500">Con esto te damos una guía más útil.</p>
+              <p className="mt-1 text-xs text-earth-500">{t('onboarding.usefulGuide')}</p>
             </div>
             <button
               type="button"
@@ -328,8 +334,8 @@ export default function OnboardingFlow({ cropOptions = [], onSetupComplete, onQu
             </button>
           </label>
 
-          {error ? (
-            <p className="text-sm font-medium text-rose-600">{error}</p>
+          {catalogError ? (
+            <p className="text-sm font-medium text-rose-600">{catalogError}</p>
           ) : null}
 
           <button
@@ -353,7 +359,7 @@ export default function OnboardingFlow({ cropOptions = [], onSetupComplete, onQu
           <div className="mx-auto flex h-24 w-24 items-center justify-center rounded-full bg-leaf-100 text-5xl plant-float">
             🌱
           </div>
-          <h2 className="mt-6 text-3xl font-semibold">Analizando tu cultivo...</h2>
+          <h2 className="mt-6 text-3xl font-semibold">{t('onboarding.analyzing')}</h2>
           <p className="mt-3 text-base leading-7 text-earth-700">
             Estamos preparando tu primera guía para hoy.
           </p>
@@ -370,7 +376,7 @@ export default function OnboardingFlow({ cropOptions = [], onSetupComplete, onQu
     return (
       <main data-testid="onboarding-flow" className={cardBase}>
         <div className="pt-4">
-          <p className="text-sm font-semibold uppercase tracking-[0.2em] text-earth-500">Tu primer valor</p>
+          <p className="text-sm font-semibold uppercase tracking-[0.2em] text-earth-500">{t('onboarding.firstValue')}</p>
           <h2 className="mt-4 text-3xl font-semibold">✅ Hoy tu planta necesita esto:</h2>
         </div>
 
@@ -406,7 +412,7 @@ export default function OnboardingFlow({ cropOptions = [], onSetupComplete, onQu
         <div className="mx-auto flex h-24 w-24 items-center justify-center rounded-[28px] bg-amber-100 text-5xl shadow-[0_18px_40px_rgba(199,140,47,0.12)]">
           🔥
         </div>
-        <p className="mt-6 text-sm font-semibold uppercase tracking-[0.22em] text-earth-500">Tu primera racha</p>
+        <p className="mt-6 text-sm font-semibold uppercase tracking-[0.22em] text-earth-500">{t('onboarding.firstStreak')}</p>
         <h2 className="mt-2 text-3xl font-semibold">Día 1 de cuidado</h2>
         <p className="mt-4 text-lg leading-8 text-earth-700">
           Si regresas mañana, tu planta crecerá mejor.

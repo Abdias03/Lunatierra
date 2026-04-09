@@ -1,4 +1,7 @@
+import { useTranslation } from 'react-i18next';
+
 export default function CropTrackingList({ crops, sortOrder = 'DESC' }) {
+  const { t } = useTranslation();
   const sortedCrops = [...crops].sort((a, b) => {
     if (sortOrder === 'ASC') {
       return a.daysSincePlanting - b.daysSincePlanting;
@@ -9,7 +12,7 @@ export default function CropTrackingList({ crops, sortOrder = 'DESC' }) {
   if (!sortedCrops.length) {
     return (
       <div className="rounded-3xl bg-earth-50 p-4 text-sm leading-6 text-earth-700">
-        No crops registered yet. Add one to start tracking growth stages.
+        {t('tracking.empty')}
       </div>
     );
   }
@@ -22,15 +25,15 @@ export default function CropTrackingList({ crops, sortOrder = 'DESC' }) {
             <div>
               <h3 className="text-lg font-semibold capitalize text-earth-900">{crop.cropName}</h3>
               <p className="text-sm text-earth-700">
-                Planted on {crop.plantingDate} • {crop.daysSincePlanting} days ago
+                {t('tracking.plantedOn', { date: crop.plantingDate, days: crop.daysSincePlanting })}
               </p>
             </div>
-            <span className="rounded-full bg-sky-100 px-3 py-1 text-xs font-semibold text-sky-700">
-              {crop.waterAvailable ? 'Water ready' : 'Low water'}
+            <span className={`rounded-full px-3 py-1 text-xs font-semibold ${crop.waterAvailable ? 'bg-sky-100 text-sky-700' : 'bg-amber-100 text-amber-700'}`}>
+              {crop.waterAvailable ? t('tracking.waterReady') : t('tracking.lowWater')}
             </span>
           </div>
           <div className="mt-4 rounded-2xl bg-white p-4">
-            <p className="text-sm font-semibold uppercase tracking-[0.16em] text-earth-500">Current stage</p>
+            <p className="text-sm font-semibold uppercase tracking-[0.16em] text-earth-500">{t('tracking.currentStage')}</p>
             <p className="mt-1 text-lg font-semibold text-earth-900">{crop.growthStageIcon ? `${crop.growthStageIcon} ` : ''}{crop.growthStage}</p>
             <p className="mt-2 text-sm leading-6 text-earth-700">{crop.expectedBehavior}</p>
           </div>

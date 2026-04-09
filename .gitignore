@@ -5,6 +5,12 @@ backend/target/
 # Frontend
 frontend/node_modules/
 frontend/dist/
+frontend/.npm-cache/
+
+# Backend
+backend/target/
+backend/.m2repo/
+*.jar
 
 # Logs
 *.log

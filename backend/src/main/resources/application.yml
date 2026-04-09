@@ -3,7 +3,7 @@ spring:
     name: lunatierra-backend
   datasource:
     url: ${DB_URL:jdbc:postgresql://localhost:5432/lunatierra}
-    username: ${DB_USERNAME:lunatierra}
+    username: ${DB_USERNAME:${DB_USER:lunatierra}}
     password: ${DB_PASSWORD:Dev230319}
     hikari:
       pool-name: LunatierraHikariPool
@@ -29,7 +29,7 @@ spring:
       data-locations: classpath:data.sql
 
 server:
-  port: ${SERVER_PORT:8080}
+  port: ${PORT:${SERVER_PORT:8080}}
   address: 0.0.0.0
   servlet:
     encoding:
@@ -43,7 +43,7 @@ logging:
     org.springframework.web: DEBUG
     org.springframework.security: DEBUG
   file:
-    name: C:/APP/Lunatierra/logs/lunaTierra.log
+    name: ${LOG_PATH:./logs/lunaTierra.log}
   pattern:
     file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
     console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
@@ -76,3 +76,6 @@ springdoc:
     operationsSorter: alpha
     tagsSorter: alpha
     displayRequestDuration: true
+
+app:
+  allowed-origins: ${ALLOWED_ORIGINS:http://localhost:5173,http://localhost:5174,http://192.168.1.134:5173,http://192.168.1.134:5174,http://192.168.1.134:5175,http://172.26.176.1:5173}

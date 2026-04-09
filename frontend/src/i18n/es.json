@@ -128,6 +128,7 @@
     "title": "Recomendaciones",
     "subtitle": "Acciones simples para hoy",
     "empty": "Por ahora todo se ve tranquilo. Con una revisión rápida basta.",
+    "noRecommendations": "No hay recomendaciones aún.",
     "severity": {
       "success": "bien",
       "warning": "atención",
@@ -142,18 +143,21 @@
     "plantingDate": "Fecha de siembra",
     "waterAvailable": "¿Tienes agua disponible",
     "submit": "Guardar cultivo",
-    "saving": "Guardando..."
+    "saving": "Guardando...",
+    "plantingDateLabel": "Fecha de siembra",
+    "waterAvailableLabel": "Agua disponible"
   },
   "tracking": {
     "title": "Tus cultivos",
     "subtitle": "Mira cómo va cada uno",
-    "empty": "Todavía no hay cultivos. Agrega uno y empezamos a acompañarlo.",
-    "plantedOn": "Sembrado el {{date}} | hace {{days}} días",
+    "empty": "No hay cultivos registrados aún. Agrega uno para empezar a rastrear las etapas de crecimiento.",
+    "plantedOn": "Sembrado el {{date}} • hace {{days}} días",
     "waterReady": "Con agua",
     "lowWater": "Poca agua",
     "currentOrder": "Orden actual",
     "sortDesc": "Mayor a menor",
-    "sortAsc": "Menor a mayor"
+    "sortAsc": "Menor a mayor",
+    "currentStage": "Etapa actual"
   },
   "crop": {
     "stage": "Etapa actual",
@@ -209,9 +213,18 @@
     "softRisk": "Riesgo leve"
   },
   "onboarding": {
-    "moonPhase": "Hoy la luna está en fase",
-    "goodTime": "Hoy puede ser un buen momento para empezar 🌱",
-    "started": "Tu cultivo ha comenzado 🚀"
+    "welcome": "Bienvenido a LunaTierra",
+    "chooseCare": "Yo elijo qué quiero cuidar.",
+    "loadingCrops": "Cargando cultivos...",
+    "accompany": "Vamos a acompañarlo día a día.",
+    "plantingDate": "Fecha de siembra",
+    "usefulGuide": "Con esto te damos una guía más útil.",
+    "analyzing": "Analizando tu cultivo...",
+    "firstValue": "Tu primer valor",
+    "firstStreak": "Tu primera racha",
+    "loadError": "No pudimos cargar los cultivos desde el servidor.",
+    "fallbackMessage": "Te mostramos opciones básicas para continuar.",
+    "retry": "Reintentar"
   },
   "login": {
     "saveProgress": "Guarda tu progreso 🌱",

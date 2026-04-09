@@ -1,0 +1,9 @@
+target/
+*.jar
+*.log
+*.iml
+.idea/
+.vscode/
+.git/
+.mvn/
+backend/.m2repo/

@@ -127,8 +127,7 @@
   "recommendations": {
     "title": "Recommendations",
     "subtitle": "Simple actions for today",
-    "empty": "Nothing special for now. A quick field walk is enough.",
-    "severity": {
+    "empty": "Nothing special for now. A quick field walk is enough.",    "noRecommendations": "No recommendations yet.",    "severity": {
       "success": "good",
       "warning": "attention",
       "info": "info"
@@ -142,18 +141,21 @@
     "plantingDate": "Planting date",
     "waterAvailable": "Do you have water available",
     "submit": "Save crop",
-    "saving": "Saving..."
+    "saving": "Saving...",
+    "plantingDateLabel": "Planting date",
+    "waterAvailableLabel": "Water available"
   },
   "tracking": {
     "title": "Your crops",
     "subtitle": "See how each one is doing",
-    "empty": "There are no crops yet. Add one and we'll start tracking it.",
-    "plantedOn": "Planted on {{date}} | {{days}} days ago",
+    "empty": "No crops registered yet. Add one to start tracking growth stages.",
+    "plantedOn": "Planted on {{date}} • {{days}} days ago",
     "waterReady": "Water ready",
     "lowWater": "Low water",
     "currentOrder": "Current order",
     "sortDesc": "Highest to lowest",
-    "sortAsc": "Lowest to highest"
+    "sortAsc": "Lowest to highest",
+    "currentStage": "Current stage"
   },
   "crop": {
     "stage": "Current stage",
@@ -209,9 +211,18 @@
     "softRisk": "Soft risk"
   },
   "onboarding": {
-    "moonPhase": "Today the moon is in",
-    "goodTime": "Today might be a good time to start 🌱",
-    "started": "Your crop has started 🚀"
+    "welcome": "Welcome to LunaTierra",
+    "chooseCare": "I choose what I want to care for.",
+    "loadingCrops": "Loading crops...",
+    "accompany": "We'll accompany you day by day.",
+    "plantingDate": "Planting date",
+    "usefulGuide": "This gives us a more useful guide.",
+    "analyzing": "Analyzing your crop...",
+    "firstValue": "Your first value",
+    "firstStreak": "Your first streak",
+    "loadError": "We couldn't load the crops from the server.",
+    "fallbackMessage": "We're showing you basic options to continue.",
+    "retry": "Retry"
   },
   "login": {
     "saveProgress": "Save your progress 🌱",

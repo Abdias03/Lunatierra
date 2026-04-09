@@ -11,6 +11,7 @@ import com.lunatierra.backend.repository.UserRepository;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.Collections;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -60,13 +61,26 @@ public class GoogleAuthService {
                     GsonFactory.getDefaultInstance()
             )
                     .setAudience(Collections.singletonList(googleClientId))
+                    .setIssuers(List.of("https://accounts.google.com", "accounts.google.com"))
                     .build();
 
             GoogleIdToken idToken = verifier.verify(token);
             if (idToken == null) {
                 throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid Google token");
             }
-            return idToken.getPayload();
+
+            GoogleIdToken.Payload payload = idToken.getPayload();
+            if (payload.getExpirationTimeSeconds() == null || payload.getExpirationTimeSeconds() * 1000 < System.currentTimeMillis()) {
+                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Expired Google token");
+            }
+            if (payload.getEmail() == null || payload.getEmail().isBlank()) {
+                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Google token does not contain email");
+            }
+            if (payload.getEmailVerified() != null && !payload.getEmailVerified()) {
+                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Google email is not verified");
+            }
+
+            return payload;
         } catch (GeneralSecurityException | IOException ex) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unable to verify Google token");
         }

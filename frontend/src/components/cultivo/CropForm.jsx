@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 const initialForm = {
   cropName: 'corn',
@@ -7,7 +8,7 @@ const initialForm = {
 };
 
 export default function CropForm({ onSubmit, loading }) {
-  const [form, setForm] = useState(initialForm);
+  const { t } = useTranslation();
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -18,20 +19,20 @@ export default function CropForm({ onSubmit, loading }) {
   return (
     <form data-testid="crop-form-basic" className="crop-form-basic space-y-4" onSubmit={handleSubmit}>
       <label className="block">
-        <span className="mb-2 block text-sm font-medium text-earth-700">Crop</span>
+        <span className="mb-2 block text-sm font-medium text-earth-700">{t('register.crop')}</span>
         <select
           className="w-full rounded-2xl border border-earth-100 bg-earth-50 px-4 py-3 text-base text-earth-900 outline-none transition focus:border-leaf-500"
           value={form.cropName}
           onChange={(event) => setForm((current) => ({ ...current, cropName: event.target.value }))}
         >
-          <option value="corn">Corn</option>
-          <option value="beans">Beans</option>
-          <option value="squash">Squash</option>
+          <option value="corn">{t('crop.names.corn')}</option>
+          <option value="beans">{t('crop.names.beans')}</option>
+          <option value="squash">{t('crop.names.squash')}</option>
         </select>
       </label>
 
       <label className="block">
-        <span className="mb-2 block text-sm font-medium text-earth-700">Planting date</span>
+        <span className="mb-2 block text-sm font-medium text-earth-700">{t('register.plantingDate')}</span>
         <input
           required
           type="date"
@@ -42,7 +43,7 @@ export default function CropForm({ onSubmit, loading }) {
       </label>
 
       <label className="flex items-center justify-between rounded-2xl border border-earth-100 bg-earth-50 px-4 py-3">
-        <span className="text-sm font-medium text-earth-700">Water available</span>
+        <span className="text-sm font-medium text-earth-700">{t('register.waterAvailable')}</span>
         <input
           type="checkbox"
           checked={form.waterAvailable}
@@ -56,7 +57,7 @@ export default function CropForm({ onSubmit, loading }) {
         disabled={loading}
         className="w-full rounded-full bg-earth-900 px-4 py-3 text-sm font-semibold text-white shadow-[0_12px_28px_rgba(48,36,24,0.16)] transition hover:bg-earth-800 active:scale-95 disabled:opacity-60"
       >
-        {loading ? 'Saving...' : 'Save crop'}
+        {loading ? t('register.saving') : t('register.submit')}
       </button>
     </form>
   );

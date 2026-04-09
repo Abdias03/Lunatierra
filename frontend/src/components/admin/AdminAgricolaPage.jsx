@@ -12,6 +12,7 @@ import {
   fetchAdminStages,
   fetchCropCatalog
 } from '../../api';
+import { useApiCall } from '../../hooks/useApiCall';
 import Card from '../shared/Card';
 import SectionHeader from '../shared/SectionHeader';
 
@@ -96,43 +97,34 @@ function Select({ label, children, ...props }) {
 export default function AdminAgricolaPage() {
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
-  const [overview, setOverview] = useState({});
-  const [crops, setCrops] = useState([]);
-  const [stages, setStages] = useState([]);
-  const [recommendations, setRecommendations] = useState([]);
-  const [lunarActivities, setLunarActivities] = useState([]);
-  const [cropForm, setCropForm] = useState(initialCropForm);
-  const [stageForm, setStageForm] = useState(initialStageForm);
-  const [recommendationForm, setRecommendationForm] = useState(initialRecommendationForm);
-  const [lunarForm, setLunarForm] = useState(initialLunarForm);
-  const [saving, setSaving] = useState('');
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
+  const { data: adminData, loading, error, execute } = useApiCall({
+    overview: {},
+    crops: [],
+    stages: [],
+    recommendations: [],
+    lunarActivities: []
+  });
 
-  const loadAdminData = async () => {
-    try {
-      setError('');
-      const [overviewData, cropData, stageData, recommendationData, lunarData] = await Promise.all([
-        fetchAdminOverview(),
-        fetchCropCatalog(),
-        fetchAdminStages(),
-        fetchAdminRecommendations(),
-        fetchAdminLunarActivities()
-      ]);
-
-      setOverview(overviewData || {});
-      setCrops(cropData || []);
-      setStages(stageData || []);
-      setRecommendations(recommendationData || []);
-      setLunarActivities(lunarData || []);
-    } catch {
-      setError(t('admin.loadError'));
-    }
+  const loadData = async () => {
+    const [overviewData, cropData, stageData, recommendationData, lunarData] = await Promise.all([
+      fetchAdminOverview(),
+      fetchCropCatalog(),
+      fetchAdminStages(),
+      fetchAdminRecommendations(),
+      fetchAdminLunarActivities()
+    ]);
+    return {
+      overview: overviewData || {},
+      crops: cropData || [],
+      stages: stageData || [],
+      recommendations: recommendationData || [],
+      lunarActivities: lunarData || []
+    };
   };
 
   useEffect(() => {
-    loadAdminData();
-  }, [i18n.language]);
+    execute(loadData);
+  }, [execute, i18n.language]);
 
   useEffect(() => {
     if (!success) {
@@ -144,8 +136,8 @@ export default function AdminAgricolaPage() {
   }, [success]);
 
   const stageOptions = useMemo(
-    () => stages.filter((stage) => String(stage.cropId) === String(recommendationForm.cropId)),
-    [stages, recommendationForm.cropId]
+    () => adminData.stages.filter((stage) => String(stage.cropId) === String(recommendationForm.cropId)),
+    [adminData.stages, recommendationForm.cropId]
   );
 
   const handleCropSubmit = async (event) => {
@@ -156,7 +148,7 @@ export default function AdminAgricolaPage() {
       await createAdminCrop(cropForm);
       setCropForm(initialCropForm);
       setSuccess(t('admin.cropSaved'));
-      await loadAdminData();
+      await execute(loadData);
     } catch {
       setError(t('admin.cropSaveError'));
     } finally {
@@ -199,7 +191,7 @@ export default function AdminAgricolaPage() {
       });
       setRecommendationForm(initialRecommendationForm);
       setSuccess(t('admin.recommendationSaved'));
-      await loadAdminData();
+      await execute(loadData);
     } catch {
       setError(t('admin.recommendationSaveError'));
     } finally {
@@ -215,7 +207,7 @@ export default function AdminAgricolaPage() {
       await createAdminLunarActivity(lunarForm);
       setLunarForm(initialLunarForm);
       setSuccess(t('admin.lunarSaved'));
-      await loadAdminData();
+      await execute(loadData);
     } catch {
       setError(t('admin.lunarSaveError'));
     } finally {
@@ -240,10 +232,16 @@ export default function AdminAgricolaPage() {
           <p className="max-w-2xl text-sm leading-6 text-earth-700">{t('admin.subtitle')}</p>
         </header>
 
-        {error ? (
-          <Card className="border-rose-200 bg-rose-50/95 p-4">
-            <p className="text-sm text-rose-700">{error}</p>
+        {loading ? (
+          <Card className="p-4">
+            <p className="text-sm text-earth-700">{t('dashboard.loading')}</p>
           </Card>
+        ) : (
+          <>
+            {error ? (
+              <Card className="border-rose-200 bg-rose-50/95 p-4">
+                <p className="text-sm text-rose-700">{error}</p>
+              </Card>
         ) : null}
 
         {success ? (
@@ -253,13 +251,13 @@ export default function AdminAgricolaPage() {
         ) : null}
 
         <section className="grid grid-cols-2 gap-4 md:grid-cols-4">
-          <StatCard label={t('admin.stats.users')} value={overview.totalUsers ?? 0} />
-          <StatCard label={t('admin.stats.activeToday')} value={overview.activeToday ?? 0} />
-          <StatCard label={t('admin.stats.activeWeek')} value={overview.activeThisWeek ?? 0} />
-          <StatCard label={t('admin.stats.crops')} value={overview.totalCrops ?? 0} />
-          <StatCard label={t('admin.stats.stages')} value={overview.totalStages ?? 0} />
-          <StatCard label={t('admin.stats.rules')} value={overview.totalRecommendations ?? 0} />
-          <StatCard label={t('admin.stats.lunar')} value={overview.totalLunarActivities ?? 0} />
+          <StatCard label={t('admin.stats.users')} value={adminData.overview.totalUsers ?? 0} />
+          <StatCard label={t('admin.stats.activeToday')} value={adminData.overview.activeToday ?? 0} />
+          <StatCard label={t('admin.stats.activeWeek')} value={adminData.overview.activeThisWeek ?? 0} />
+          <StatCard label={t('admin.stats.crops')} value={adminData.overview.totalCrops ?? 0} />
+          <StatCard label={t('admin.stats.stages')} value={adminData.overview.totalStages ?? 0} />
+          <StatCard label={t('admin.stats.rules')} value={adminData.overview.totalRecommendations ?? 0} />
+          <StatCard label={t('admin.stats.lunar')} value={adminData.overview.totalLunarActivities ?? 0} />
         </section>
 
         <section className="grid gap-6 lg:grid-cols-2">
@@ -286,7 +284,7 @@ export default function AdminAgricolaPage() {
             <form className="mt-4 space-y-4" onSubmit={handleStageSubmit}>
               <Select label={t('admin.crop')} value={stageForm.cropId} onChange={(e) => setStageForm((c) => ({ ...c, cropId: e.target.value }))} required>
                 <option value="">{t('admin.selectCrop')}</option>
-                {crops.map((crop) => <option key={crop.id} value={crop.id}>{crop.displayName}</option>)}
+                {adminData.crops.map((crop) => <option key={crop.id} value={crop.id}>{crop.displayName}</option>)}
               </Select>
               <Input label={t('admin.stageName')} value={stageForm.name} onChange={(e) => setStageForm((c) => ({ ...c, name: e.target.value }))} placeholder={i18n.language.startsWith('es') ? 'Floración' : 'Flowering'} required />
               <div className="grid gap-4 sm:grid-cols-2">
@@ -305,7 +303,7 @@ export default function AdminAgricolaPage() {
             <form className="mt-4 space-y-4" onSubmit={handleRecommendationSubmit}>
               <Select label={t('admin.crop')} value={recommendationForm.cropId} onChange={(e) => setRecommendationForm((c) => ({ ...c, cropId: e.target.value, stageId: '' }))}>
                 <option value="">{t('admin.general')}</option>
-                {crops.map((crop) => <option key={crop.id} value={crop.id}>{crop.displayName}</option>)}
+                {adminData.crops.map((crop) => <option key={crop.id} value={crop.id}>{crop.displayName}</option>)}
               </Select>
               <Select label={t('admin.stageName')} value={recommendationForm.stageId} onChange={(e) => setRecommendationForm((c) => ({ ...c, stageId: e.target.value }))}>
                 <option value="">{t('admin.allStages')}</option>
@@ -358,8 +356,8 @@ export default function AdminAgricolaPage() {
           <Card className="bg-white/92 p-5">
             <SectionHeader eyebrow={t('admin.usersEyebrow')} title={t('admin.activeUsers')} />
             <div className="mt-4 space-y-3">
-              {overview.recentUsers?.length ? (
-                overview.recentUsers.map((user) => (
+              {adminData.overview.recentUsers?.length ? (
+                adminData.overview.recentUsers.map((user) => (
                   <div key={user.id} className="rounded-[20px] bg-earth-50 px-4 py-3">
                     <p className="text-sm font-semibold text-earth-900">{user.name}</p>
                     <p className="mt-1 text-xs text-earth-600">{user.email || t('admin.noEmail')}</p>
@@ -377,7 +375,7 @@ export default function AdminAgricolaPage() {
           <Card className="bg-white/92 p-5">
             <SectionHeader eyebrow={t('admin.currentCatalog')} title={t('admin.registeredCrops')} />
             <div className="mt-4 space-y-3">
-              {crops.map((crop) => (
+              {adminData.crops.map((crop) => (
                 <div key={crop.id} className="rounded-[20px] bg-earth-50 px-4 py-3">
                   <p className="text-sm font-semibold text-earth-900">{`${crop.displayName} · ${crop.code}`}</p>
                   <p className="mt-1 text-xs text-earth-600">{crop.description || t('admin.noDescription')}</p>
@@ -391,7 +389,7 @@ export default function AdminAgricolaPage() {
           <Card className="bg-white/92 p-5">
             <SectionHeader eyebrow={t('admin.savedStages')} title={t('admin.quickView')} />
             <div className="mt-4 max-h-[28rem] space-y-3 overflow-auto pr-1">
-              {stages.map((stage) => (
+              {adminData.stages.map((stage) => (
                 <div key={stage.id} className="rounded-[20px] bg-earth-50 px-4 py-3">
                   <p className="text-sm font-semibold text-earth-900">{`${stage.cropName} · ${stage.stageName}`}</p>
                   <p className="mt-1 text-xs text-earth-600">{t('admin.daysRange', { min: stage.minDay, max: stage.maxDay })}</p>
@@ -404,7 +402,7 @@ export default function AdminAgricolaPage() {
           <Card className="bg-white/92 p-5">
             <SectionHeader eyebrow={t('admin.savedRules')} title={t('admin.recommendations')} />
             <div className="mt-4 max-h-[28rem] space-y-3 overflow-auto pr-1">
-              {recommendations.map((recommendation) => (
+              {adminData.recommendations.map((recommendation) => (
                 <div key={recommendation.id} className="rounded-[20px] bg-earth-50 px-4 py-3">
                   <p className="text-sm font-semibold text-earth-900">{`${recommendation.cropName} · ${recommendation.stageName}`}</p>
                   <p className="mt-1 text-xs uppercase tracking-[0.14em] text-earth-500">{`${recommendation.type} · ${recommendation.condition}`}</p>
@@ -415,11 +413,14 @@ export default function AdminAgricolaPage() {
           </Card>
         </section>
 
+        </>
+        )}
+
         <section>
           <Card className="bg-white/92 p-5">
             <SectionHeader eyebrow={t('admin.lunarCalendar')} title={t('admin.registeredActivities')} />
             <div className="mt-4 grid gap-3 md:grid-cols-2">
-              {lunarActivities.map((activity) => (
+              {adminData.lunarActivities.map((activity) => (
                 <div key={activity.id} className="rounded-[20px] bg-earth-50 px-4 py-3">
                   <p className="text-xs font-semibold uppercase tracking-[0.16em] text-earth-500">{activity.phase}</p>
                   <p className="mt-2 text-sm text-earth-800">{activity.activity}</p>

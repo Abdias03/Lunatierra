@@ -10,12 +10,16 @@ export function useCrops() {
   const loadCrops = async () => {
     setLoading(true);
     setError('');
+
     try {
-      const [cropData, catalogData] = await Promise.all([getCrops(), getCropCatalog()]);
+      const timeoutPromise = new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('Request timed out')), 30000)
+      );
+      const apiPromise = Promise.all([getCrops(), getCropCatalog()]);
+      const [cropData, catalogData] = await Promise.race([apiPromise, timeoutPromise]);
       setCrops(cropData || []);
       setCatalog(catalogData || []);
     } catch (err) {
-      console.error('[useCrops] loadCrops failed', err);
       setError(err.message || 'Could not load crops');
     } finally {
       setLoading(false);

@@ -11,6 +11,8 @@ import CropProgressIndicator from './CropProgressIndicator';
 import CropStatusCard from './CropStatusCard';
 import GrowthPhotoGallery from './GrowthPhotoGallery';
 
+const API_BASE_URL = import.meta.env.VITE_API_URL || '/api';
+
 const {
   GUEST_GROWTH_LOGS: GUEST_GROWTH_LOGS_KEY,
   GUEST_GROWTH_LOG_CROP: GUEST_GROWTH_LOG_CROP_KEY,
@@ -88,6 +90,7 @@ export default function CropDetailPagePremium({ crops, recommendationData }) {
   const navigate = useNavigate();
   const { id } = useParams();
   const [photos, setPhotos] = useState([]);
+  const [error, setError] = useState('');
 
   const crop = crops.find((item) => String(item.id) === id);
   const cropDetail = recommendationData.cropDetails.find((item) => String(item.cropId) === id) || null;
@@ -104,7 +107,7 @@ export default function CropDetailPagePremium({ crops, recommendationData }) {
     }
 
     try {
-      const response = await fetch(`/api/growth-log/${crop.id}`, {
+      const response = await fetch(`${API_BASE_URL}/growth-log/${crop.id}`, {
         headers: buildAuthHeaders()
       });
 
@@ -119,7 +122,7 @@ export default function CropDetailPagePremium({ crops, recommendationData }) {
         setPhotos(data);
       }
     } catch (error) {
-      console.error('Failed to fetch photos:', error);
+      setError(error.message || 'Failed to fetch photos');
     }
   };
 
@@ -165,7 +168,7 @@ export default function CropDetailPagePremium({ crops, recommendationData }) {
     formData.append('file', file);
     formData.append('userCropId', crop.id);
 
-    const response = await fetch('/api/growth-log', {
+    const response = await fetch(`${API_BASE_URL}/growth-log`, {
       method: 'POST',
       headers: buildAuthHeaders(),
       body: formData
@@ -206,7 +209,7 @@ export default function CropDetailPagePremium({ crops, recommendationData }) {
       return;
     }
 
-    const response = await fetch(`/api/growth-log/${crop.id}/${photo.id}`, {
+    const response = await fetch(`${API_BASE_URL}/growth-log/${crop.id}/${photo.id}`, {
       method: 'DELETE',
       headers: buildAuthHeaders()
     });

@@ -10,12 +10,16 @@ export function useWeather() {
   const loadWeather = async () => {
     setLoading(true);
     setError('');
+
     try {
-      const [recommendationResult, lunarResult] = await Promise.all([getRecommendations(), getLunarPhase()]);
+      const timeoutPromise = new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('Request timed out')), 30000)
+      );
+      const apiPromise = Promise.all([getRecommendations(), getLunarPhase()]);
+      const [recommendationResult, lunarResult] = await Promise.race([apiPromise, timeoutPromise]);
       setRecommendations(recommendationResult);
       setLunarPhase(lunarResult);
     } catch (err) {
-      console.error('[useWeather] loadWeather failed', err);
       setError(err.message || 'Could not load weather/lunar data');
     } finally {
       setLoading(false);
