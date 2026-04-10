@@ -5,11 +5,26 @@ ON CONFLICT (id) DO UPDATE SET
     streak_count = EXCLUDED.streak_count,
     last_check_date = EXCLUDED.last_check_date;
 
-INSERT INTO regions (name, climate_type) VALUES
-    ('Altiplano Central', 'templado-seco'),
-    ('Golfo Humedo', 'calido-humedo')
-ON CONFLICT (name) DO UPDATE SET
-    climate_type = EXCLUDED.climate_type;
+UPDATE regions
+SET climate_type = 'templado-seco'
+WHERE name = 'Altiplano Central';
+
+UPDATE regions
+SET climate_type = 'calido-humedo'
+WHERE name = 'Golfo Humedo';
+
+INSERT INTO regions (name, climate_type)
+SELECT region_data.name, region_data.climate_type
+FROM (
+    VALUES
+        ('Altiplano Central', 'templado-seco'),
+        ('Golfo Humedo', 'calido-humedo')
+) AS region_data(name, climate_type)
+WHERE NOT EXISTS (
+    SELECT 1
+    FROM regions existing_regions
+    WHERE existing_regions.name = region_data.name
+);
 
 INSERT INTO crops (code, name, type, description) VALUES
     ('CORN', 'Maiz', 'ANNUAL', 'Maiz de ciclo anual para manejo diario.'),
