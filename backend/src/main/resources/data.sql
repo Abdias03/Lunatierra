@@ -26,15 +26,44 @@ WHERE NOT EXISTS (
     WHERE existing_regions.name = region_data.name
 );
 
-INSERT INTO crops (code, name, type, description) VALUES
-    ('CORN', 'Maiz', 'ANNUAL', 'Maiz de ciclo anual para manejo diario.'),
-    ('BEANS', 'Frijol', 'ANNUAL', 'Frijol de ciclo corto con seguimiento por etapa.'),
-    ('SQUASH', 'Calabaza', 'ANNUAL', 'Calabaza de desarrollo rastrero y fruto visible.'),
-    ('JITOMATE', 'Jitomate', 'ANNUAL', 'Jitomate de mesa para seguimiento diario.')
-ON CONFLICT (code) DO UPDATE SET
-    name = EXCLUDED.name,
-    type = EXCLUDED.type,
-    description = EXCLUDED.description;
+UPDATE crops
+SET name = 'Maiz',
+    type = 'ANNUAL',
+    description = 'Maiz de ciclo anual para manejo diario.'
+WHERE code = 'CORN';
+
+UPDATE crops
+SET name = 'Frijol',
+    type = 'ANNUAL',
+    description = 'Frijol de ciclo corto con seguimiento por etapa.'
+WHERE code = 'BEANS';
+
+UPDATE crops
+SET name = 'Calabaza',
+    type = 'ANNUAL',
+    description = 'Calabaza de desarrollo rastrero y fruto visible.'
+WHERE code = 'SQUASH';
+
+UPDATE crops
+SET name = 'Jitomate',
+    type = 'ANNUAL',
+    description = 'Jitomate de mesa para seguimiento diario.'
+WHERE code = 'JITOMATE';
+
+INSERT INTO crops (code, name, type, description)
+SELECT crop_data.code, crop_data.name, crop_data.type, crop_data.description
+FROM (
+    VALUES
+        ('CORN', 'Maiz', 'ANNUAL', 'Maiz de ciclo anual para manejo diario.'),
+        ('BEANS', 'Frijol', 'ANNUAL', 'Frijol de ciclo corto con seguimiento por etapa.'),
+        ('SQUASH', 'Calabaza', 'ANNUAL', 'Calabaza de desarrollo rastrero y fruto visible.'),
+        ('JITOMATE', 'Jitomate', 'ANNUAL', 'Jitomate de mesa para seguimiento diario.')
+) AS crop_data(code, name, type, description)
+WHERE NOT EXISTS (
+    SELECT 1
+    FROM crops existing_crops
+    WHERE existing_crops.code = crop_data.code
+);
 
 INSERT INTO crop_stages (id, crop_id, name, min_day, max_day, description) VALUES
     (1, (SELECT id FROM crops WHERE code = 'CORN'), 'Germinacion', 0, 7, 'La semilla debe brotar si el suelo conserva buena humedad.'),

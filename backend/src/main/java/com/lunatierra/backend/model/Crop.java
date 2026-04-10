@@ -6,17 +6,24 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Column;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 
 @Entity
-@Table(name = "crops")
+@Table(name = "crops", uniqueConstraints = {
+        @UniqueConstraint(name = "uk_crops_code", columnNames = "code")
+})
 public class Crop {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false, unique = true)
     private String code;
+
+    @Column(nullable = false)
     private String name;
     @Enumerated(EnumType.STRING)
     private CropType type;
